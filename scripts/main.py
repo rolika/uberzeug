@@ -31,7 +31,7 @@ class InventoryApplication():
             return
         master_list = self.__dbsession.load_all_items()
         withdraw_dialog = WithdrawDialog(self.__ui, master_list, projectnumber)
-        self.__dbsession.log_stock_change(withdraw_dialog.withdrawed_items,
+        self.__dbsession.log_stock_change(withdraw_dialog.withdraw_list,
                                           projectnumber)
 
 

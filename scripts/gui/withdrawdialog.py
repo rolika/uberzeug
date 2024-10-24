@@ -17,8 +17,8 @@ class WithdrawDialog(simpledialog.Dialog):
     def __init__(self, root:Widget, master_list:List[StockItemRecord],
                  projectnumber:Projectnumber) -> None:
         self.__master_list = master_list
-        self.__withdrawed_items = []
-        self.__temp_withdraw = []
+        self.__withdraw_list = []
+        self.__temp_list = []
         super().__init__(root,
                          title=f"{projectnumber.legal}: Kivét raktárból")
 
@@ -42,7 +42,7 @@ class WithdrawDialog(simpledialog.Dialog):
         box.pack()
 
     def apply(self) -> None:
-        self.__withdrawed_items = self.__temp_withdraw
+        self.__withdraw_list = self.__temp_list
 
     def _withdraw(self, _:Event) -> float:
         item = self.__itemlistbox.get_record()
@@ -51,11 +51,12 @@ class WithdrawDialog(simpledialog.Dialog):
                                 maxvalue=item.stock, unit=item.unit)
         if change:
             setattr(item, "change", -change)
-            self.__temp_withdraw.append(item)
-            for item in self.__temp_withdraw:
+            self.__temp_list.append(item)
+            self.__itemlistbox.update_item(item)
+            for item in self.__temp_list:
                 print(item.withdraw_view)
             print("---")
 
     @property
-    def withdrawed_items(self) -> List[StockItemRecord]|None:
-        return self.__withdrawed_items
+    def withdraw_list(self) -> List[StockItemRecord]|None:
+        return self.__withdraw_list

@@ -11,7 +11,7 @@ class ItemListbox(LabelFrame):
                  master_list:List[StockItemRecord]=None) -> None:
         super().__init__(root, text=title)
         self.__master_list = master_list
-        self.__item_list = None
+        self.__display_list = None
         self._init_controll_variables()
         self._build_interface()
         self._bindings()
@@ -63,7 +63,7 @@ class ItemListbox(LabelFrame):
 
     def _populate(self, item_list:list) -> None:    
         self.__listbox.delete(0, END)
-        self.__item_list = item_list
+        self.__display_list = item_list
         for item in item_list:
             self.__listbox.insert(END, str(item))
 
@@ -72,20 +72,20 @@ class ItemListbox(LabelFrame):
 
     def get_record(self) -> StockItemRecord:
         try:
-            return self.__item_list[self.__listbox.curselection()[0]]
+            return self.__display_list[self.__listbox.curselection()[0]]
         except IndexError:  # empty list
             return None
 
     def update_item(self, item:StockItemRecord) -> None:
-        for idx, stockitem in enumerate(self.__item_list):
+        for idx, stockitem in enumerate(self.__display_list):
             if stockitem.articlenumber == item.articlenumber:
                 break
-        self.__item_list[idx] = item
+        self.__display_list[idx] = item
         self.__listbox.delete(idx)
         self.__listbox.insert(idx, str(item))
 
     def lookup(self, term:str) -> bool:    
-        selection = list(self.__master_list)
+        selection = self.__master_list
         for word in re.split(r"\W+", term.lower()):
             if word:
                 selection = [item for item in selection if item.contains(word)]
