@@ -66,6 +66,17 @@ class StockItemRecord(Record):
                 return True
         return False
 
+    def apply_change(self) -> None:
+        """Change is signed: - for withdraw, + for deposit"""
+        assert self.change
+        self.stock += self.change
+
+    def undo_change(self) -> None:
+        """Change is signed: - for withdraw, + for deposit"""
+        assert self.change
+        self.stock -= self.change
+
+
     @property
     def withdraw_view(self) -> str:
         assert self.change

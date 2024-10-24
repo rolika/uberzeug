@@ -51,6 +51,7 @@ class WithdrawDialog(simpledialog.Dialog):
                                 maxvalue=item.stock, unit=item.unit)
         if change:
             setattr(item, "change", -change)
+            item.apply_change()
             self.__temp_list.append(item)
             self.__itemlistbox.update_item(item)
             for item in self.__temp_list:

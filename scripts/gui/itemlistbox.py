@@ -49,23 +49,31 @@ class ItemListbox(LabelFrame):
         self.__lookup_entry.grid(row=0, column=0, sticky=E+W)
         self.__listbox.grid(row=1, column=0)
         vertical_scroll.grid(row=1, column=1, sticky=N+S)
-    
+
     def _bindings(self) -> None:
-        lookup_ = self.__listbox.register(self.lookup)
-        self.__lookup_entry["validatecommand"] = (lookup_, "%P")
+        lookup = self.__listbox.register(self._lookup)
+        self.__lookup_entry["validatecommand"] = (lookup, "%P")
         self.__listbox.bind("<Escape>", self._clear_selection)
         self.__lookup_entry.bind("<Escape>", self._clear_selection)
 
     def _clear_selection(self, _=None) -> None:
         self.__lookup_var.set("")
-        self.lookup("")    
+        self._lookup("")
         self.__lookup_entry.focus()
 
-    def _populate(self, item_list:list) -> None:    
+    def _populate(self, item_list:list) -> None:
         self.__listbox.delete(0, END)
         self.__display_list = item_list
         for item in item_list:
             self.__listbox.insert(END, str(item))
+
+    def _lookup(self, term:str) -> bool:
+        selection = self.__master_list
+        for word in re.split(r"\W+", term.lower()):
+            if word:
+                selection = [item for item in selection if item.contains(word)]
+        self._populate(selection)
+        return True
 
     def bind_selection(self, method:callable) -> None:
         self.__listbox.bind("<<ListboxSelect>>", method)
@@ -84,18 +92,10 @@ class ItemListbox(LabelFrame):
         self.__listbox.delete(idx)
         self.__listbox.insert(idx, str(item))
 
-    def lookup(self, term:str) -> bool:    
-        selection = self.__master_list
-        for word in re.split(r"\W+", term.lower()):
-            if word:
-                selection = [item for item in selection if item.contains(word)]
-        self._populate(selection)
-        return True
-    
     @property
     def lookup_entry(self) -> ttk.Entry:
         return self.__lookup_entry
-    
+
     @lookup_entry.setter
     def lookup_entry(self, value:str) -> None:
         self.__lookup_var.set(value)

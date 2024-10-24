@@ -156,10 +156,10 @@ VALUES (?, ?, ?, ?, date(), ?)
             WHERE strftime("%Y-%m", datum) = ?
             ORDER BY projektszam ASC;
         """, (month, ))
-    
+
     def load_all_items(self) -> List[StockItemRecord]:
         return [StockItemRecord(**item) for item in self.select_all_items()]
-    
+
     def log_stock_change(self, items:List[StockItemRecord],
                          projectnumber:Projectnumber) -> None:
         for item in items:
@@ -168,7 +168,7 @@ VALUES (?, ?, ?, ?, date(), ?)
                     UPDATE raktar
                     SET keszlet = ?, utolso_modositas = date()
                     WHERE cikkszam = ?;
-                """, (item.stock + item.change, item.articlenumber))
+                """, (item.stock, item.articlenumber))
                 space = " " if item.manufacturer else ""
                 name = item.manufacturer + space + item.name
                 self.execute("""
