@@ -63,7 +63,7 @@ class FileSession:
             f.write("{:>79}".format("Szállítólevél száma: {}\n"\
                                     .format(waybill_number)))
             for item in items:
-                f.write(str(item))
+                f.write(item.withdraw_view)
                 f.write("\n")
 
     def _get_exportfolder(self, projectnumber:Projectnumber) -> pathlib.Path:

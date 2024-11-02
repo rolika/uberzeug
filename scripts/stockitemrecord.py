@@ -76,7 +76,6 @@ class StockItemRecord(Record):
         assert self.change
         self.stock -= self.change
 
-
     @property
     def withdraw_view(self) -> str:
         assert self.change
