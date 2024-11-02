@@ -5,6 +5,7 @@ INVENTORY APPLICATION
 import locale
 locale.setlocale(locale.LC_ALL, "")
 
+from scripts.filesession import FileSession
 from scripts.gui.askprojectnumber import ask_projectnumber
 from scripts.databasesession import DatabaseSession
 from scripts.gui.title_ui import TitleUI
@@ -17,6 +18,7 @@ DATABASE = "data/adatok.db"
 class InventoryApplication():
     def __init__(self, database:str=DATABASE) -> None:
         self.__dbsession = DatabaseSession(database)
+        self.__filesession = FileSession()
         self.__ui = TitleUI(self)
         self._bindings()
         self.__ui.pack()
@@ -33,6 +35,9 @@ class InventoryApplication():
         withdraw_dialog = WithdrawDialog(self.__ui, master_list, projectnumber)
         self.__dbsession.log_stock_change(withdraw_dialog.withdraw_list,
                                           projectnumber)
+        self.__filesession.export_waybill(withdraw_dialog.withdraw_list,
+                                          projectnumber)
+
 
 
 
