@@ -1,3 +1,6 @@
+import locale
+locale.setlocale(locale.LC_ALL, "")
+
 from tkinter import *
 from tkinter import ttk
 from tkinter import simpledialog
