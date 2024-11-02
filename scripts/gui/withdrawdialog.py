@@ -16,7 +16,7 @@ PADX = 2
 PADY = 2
 
 
-class WithdrawDialog(simpledialog.Dialog):
+class _WithdrawDialog(simpledialog.Dialog):
     def __init__(self, root:Widget, master_list:List[StockItemRecord],
                  projectnumber:Projectnumber) -> None:
         self.__master_list = master_list
@@ -64,3 +64,9 @@ class WithdrawDialog(simpledialog.Dialog):
     @property
     def withdraw_list(self) -> List[StockItemRecord]|None:
         return self.__withdraw_list
+
+
+def withdraw_dialog(root:Widget, master_list:List[StockItemRecord],
+                    projectnumber:Projectnumber) -> List[StockItemRecord]|None:
+    withdrawed_items = _WithdrawDialog(root, master_list, projectnumber)
+    return withdrawed_items.withdraw_list

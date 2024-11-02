@@ -9,7 +9,7 @@ from scripts.filesession import FileSession
 from scripts.gui.askprojectnumber import ask_projectnumber
 from scripts.databasesession import DatabaseSession
 from scripts.gui.title_ui import TitleUI
-from scripts.gui.withdrawdialog import WithdrawDialog
+from scripts.gui.withdrawdialog import withdraw_dialog
 
 
 DATABASE = "data/adatok.db"
@@ -32,11 +32,10 @@ class InventoryApplication():
         if not projectnumber:
             return
         master_list = self.__dbsession.load_all_items()
-        withdraw_dialog = WithdrawDialog(self.__ui, master_list, projectnumber)
-        self.__dbsession.log_stock_change(withdraw_dialog.withdraw_list,
-                                          projectnumber)
-        self.__filesession.export_waybill(withdraw_dialog.withdraw_list,
-                                          projectnumber)
+        withdrawed_items = withdraw_dialog(self.__ui, master_list,
+                                           projectnumber)
+        self.__dbsession.log_stock_change(withdrawed_items, projectnumber)
+        self.__filesession.export_waybill(withdrawed_items, projectnumber)
 
 
 
