@@ -1,4 +1,5 @@
 import locale
+
 locale.setlocale(locale.LC_ALL, "")
 
 from tkinter import *
@@ -8,6 +9,7 @@ from typing import List
 
 from scripts.gui.asklocalfloat import ask_localfloat
 from scripts.gui.itemlistbox import ItemListbox
+from scripts.gui.waybillpanel import WithdrawPanel
 from scripts.projectnumber import Projectnumber
 from scripts.stockitemrecord import StockItemRecord
 
@@ -22,8 +24,7 @@ class _WithdrawDialog(simpledialog.Dialog):
         self.__master_list = master_list
         self.__withdraw_list = []
         self.__temp_list = []
-        super().__init__(root,
-                         title=f"{projectnumber.legal}: Kivét raktárból")
+        super().__init__(root, title=f"{projectnumber.legal}: Kivét raktárból")
 
     def body(self, root:Widget) -> None:
         """Create dialog body. Return widget that should have initial focus."""
@@ -31,6 +32,8 @@ class _WithdrawDialog(simpledialog.Dialog):
         self.__itemlistbox = ItemListbox(box, master_list=self.__master_list)
         self.__itemlistbox.pack(side=LEFT, padx=PADX, pady=PADY)
         self.__itemlistbox.bind_selection(self._withdraw)
+        self.__withdrawpanel = WithdrawPanel(root=box)
+        self.__withdrawpanel.pack(padx=PADX, pady=PADY)
         box.pack()
         return self.__itemlistbox.lookup_entry
 
@@ -57,6 +60,7 @@ class _WithdrawDialog(simpledialog.Dialog):
             item.apply_change()
             self.__temp_list.append(item)
             self.__itemlistbox.update_item(item)
+            self.__withdrawpanel.add(item)
             for item in self.__temp_list:
                 print(item.withdraw_view)
             print("---")
