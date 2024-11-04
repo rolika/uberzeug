@@ -5,73 +5,40 @@ INVENTORY APPLICATION
 import locale
 locale.setlocale(locale.LC_ALL, "")
 
-import re
-from sqlite3 import Cursor
-
-from scripts.databasesession import DatabaseSession
 from scripts.filesession import FileSession
-from scripts.gui.gui import Gui
-from scripts.projectnumber import Projectnumber
-from scripts.rep import Rep
-from scripts.stockitemrecord import StockItemRecord
+from scripts.gui.askprojectnumber import ask_projectnumber
+from scripts.databasesession import DatabaseSession
+from scripts.gui.title_ui import TitleUI
+from scripts.gui.withdrawdialog import withdraw_dialog
 
 
 DATABASE = "data/adatok.db"
 
 
-class InventoryApp():
+class InventoryApplication():
     def __init__(self, database:str=DATABASE) -> None:
         self.__dbsession = DatabaseSession(database)
-        self.__gui = Gui()
+        self.__filesession = FileSession()
+        self.__ui = TitleUI(self)
         self._bindings()
-        all_items = self.__dbsession.select_all_items()
-        self.__gui.itemlistbox.populate(self._load(all_items))
-        self.__gui.itemlistbox.select_index(0)
-        self.__gui.mainloop()
+        self.__ui.pack()
+        self.__ui.mainloop()
 
     def _bindings(self) -> None:
-        lookup_ = self.__gui.itemlistbox.register(self._lookup)
-        self.__gui.itemlistbox.register_lookup(lookup_)
-        self.__gui.itemlistbox.bind_selection(self._show_selected)
-        self.__gui.controldevice.set_saveitem_command(self._save_item)
-        self.__gui.bind_all("<Escape>", self._clear_selection)
-        self.__gui.itemlistbox.bind_clear_selection(self._clear_selection)
+        self.__ui.withdraw_button= self._withdraw
 
-    def _lookup(self, term:str) -> bool:
-        self.__gui.itemlistbox.clear_listbox()
-        selection = self._load(self.__dbsession.select_all_items())
-        for word in re.split(r"\W+", term.lower()):
-            if word:
-                selection = [item for item in selection if item.contains(word)]
-        self.__gui.itemlistbox.populate(selection)
-        try:
-            self.__gui.itemlistbox.select_index(0)
-        except IndexError:  # no result, empty list
-            pass
-        return True
+    def _withdraw(self) -> None:
+        projectnumber = ask_projectnumber(self.__ui)
+        if not projectnumber:
+            return
+        master_list = self.__dbsession.load_all_items()
+        withdrawed_items = withdraw_dialog(self.__ui, master_list,
+                                           projectnumber)
+        self.__dbsession.log_stock_change(withdrawed_items, projectnumber)
+        self.__filesession.export_waybill(withdrawed_items, projectnumber)
 
-    def _load(self, source:Cursor) -> list[StockItemRecord]:
-        return [StockItemRecord(**item) for item in source]
 
-    def _show_selected(self, _) -> None:
-        item = self.__gui.itemlistbox.get_record()
-        if item:
-            self.__gui.update_form(item)
-
-    def _save_item(self) -> None:
-        if item := self.__gui.check_item():
-            self.__dbsession.write_item(item)
-            if not item.articlenumber:  # this is an insert
-                self.__gui.itemlistbox.clear_listbox()
-                all_items = self.__dbsession.select_all_items()
-                self.__gui.itemlistbox.populate(self._load(all_items))
-                item.articlenumber = self.__dbsession.get_last_rowid()
-            self.__gui.itemlistbox.update_item(item)
-
-    def _clear_selection(self, _=None) -> None:
-        self.__gui.itemlistbox.clear_entry()
-        self._lookup("")
 
 
 if __name__ == "__main__":
-    InventoryApp()
+    InventoryApplication()

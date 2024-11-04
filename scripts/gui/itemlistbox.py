@@ -1,16 +1,21 @@
+import re
 from tkinter import *
 from tkinter import ttk
+from typing import List
 
 from scripts.stockitemrecord import StockItemRecord
 
 
 class ItemListbox(LabelFrame):
-    def __init__(self, title="Raktárkészlet") -> None:
-        super().__init__(text=title)
-        self.__selected_item = None
-        self.__item_list = None
+    def __init__(self, root=None, title="Raktárkészlet",
+                 master_list:List[StockItemRecord]=None) -> None:
+        super().__init__(root, text=title)
+        self.__master_list = master_list
+        self.__display_list = None
         self._init_controll_variables()
         self._build_interface()
+        self._bindings()
+        self._clear_selection()
 
     def _init_controll_variables(self) -> None:
         self.__lookup_var = StringVar()
@@ -19,9 +24,8 @@ class ItemListbox(LabelFrame):
     def _build_interface(self) -> None:
         self.__lookup_entry = ttk.Entry(self, textvariable=self.__lookup_var,
                                         validate="key")
-        self.__clear_button = Button(self, bitmap="questhead")
-        self.__clear_button.grid(row=0, column=1)
-        self.__lookup_entry.focus()
+        Button(self, bitmap="questhead", command=self._clear_selection)\
+            .grid(row=0, column=1)
 
         vertical_scroll = Scrollbar(self, orient=VERTICAL)
         self.__listbox = Listbox(self,
@@ -31,7 +35,8 @@ class ItemListbox(LabelFrame):
                                  selectmode=SINGLE,
                                  width=60,
                                  height=23,
-                                 yscrollcommand=vertical_scroll.set)
+                                 yscrollcommand=vertical_scroll.set,
+                                 exportselection=False)
         vertical_scroll["command"]=self.__listbox.yview
 
         self.__listbox.bind("<Button-4>",
@@ -45,51 +50,55 @@ class ItemListbox(LabelFrame):
         self.__listbox.grid(row=1, column=0)
         vertical_scroll.grid(row=1, column=1, sticky=N+S)
 
-    def populate(self, item_list:list) -> None:
-        self.__item_list = item_list
+    def _bindings(self) -> None:
+        lookup = self.__listbox.register(self._lookup)
+        self.__lookup_entry["validatecommand"] = (lookup, "%P")
+        self.__listbox.bind("<Escape>", self._clear_selection)
+        self.__lookup_entry.bind("<Escape>", self._clear_selection)
+
+    def _clear_selection(self, _=None) -> None:
+        self.__lookup_var.set("")
+        self._lookup("")
+        self.__lookup_entry.focus()
+
+    def _populate(self, item_list:list) -> None:
+        self.__listbox.delete(0, END)
+        self.__display_list = item_list
         for item in item_list:
             self.__listbox.insert(END, str(item))
 
-    def clear_listbox(self) -> None:
-        self.__listbox.delete(0, END)
-
-    def clear_entry(self) -> None:
-        self.__lookup_var.set("")
-
-    def register_lookup(self, reference:str) -> None:
-        self.__lookup_entry["validatecommand"] = (reference, "%P")
+    def _lookup(self, term:str) -> bool:
+        selection = self.__master_list
+        for word in re.split(r"\W+", term.lower()):
+            if word:
+                selection = [item for item in selection if item.contains(word)]
+        self._populate(selection)
+        return True
 
     def bind_selection(self, method:callable) -> None:
         self.__listbox.bind("<<ListboxSelect>>", method)
 
-    def bind_clear_selection(self, method:callable) -> None:
-        self.__clear_button["command"] = method
-
     def get_record(self) -> StockItemRecord:
         try:
-            self.__selected_item =\
-                self.__item_list[self.__listbox.curselection()[0]]
-            return self.__selected_item
+            return self.__display_list[self.__listbox.curselection()[0]]
         except IndexError:  # empty list
             return None
 
-    def select_index(self, idx:int) -> None:
-        self.__listbox.selection_set(idx)
-        self.__listbox.event_generate("<<ListboxSelect>>")
-
     def update_item(self, item:StockItemRecord) -> None:
-        for idx, stockitem in enumerate(self.__item_list):
+        for idx, stockitem in enumerate(self.__display_list):
             if stockitem.articlenumber == item.articlenumber:
                 break
-        self.__item_list[idx] = item
+        self.__display_list[idx] = item
         self.__listbox.delete(idx)
         self.__listbox.insert(idx, str(item))
-        self.select_index(idx)
-        self.__listbox.see(idx)
 
     @property
-    def selected_item(self) -> StockItemRecord:
-        return self.__selected_item
+    def lookup_entry(self) -> ttk.Entry:
+        return self.__lookup_entry
+
+    @lookup_entry.setter
+    def lookup_entry(self, value:str) -> None:
+        self.__lookup_var.set(value)
 
 
 if __name__ == "__main__":

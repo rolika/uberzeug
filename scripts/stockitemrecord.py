@@ -3,6 +3,8 @@ locale.setlocale(locale.LC_ALL, "")
 
 from datetime import date
 
+from scripts.record import Record
+
 
 TRANSLATE_ATTRIBUTES = {
     "cikkszam": "articlenumber",
@@ -25,13 +27,16 @@ TRANSLATE_ATTRIBUTES = {
 }
 
 
-class StockItemRecord():
+class StockItemRecord(Record):
     """Handles a single item in the stock."""
 
     def __init__(self, **kwargs) -> None:
+        """Setting the articlenumber attribute explicitly is important:
+        If data is coming from a database source, it's the primary key.
+        If data is gathered from a gui, it's a new item, it doesn't have any
+        primary key yet."""
         self.articlenumber = None
-        for arg, value in kwargs.items():
-            setattr(self, TRANSLATE_ATTRIBUTES.get(arg, arg), value)
+        super().__init__(translate_attributes=TRANSLATE_ATTRIBUTES, **kwargs)
 
     def __str__(self) -> str:
         space = " " if self.manufacturer else ""
@@ -60,3 +65,22 @@ class StockItemRecord():
             if term in str(getattr(self, attribute, None)).lower():
                 return True
         return False
+
+    def apply_change(self) -> None:
+        """Change is signed: - for withdraw, + for deposit"""
+        assert self.change
+        self.stock += self.change
+
+    def undo_change(self) -> None:
+        """Change is signed: - for withdraw, + for deposit"""
+        assert self.change
+        self.stock -= self.change
+
+    @property
+    def withdraw_view(self) -> str:
+        assert self.change
+        space = " " if self.manufacturer else ""
+        return "{:<41} {:>10} {:<7}".format(
+                (self.manufacturer + space + self.name)[0:41],
+                locale.format_string(f="%+.2f", val=self.change, grouping=True),
+                self.unit)

@@ -22,8 +22,8 @@ class Projectnumber():
     for ordering."""
     def __init__(self, text:str) -> None:
         """At initialization we try tor extract a valid projectnumber."""
-        self.year = None
-        self.serial = None
+        self.year = -1
+        self.serial = -1
         regex = re.compile(PROJECTNUMBER_PATTERN)
         extract = regex.search(text)
         if extract:

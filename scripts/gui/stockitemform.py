@@ -16,8 +16,8 @@ PADY = 3
 
 
 class StockItemForm(LabelFrame):
-    def __init__(self):
-        super().__init__(text="Raktári tétel")
+    def __init__(self, root=None):
+        super().__init__(root, text="Raktári tétel")
         self._init_controll_variables()
         self._build_interface()
         self._set_default_values()
