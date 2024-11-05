@@ -34,8 +34,9 @@ class InventoryApplication():
         master_list = self.__dbsession.load_all_items()
         withdrawed_items = withdraw_dialog(self.__ui, master_list,
                                            projectnumber)
-        self.__dbsession.log_stock_change(withdrawed_items, projectnumber)
-        self.__filesession.export_waybill(withdrawed_items, projectnumber)
+        if len(withdrawed_items):
+            self.__dbsession.log_stock_change(withdrawed_items, projectnumber)
+            self.__filesession.export_waybill(withdrawed_items, projectnumber)
 
 
 
