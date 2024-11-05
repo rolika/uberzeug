@@ -1,8 +1,8 @@
 from datetime import date
 from typing import Iterable
 
-from databasesession import DatabaseSession
-from szam_megjelenites import *
+from scripts.databasesession import DatabaseSession
+from scripts.szam_megjelenites import *
 
 
 class Rep:
@@ -100,3 +100,6 @@ class Rep:
         result += Rep.line()
         result += Rep.waybill_footer()
         return result
+    
+    def waybillpanel_header() -> str:
+        return "ssz. {:<41} {:>10} {:<7}mégse".format("megnevezés", "változás", "egység")

@@ -60,7 +60,7 @@ class _WithdrawDialog(simpledialog.Dialog):
             item.apply_change()
             self.__temp_list.append(item)
             self.__itemlistbox.update_item(item)
-            self.__withdrawpanel.add(item)
+            self.__withdrawpanel.update_waybill(self.__temp_list)
             for item in self.__temp_list:
                 print(item.withdraw_view)
             print("---")
