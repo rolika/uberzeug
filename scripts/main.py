@@ -12,12 +12,9 @@ from scripts.gui.title_ui import TitleUI
 from scripts.gui.withdrawdialog import withdraw_dialog
 
 
-DATABASE = "data/adatok.db"
-
-
 class InventoryApplication():
-    def __init__(self, database:str=DATABASE) -> None:
-        self.__dbsession = DatabaseSession(database)
+    def __init__(self) -> None:
+        self.__dbsession = DatabaseSession()
         self.__filesession = FileSession()
         self.__ui = TitleUI(self)
         self._bindings()
@@ -37,8 +34,6 @@ class InventoryApplication():
         if len(withdrawed_items):
             self.__dbsession.log_stock_change(withdrawed_items, projectnumber)
             self.__filesession.export_waybill(withdrawed_items, projectnumber)
-
-
 
 
 if __name__ == "__main__":
