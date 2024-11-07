@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from typing import List
 
+from scripts.gui.itemlistbox import ItemListbox
 from scripts.rep import Rep
 from scripts.stockitemrecord import StockItemRecord
 
@@ -12,29 +13,39 @@ TITLE = "Szállítólevél"
 
 
 class WithdrawPanel(LabelFrame):
-    def __init__(self, root=None, title=TITLE, **kwargs) -> None:
+    def __init__(self, root=None, title=TITLE,
+                 temp_list:List[StockItemRecord]=[],
+                 itemlistbox:ItemListbox=None, **kwargs) -> None:
         super().__init__(root, text=title, **kwargs)
+        self.__temp_list = temp_list
+        self.__itemlistbox = itemlistbox
         Label(self, font=("Liberation Mono", "-12"),
               text=Rep.waybillpanel_header()).pack()
         ttk.Separator(self, orient=HORIZONTAL).pack(fill=X)
+        self.__box = Frame(self)
+        self.__box.pack(expand=True, fill=X, anchor=W)
 
-    def update_waybill(self, items:List[StockItemRecord]) -> None:
-        for widget in self.winfo_children():
-            if widget.winfo_class() == "Frame":
-                widget.destroy()
-        for idx, item in enumerate(items):
-            self._add(idx+1, item)
+    def update_waybill(self) -> None:
+        for line in self.__box.winfo_children():
+            line.destroy()
+        for idx, item in enumerate(self.__temp_list):
+            self._add_line(idx + 1, item)
 
-    def _add(self, idx:int, item:StockItemRecord) -> None:
+    def _add_line(self, idx:int, item:StockItemRecord) -> None:
         """The Frame's name corresponds to the item's index in the list."""
-        box = Frame(self, name=str(idx))
-        Label(box, text=f"{idx:0>4}", font=("Liberation Mono", "-12"))\
+        line = Frame(self.__box, name=str(idx))
+        Label(line, text=f"{idx:0>4}", font=("Liberation Mono", "-12"))\
             .pack(side=LEFT)
-        Label(box, text=item.withdraw_view, font=("Liberation Mono", "-12"))\
+        Label(line, text=item.withdraw_view, font=("Liberation Mono", "-12"))\
             .pack(side=LEFT)
-        Button(box, bitmap="error", command=lambda: self._delete_line(box))\
+        Button(line, bitmap="error",
+               command=lambda: self._undo(line.winfo_name()))\
             .pack(padx=PADX, pady=PADY)
-        box.pack(anchor=W)
+        line.pack(expand=True, fill=X, anchor=W)
 
-    def _delete_line(self, name:str) -> None:
-        self.nametowidget(name).destroy()
+    def _undo(self, name:str) -> None:
+        idx = int(name) - 1
+        item = self.__temp_list.pop(idx)
+        item.undo_change()
+        self.__itemlistbox.update_item(item)
+        self.update_waybill()

@@ -1,5 +1,4 @@
 import locale
-
 locale.setlocale(locale.LC_ALL, "")
 
 from tkinter import *
@@ -22,8 +21,8 @@ class _WithdrawDialog(simpledialog.Dialog):
     def __init__(self, root:Widget, master_list:List[StockItemRecord],
                  projectnumber:Projectnumber) -> None:
         self.__master_list = master_list
-        self.__withdraw_list = []
-        self.__temp_list = []
+        self.__withdraw_list:List[StockItemRecord] = []
+        self.__temp_list:List[StockItemRecord] = []
         super().__init__(root, title=f"{projectnumber.legal}: Kivét raktárból")
 
     def body(self, root:Widget) -> None:
@@ -32,8 +31,10 @@ class _WithdrawDialog(simpledialog.Dialog):
         self.__itemlistbox = ItemListbox(box, master_list=self.__master_list)
         self.__itemlistbox.pack(side=LEFT, padx=PADX, pady=PADY)
         self.__itemlistbox.bind_selection(self._withdraw)
-        self.__withdrawpanel = WithdrawPanel(root=box)
-        self.__withdrawpanel.pack(padx=PADX, pady=PADY)
+        self.__waybillpanel = WithdrawPanel(root=box,
+                                            temp_list=self.__temp_list,
+                                            itemlistbox=self.__itemlistbox)
+        self.__waybillpanel.pack(padx=PADX, pady=PADY)
         box.pack()
         return self.__itemlistbox.lookup_entry
 
@@ -60,10 +61,7 @@ class _WithdrawDialog(simpledialog.Dialog):
             item.apply_change()
             self.__temp_list.append(item)
             self.__itemlistbox.update_item(item)
-            self.__withdrawpanel.update_waybill(self.__temp_list)
-            for item in self.__temp_list:
-                print(item.withdraw_view)
-            print("---")
+            self.__waybillpanel.update_waybill()
 
     @property
     def withdraw_list(self) -> List[StockItemRecord]|None:
