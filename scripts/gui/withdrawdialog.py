@@ -8,6 +8,7 @@ from typing import List
 
 from scripts.gui.asklocalfloat import ask_localfloat
 from scripts.gui.itemlistbox import ItemListbox
+from scripts.gui.waybillpanel import WithdrawPanel
 from scripts.projectnumber import Projectnumber
 from scripts.stockitemrecord import StockItemRecord
 
@@ -20,10 +21,9 @@ class _WithdrawDialog(simpledialog.Dialog):
     def __init__(self, root:Widget, master_list:List[StockItemRecord],
                  projectnumber:Projectnumber) -> None:
         self.__master_list = master_list
-        self.__withdraw_list = []
-        self.__temp_list = []
-        super().__init__(root,
-                         title=f"{projectnumber.legal}: Kivét raktárból")
+        self.__withdraw_list:List[StockItemRecord] = []
+        self.__temp_list:List[StockItemRecord] = []
+        super().__init__(root, title=f"{projectnumber.legal}: Kivét raktárból")
 
     def body(self, root:Widget) -> None:
         """Create dialog body. Return widget that should have initial focus."""
@@ -31,6 +31,10 @@ class _WithdrawDialog(simpledialog.Dialog):
         self.__itemlistbox = ItemListbox(box, master_list=self.__master_list)
         self.__itemlistbox.pack(side=LEFT, padx=PADX, pady=PADY)
         self.__itemlistbox.bind_selection(self._withdraw)
+        self.__waybillpanel = WithdrawPanel(root=box,
+                                            temp_list=self.__temp_list,
+                                            itemlistbox=self.__itemlistbox)
+        self.__waybillpanel.pack(padx=PADX, pady=PADY)
         box.pack()
         return self.__itemlistbox.lookup_entry
 
@@ -57,9 +61,7 @@ class _WithdrawDialog(simpledialog.Dialog):
             item.apply_change()
             self.__temp_list.append(item)
             self.__itemlistbox.update_item(item)
-            for item in self.__temp_list:
-                print(item.withdraw_view)
-            print("---")
+            self.__waybillpanel.update_waybill()
 
     @property
     def withdraw_list(self) -> List[StockItemRecord]|None:

@@ -7,12 +7,13 @@ from scripts.stockitemrecord import StockItemRecord
 
 
 LOG_COLUMNS = "megnevezes, egysegar, egyseg, valtozas, datum, projektszam"
+DATABASE = "data/adatok.db"
 
 
 class DatabaseSession(sqlite3.Connection):
     """This class handles all database-related stuff."""
 
-    def __init__(self, filepath:str) -> None:
+    def __init__(self, filepath:str=DATABASE) -> None:
         """Initialize an sqlite database connection."""
         super().__init__(pathlib.Path(filepath))
         self.row_factory = sqlite3.Row  # access results with column-names
