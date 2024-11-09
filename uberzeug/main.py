@@ -12,7 +12,7 @@ from uberzeug.gui.title_ui import TitleUI
 from uberzeug.gui.withdrawdialog import withdraw_dialog
 
 
-class InventoryApplication():
+class Uberzeug():
     def __init__(self) -> None:
         self.__dbsession = DatabaseSession()
         self.__filesession = FileSession()
@@ -37,4 +37,4 @@ class InventoryApplication():
 
 
 if __name__ == "__main__":
-    InventoryApplication()
+    Uberzeug()

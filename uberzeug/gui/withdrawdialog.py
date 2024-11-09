@@ -8,7 +8,7 @@ from typing import List
 
 from uberzeug.gui.asklocalfloat import ask_localfloat
 from uberzeug.gui.itemlistbox import ItemListbox
-from uberzeug.gui.waybillpanel import WithdrawPanel
+from uberzeug.gui.waybillpanel import WaybillPanel
 from uberzeug.projectnumber import Projectnumber
 from uberzeug.stockitemrecord import StockItemRecord
 
@@ -31,7 +31,7 @@ class _WithdrawDialog(simpledialog.Dialog):
         self.__itemlistbox = ItemListbox(box, master_list=self.__master_list)
         self.__itemlistbox.pack(side=LEFT, padx=PADX, pady=PADY)
         self.__itemlistbox.bind_selection(self._withdraw)
-        self.__waybillpanel = WithdrawPanel(root=box,
+        self.__waybillpanel = WaybillPanel(root=box,
                                             temp_list=self.__temp_list,
                                             itemlistbox=self.__itemlistbox)
         self.__waybillpanel.pack(padx=PADX, pady=PADY)

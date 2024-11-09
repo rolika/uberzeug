@@ -12,7 +12,7 @@ PADY = 2
 TITLE = "Szállítólevél"
 
 
-class WithdrawPanel(LabelFrame):
+class WaybillPanel(LabelFrame):
     def __init__(self, root=None, title=TITLE,
                  temp_list:List[StockItemRecord]=[],
                  itemlistbox:ItemListbox=None, **kwargs) -> None:
