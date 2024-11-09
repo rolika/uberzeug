@@ -2,11 +2,11 @@ import os
 from tkinter import *
 from tkinter import messagebox
 
-from scripts.databasesession import DatabaseSession
-from scripts.gui.controldevice import ControlDevice
-from scripts.gui.itemlistbox import ItemListbox
-from scripts.gui.stockitemform import StockItemForm
-from scripts.stockitemrecord import StockItemRecord
+from uberzeug.databasesession import DatabaseSession
+from uberzeug.gui.controldevice import ControlDevice
+from uberzeug.gui.itemlistbox import ItemListbox
+from uberzeug.gui.stockitemform import StockItemForm
+from uberzeug.stockitemrecord import StockItemRecord
 
 
 PROGRAM = "Készlet-nyilvántartó"

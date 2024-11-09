@@ -1,9 +1,9 @@
 import locale
 locale.setlocale(locale.LC_ALL, "")
 
-from scripts.projectnumber import Projectnumber
-from scripts.record import Record
-from scripts.stockitemrecord import StockItemRecord
+from uberzeug.projectnumber import Projectnumber
+from uberzeug.record import Record
+from uberzeug.stockitemrecord import StockItemRecord
 
 
 TRANSLATE_ATTRIBUTES = {

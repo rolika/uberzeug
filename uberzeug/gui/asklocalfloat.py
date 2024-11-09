@@ -4,7 +4,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import simpledialog
 
-from scripts.gui import styles
+from uberzeug.gui import styles
 
 
 class _AskLocalFloat(simpledialog.Dialog):

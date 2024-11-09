@@ -6,11 +6,11 @@ from tkinter import ttk
 from tkinter import simpledialog
 from typing import List
 
-from scripts.gui.asklocalfloat import ask_localfloat
-from scripts.gui.itemlistbox import ItemListbox
-from scripts.gui.waybillpanel import WithdrawPanel
-from scripts.projectnumber import Projectnumber
-from scripts.stockitemrecord import StockItemRecord
+from uberzeug.gui.asklocalfloat import ask_localfloat
+from uberzeug.gui.itemlistbox import ItemListbox
+from uberzeug.gui.waybillpanel import WithdrawPanel
+from uberzeug.projectnumber import Projectnumber
+from uberzeug.stockitemrecord import StockItemRecord
 
 
 PADX = 2

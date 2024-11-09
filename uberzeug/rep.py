@@ -1,8 +1,8 @@
 from datetime import date
 from typing import Iterable
 
-from scripts.databasesession import DatabaseSession
-from scripts.szam_megjelenites import *
+from uberzeug.databasesession import DatabaseSession
+from uberzeug.szam_megjelenites import *
 
 
 class Rep:

@@ -2,8 +2,8 @@ import pathlib
 import sqlite3
 from typing import List
 
-from scripts.projectnumber import Projectnumber
-from scripts.stockitemrecord import StockItemRecord
+from uberzeug.projectnumber import Projectnumber
+from uberzeug.stockitemrecord import StockItemRecord
 
 
 LOG_COLUMNS = "megnevezes, egysegar, egyseg, valtozas, datum, projektszam"

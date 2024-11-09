@@ -5,8 +5,8 @@ from datetime import date
 from tkinter import *
 from tkinter import ttk
 
-from scripts.gui import styles
-from scripts.stockitemrecord import StockItemRecord
+from uberzeug.gui import styles
+from uberzeug.stockitemrecord import StockItemRecord
 
 
 SHORT_FIELD = 9
