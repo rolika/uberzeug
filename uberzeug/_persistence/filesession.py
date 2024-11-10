@@ -3,6 +3,7 @@ import pathlib
 import os
 from typing import List
 
+from uberzeug._helper import textrep
 from uberzeug._helper.constants import *
 from uberzeug._helper.projectnumber import Projectnumber
 from uberzeug._record.stockitemrecord import StockItemRecord
@@ -58,9 +59,11 @@ class FileSession:
         with open(exportfolder / filename, "w") as f:
             f.write("{:>79}".format("Szállítólevél száma: {}\n"\
                                     .format(waybill_number)))
-            for item in items:
-                f.write(item.withdraw_view)
+            f.write(textrep.waybill_header(projectnumber=projectnumber))
+            for idx, item in enumerate(items):
+                f.write(f"{idx:0>3}.    {item.withdraw_view}")
                 f.write("\n")
+            f.write(textrep.waybill_footer())
 
     def _get_exportfolder(self, projectnumber:Projectnumber) -> pathlib.Path:
         """Identify an existing or create a new folder for this export."""

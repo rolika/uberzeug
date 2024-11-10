@@ -1,5 +1,6 @@
 APPLICATION_TITLE = "ÜBERZEUG"
 ORGANIZATION = ["Pohlen-Dach Hungária Bt.", "8440-Herend", "Dózsa utca 49."]
+CLIENT = ["...................", "...................", "..................."]
 
 LOG_COLUMNS = "megnevezes, egysegar, egyseg, valtozas, datum, projektszam"
 DATABASE = "data/adatok.db"
