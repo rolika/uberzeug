@@ -61,7 +61,7 @@ class FileSession:
                                     .format(waybill_number)))
             f.write(textrep.waybill_header(projectnumber=projectnumber))
             for idx, item in enumerate(items):
-                f.write(f"{idx:0>3}.    {item.withdraw_view}")
+                f.write(f"{idx+1:0>3}.    {item.withdraw_view}")
                 f.write("\n")
             f.write(textrep.waybill_footer())
 

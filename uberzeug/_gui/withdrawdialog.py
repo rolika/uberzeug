@@ -53,11 +53,22 @@ class _WithdrawDialog(simpledialog.Dialog):
         change = ask_localfloat(title="Kivét", prompt=item.name, root=self,
                                 initvalue=item.stock, minvalue=0,
                                 maxvalue=item.stock, unit=item.unit)
+        already_withdrawed = False
         if change:
-            setattr(item, "change", -change)
-            item.apply_change()
-            self.__temp_list.append(item)
-            self.__itemlistbox.update_item(item)
+            for withdrawed in self.__temp_list:
+                if withdrawed.articlenumber == item.articlenumber:
+                    already_withdrawed = True
+                    break  # there can be only one
+            if already_withdrawed:
+                withdrawed.undo_change()
+                withdrawed.change -= change
+                withdrawed.apply_change()
+                self.__itemlistbox.update_item(withdrawed)
+            else:
+                setattr(item, "change", -change)
+                item.apply_change()
+                self.__temp_list.append(item)
+                self.__itemlistbox.update_item(item)
             self.__waybillpanel.update_waybill()
 
     @property
