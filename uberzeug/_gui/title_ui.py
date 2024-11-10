@@ -3,12 +3,8 @@ from tkinter import *
 from tkinter import ttk
 from typing import List
 
+from uberzeug._helper.constants import *
 import uberzeug._helper.textrep as textrep
-
-
-TITLE_IMAGE = r"data/titleimg.gif"
-WINDOWS_ICON = r"data/pohlen.ico"
-LINUX_ICON = r"data/pohlen.gif"
 
 
 class TitleUI(Frame):

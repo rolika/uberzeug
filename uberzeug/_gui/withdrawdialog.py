@@ -9,12 +9,9 @@ from typing import List
 from uberzeug._gui.asklocalfloat import ask_localfloat
 from uberzeug._gui.itemlistbox import ItemListbox
 from uberzeug._gui.waybillpanel import WaybillPanel
+from uberzeug._helper.constants import *
 from uberzeug._helper.projectnumber import Projectnumber
 from uberzeug._record.stockitemrecord import StockItemRecord
-
-
-PADX = 2
-PADY = 2
 
 
 class _WithdrawDialog(simpledialog.Dialog):
@@ -23,7 +20,7 @@ class _WithdrawDialog(simpledialog.Dialog):
         self.__master_list = master_list
         self.__withdraw_list:List[StockItemRecord] = []
         self.__temp_list:List[StockItemRecord] = []
-        super().__init__(root, title=f"{projectnumber.legal}: Kivét raktárból")
+        super().__init__(root, title=f"{projectnumber.legal}: {WITHDRAW_TITLE}")
 
     def body(self, root:Widget) -> None:
         """Create dialog body. Return widget that should have initial focus."""

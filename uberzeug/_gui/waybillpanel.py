@@ -3,17 +3,13 @@ from tkinter import ttk
 from typing import List
 
 from uberzeug._gui.itemlistbox import ItemListbox
+from uberzeug._helper.constants import *
 import uberzeug._helper.textrep as textrep
 from uberzeug._record.stockitemrecord import StockItemRecord
 
 
-PADX = 2
-PADY = 2
-TITLE = "Szállítólevél"
-
-
 class WaybillPanel(LabelFrame):
-    def __init__(self, root=None, title=TITLE,
+    def __init__(self, root=None, title=WAYBILL_TITLE,
                  temp_list:List[StockItemRecord]=[],
                  itemlistbox:ItemListbox=None, **kwargs) -> None:
         super().__init__(root, text=title, **kwargs)

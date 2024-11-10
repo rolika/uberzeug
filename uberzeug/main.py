@@ -6,6 +6,7 @@ import locale
 from typing import List
 locale.setlocale(locale.LC_ALL, "")
 
+from uberzeug._helper.constants import *
 from uberzeug._gui.askprojectnumber import ask_projectnumber
 from uberzeug._gui.title_ui import TitleUI
 from uberzeug._gui.withdrawdialog import withdraw_dialog
@@ -13,12 +14,8 @@ from uberzeug._persistence.databasesession import DatabaseSession
 from uberzeug._persistence.filesession import FileSession
 
 
-TITLE = "ÜBERZEUG"
-ORGANIZATION = ["Pohlen-Dach Hungária Bt.", "8440-Herend", "Dózsa utca 49."]
-
-
 class Uberzeug():
-    def __init__(self, title:str=TITLE,
+    def __init__(self, title:str=APPLICATION_TITLE,
                  organization:List[str]=ORGANIZATION) -> None:
         self.__dbsession = DatabaseSession()
         self.__filesession = FileSession(organization)

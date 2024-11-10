@@ -1,11 +1,6 @@
 import re
 
-
-PROJECTNUMBER_PATTERN = r"(?P<year>\d{2})[/ _-](?P<serial>\d{1,3})"
-MIN_YEAR = 0
-MAX_YEAR = 99
-MIN_SERIAL = 0
-MAX_SERIAL = 999
+from uberzeug._helper.constants import *
 
 
 class Projectnumber():
