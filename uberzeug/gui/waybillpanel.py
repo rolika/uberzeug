@@ -3,8 +3,8 @@ from tkinter import ttk
 from typing import List
 
 from uberzeug.gui.itemlistbox import ItemListbox
-from uberzeug.rep import Rep
-from uberzeug.stockitemrecord import StockItemRecord
+from uberzeug.helper.rep import Rep
+from uberzeug.record.stockitemrecord import StockItemRecord
 
 
 PADX = 2

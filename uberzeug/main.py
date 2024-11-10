@@ -5,9 +5,9 @@ INVENTORY APPLICATION
 import locale
 locale.setlocale(locale.LC_ALL, "")
 
-from uberzeug.filesession import FileSession
+from uberzeug.persistence.filesession import FileSession
 from uberzeug.gui.askprojectnumber import ask_projectnumber
-from uberzeug.databasesession import DatabaseSession
+from uberzeug.persistence.databasesession import DatabaseSession
 from uberzeug.gui.title_ui import TitleUI
 from uberzeug.gui.withdrawdialog import withdraw_dialog
 

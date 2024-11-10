@@ -3,8 +3,8 @@ import pathlib
 import os
 from typing import List
 
-from uberzeug.projectnumber import Projectnumber
-from uberzeug.stockitemrecord import StockItemRecord
+from uberzeug.helper.projectnumber import Projectnumber
+from uberzeug.record.stockitemrecord import StockItemRecord
 
 
 WAYBILLFOLDER = "data/Szállítólevelek/"

@@ -3,7 +3,7 @@ from tkinter import *
 from tkinter import ttk
 from typing import List
 
-from uberzeug.stockitemrecord import StockItemRecord
+from uberzeug.record.stockitemrecord import StockItemRecord
 
 
 class ItemListbox(LabelFrame):

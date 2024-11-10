@@ -6,7 +6,7 @@ from tkinter import *
 from tkinter import ttk
 
 from uberzeug.gui import styles
-from uberzeug.stockitemrecord import StockItemRecord
+from uberzeug.record.stockitemrecord import StockItemRecord
 
 
 SHORT_FIELD = 9

@@ -9,8 +9,8 @@ from typing import List
 from uberzeug.gui.asklocalfloat import ask_localfloat
 from uberzeug.gui.itemlistbox import ItemListbox
 from uberzeug.gui.waybillpanel import WaybillPanel
-from uberzeug.projectnumber import Projectnumber
-from uberzeug.stockitemrecord import StockItemRecord
+from uberzeug.helper.projectnumber import Projectnumber
+from uberzeug.record.stockitemrecord import StockItemRecord
 
 
 PADX = 2
