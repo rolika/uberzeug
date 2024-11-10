@@ -3,7 +3,7 @@ locale.setlocale(locale.LC_ALL, "")
 
 from datetime import date
 
-from uberzeug.record.record import Record
+from uberzeug._record.record import Record
 
 
 TRANSLATE_ATTRIBUTES = {

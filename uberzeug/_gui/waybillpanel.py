@@ -2,9 +2,9 @@ from tkinter import *
 from tkinter import ttk
 from typing import List
 
-from uberzeug.gui.itemlistbox import ItemListbox
-from uberzeug.helper.rep import Rep
-from uberzeug.record.stockitemrecord import StockItemRecord
+from uberzeug._gui.itemlistbox import ItemListbox
+from uberzeug._helper.rep import Rep
+from uberzeug._record.stockitemrecord import StockItemRecord
 
 
 PADX = 2
