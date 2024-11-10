@@ -3,7 +3,7 @@ from tkinter import ttk
 from typing import List
 
 from uberzeug._gui.itemlistbox import ItemListbox
-from uberzeug._helper.rep import Rep
+import uberzeug._helper.textrep as textrep
 from uberzeug._record.stockitemrecord import StockItemRecord
 
 
@@ -20,7 +20,7 @@ class WaybillPanel(LabelFrame):
         self.__temp_list = temp_list
         self.__itemlistbox = itemlistbox
         Label(self, font=("Liberation Mono", "-12"),
-              text=Rep.waybillpanel_header()).pack()
+              text=textrep.waybillpanel_header()).pack()
         ttk.Separator(self, orient=HORIZONTAL).pack(fill=X)
         self.__box = Frame(self)
         self.__box.pack(expand=True, fill=X, anchor=W)
