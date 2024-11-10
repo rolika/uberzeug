@@ -1,16 +1,18 @@
 import os
 from tkinter import *
 from tkinter import ttk
+from typing import List
+
+import uberzeug._helper.textrep as textrep
 
 
-TITLE = "Ü B E R Z E U G"
 TITLE_IMAGE = r"data/titleimg.gif"
 WINDOWS_ICON = r"data/pohlen.ico"
 LINUX_ICON = r"data/pohlen.gif"
 
 
 class TitleUI(Frame):
-    def __init__(self, root:Widget=None, title:str=TITLE,
+    def __init__(self, title:str, organization:List[str], root:Widget=None,
                  title_image:str=TITLE_IMAGE, **kwargs) -> None:
         super().__init__(**kwargs)
         if os.name == "posix":
@@ -18,13 +20,13 @@ class TitleUI(Frame):
             self.master.tk.call("wm", "iconphoto", self.master._w, icon)
         else:
             self.master.iconbitmap(default = WINDOWS_ICON)
-        self.master.title("Pohlen-Dach")
-        self.__title = title
+        self.master.title(textrep.explode(title, width=3))
+        self.__company = organization[0]
         self.__title_image = PhotoImage(file=title_image)
         self._body()
 
     def _body(self) -> None:
-        box = LabelFrame(self, text=self.__title, labelanchor=N)
+        box = LabelFrame(self, text=self.__company, labelanchor=N)
         canvas = Canvas(box, width=640, height=295)
         canvas.create_image(0, 0, image=self.__title_image, anchor=NW)
         canvas.pack(padx=5, pady=5)

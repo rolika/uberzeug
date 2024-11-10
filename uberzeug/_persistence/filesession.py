@@ -10,7 +10,6 @@ from uberzeug._record.stockitemrecord import StockItemRecord
 WAYBILLFOLDER = "data/Szállítólevelek/"
 EXTENSION = "txt"
 STOCKNAME = "Raktárkészlet"
-ORGANIZATION = ["Pohlen-Dach Hungária Bt.", "8440-Herend", "Dózsa utca 49."]
 
 
 class FileSession:
@@ -22,8 +21,9 @@ class FileSession:
     like: 24_001 -> 2024 -> June.
     The waybill has a number which looks like 24_001_12, the latter being a
     serial number, which is always +1 of all waybills in the projectfolder."""
-    def __init__(self, waybillfolder:str=WAYBILLFOLDER, extension:str=EXTENSION,
-                 organization:List[str]=ORGANIZATION) -> None:
+    def __init__(self, organization:List[str],
+                 waybillfolder:str=WAYBILLFOLDER,
+                 extension:str=EXTENSION) -> None:
         self.__waybillfolder = pathlib.Path(waybillfolder)
         self.__extension = extension
         self.__organization = organization

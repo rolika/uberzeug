@@ -8,9 +8,13 @@ def line(char:str="_", length:int=80) -> str:
     return "".join(char for _ in range(length))
 
 
+def explode(text:str, filler:str=" ", width:int=1) -> str:
+    filler = filler * width
+    return filler.join(char for char in text)
+
+
 def headline(text:str) -> str:
-    head = " ".join(char.upper() for char in text)
-    return "{}{:^80}{}{}".format(line(), head, "\n", line())
+    return "{}{:^80}{}{}".format(line(), explode(text).upper(), "\n", line())
 
 
 def header(fillchar:str="", **kwargs:dict[str,int]) -> str:
