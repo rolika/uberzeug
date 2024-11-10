@@ -2,25 +2,21 @@ from tkinter import *
 from tkinter import ttk
 from typing import List
 
-from scripts.gui.itemlistbox import ItemListbox
-from scripts.rep import Rep
-from scripts.stockitemrecord import StockItemRecord
+from uberzeug._gui.itemlistbox import ItemListbox
+from uberzeug._helper.constants import *
+import uberzeug._helper.textrep as textrep
+from uberzeug._record.stockitemrecord import StockItemRecord
 
 
-PADX = 2
-PADY = 2
-TITLE = "Szállítólevél"
-
-
-class WithdrawPanel(LabelFrame):
-    def __init__(self, root=None, title=TITLE,
+class WaybillPanel(LabelFrame):
+    def __init__(self, root=None, title=WAYBILL_TITLE,
                  temp_list:List[StockItemRecord]=[],
                  itemlistbox:ItemListbox=None, **kwargs) -> None:
         super().__init__(root, text=title, **kwargs)
         self.__temp_list = temp_list
         self.__itemlistbox = itemlistbox
         Label(self, font=("Liberation Mono", "-12"),
-              text=Rep.waybillpanel_header()).pack()
+              text=textrep.waybillpanel_header()).pack()
         ttk.Separator(self, orient=HORIZONTAL).pack(fill=X)
         self.__box = Frame(self)
         self.__box.pack(expand=True, fill=X, anchor=W)

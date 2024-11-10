@@ -2,12 +2,9 @@ import pathlib
 import sqlite3
 from typing import List
 
-from scripts.projectnumber import Projectnumber
-from scripts.stockitemrecord import StockItemRecord
-
-
-LOG_COLUMNS = "megnevezes, egysegar, egyseg, valtozas, datum, projektszam"
-DATABASE = "data/adatok.db"
+from uberzeug._helper.constants import *
+from uberzeug._helper.projectnumber import Projectnumber
+from uberzeug._record.stockitemrecord import StockItemRecord
 
 
 class DatabaseSession(sqlite3.Connection):

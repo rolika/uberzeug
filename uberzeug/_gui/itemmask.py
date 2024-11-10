@@ -1,8 +1,8 @@
 from tkinter import *
 from tkinter import ttk
 
-from scripts.gui import styles
-from scripts.itemrecord import ItemRecord
+from uberzeug._gui import styles
+from uberzeug.itemrecord import ItemRecord
 
 
 SHORT_FIELD = 8

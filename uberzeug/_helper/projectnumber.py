@@ -1,11 +1,6 @@
 import re
 
-
-PROJECTNUMBER_PATTERN = r"(?P<year>\d{2})[/ _-](?P<serial>\d{1,3})"
-MIN_YEAR = 0
-MAX_YEAR = 99
-MIN_SERIAL = 0
-MAX_SERIAL = 999
+from uberzeug._helper.constants import *
 
 
 class Projectnumber():
@@ -38,7 +33,7 @@ class Projectnumber():
     def __str__(self) -> str:
         """Projectnumber as a string is the filename-format."""
         assert bool(self)
-        return "{}_{:0>3}".format(self.year, self.serial)
+        return f"{self.year}_{self.serial:0>3}"
     
     def __eq__(self, other:object) -> bool:
         """Two projectnumbers are equal if both year and serial are equal."""
@@ -48,10 +43,11 @@ class Projectnumber():
     def legal(self) -> str:
         """This is the human readable legal form."""
         assert bool(self)
-        return "{}/{}".format(self.year, self.serial)
+        return f"{self.year}/{self.serial}"
 
 
 if __name__ == "__main__":
     one = Projectnumber("Some Folder Name 24 2")
     two = Projectnumber("24_002")
     print(one, two)
+    print(one.legal, two.legal)

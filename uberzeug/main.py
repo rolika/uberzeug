@@ -3,20 +3,23 @@ INVENTORY APPLICATION
 """
 
 import locale
+from typing import List
 locale.setlocale(locale.LC_ALL, "")
 
-from scripts.filesession import FileSession
-from scripts.gui.askprojectnumber import ask_projectnumber
-from scripts.databasesession import DatabaseSession
-from scripts.gui.title_ui import TitleUI
-from scripts.gui.withdrawdialog import withdraw_dialog
+from uberzeug._helper.constants import *
+from uberzeug._gui.askprojectnumber import ask_projectnumber
+from uberzeug._gui.title_ui import TitleUI
+from uberzeug._gui.withdrawdialog import withdraw_dialog
+from uberzeug._persistence.databasesession import DatabaseSession
+from uberzeug._persistence.filesession import FileSession
 
 
-class InventoryApplication():
-    def __init__(self) -> None:
+class Uberzeug():
+    def __init__(self, title:str=APPLICATION_TITLE,
+                 organization:List[str]=ORGANIZATION) -> None:
         self.__dbsession = DatabaseSession()
-        self.__filesession = FileSession()
-        self.__ui = TitleUI(self)
+        self.__filesession = FileSession(organization)
+        self.__ui = TitleUI(title, organization, root=self)
         self._bindings()
         self.__ui.pack()
         self.__ui.mainloop()
@@ -37,4 +40,4 @@ class InventoryApplication():
 
 
 if __name__ == "__main__":
-    InventoryApplication()
+    Uberzeug()

@@ -3,14 +3,10 @@ import pathlib
 import os
 from typing import List
 
-from scripts.projectnumber import Projectnumber
-from scripts.stockitemrecord import StockItemRecord
-
-
-WAYBILLFOLDER = "data/Szállítólevelek/"
-EXTENSION = "txt"
-STOCKNAME = "Raktárkészlet"
-ORGANIZATION = ["Pohlen-Dach Hungária Bt.", "8440-Herend", "Dózsa utca 49."]
+from uberzeug._helper import textrep
+from uberzeug._helper.constants import *
+from uberzeug._helper.projectnumber import Projectnumber
+from uberzeug._record.stockitemrecord import StockItemRecord
 
 
 class FileSession:
@@ -22,8 +18,9 @@ class FileSession:
     like: 24_001 -> 2024 -> June.
     The waybill has a number which looks like 24_001_12, the latter being a
     serial number, which is always +1 of all waybills in the projectfolder."""
-    def __init__(self, waybillfolder:str=WAYBILLFOLDER, extension:str=EXTENSION,
-                 organization:List[str]=ORGANIZATION) -> None:
+    def __init__(self, organization:List[str],
+                 waybillfolder:str=WAYBILLFOLDER,
+                 extension:str=EXTENSION) -> None:
         self.__waybillfolder = pathlib.Path(waybillfolder)
         self.__extension = extension
         self.__organization = organization
@@ -62,9 +59,11 @@ class FileSession:
         with open(exportfolder / filename, "w") as f:
             f.write("{:>79}".format("Szállítólevél száma: {}\n"\
                                     .format(waybill_number)))
-            for item in items:
-                f.write(item.withdraw_view)
+            f.write(textrep.waybill_header(projectnumber=projectnumber))
+            for idx, item in enumerate(items):
+                f.write(f"{idx:0>3}.    {item.withdraw_view}")
                 f.write("\n")
+            f.write(textrep.waybill_footer())
 
     def _get_exportfolder(self, projectnumber:Projectnumber) -> pathlib.Path:
         """Identify an existing or create a new folder for this export."""
