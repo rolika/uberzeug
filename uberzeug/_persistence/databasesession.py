@@ -175,3 +175,9 @@ VALUES (?, ?, ?, ?, date(), ?)
                     VALUES (?, ?, ?, ?, date(), ?)
                 """, (name, item.unitprice, item.unit, item.change,
                       str(projectnumber)))
+    
+    def load_all_log_entries(self):
+        return self.execute("""
+            SELECT megnevezes, SUM(valtozas) AS total_quantity
+            FROM raktar_naplo
+            GROUP BY megnevezes;""")
