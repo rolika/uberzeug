@@ -23,3 +23,5 @@ MIN_YEAR = 0
 MAX_YEAR = 99
 MIN_SERIAL = 0
 MAX_SERIAL = 999
+
+LOGFILE = "data/uberzeug.log"

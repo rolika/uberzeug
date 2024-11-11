@@ -1,6 +1,8 @@
 from datetime import date
-import pathlib
+import logging
 import os
+import pathlib
+import socket
 from typing import List
 
 from uberzeug._helper import textrep
@@ -25,6 +27,9 @@ class FileSession:
         self.__extension = extension
         self.__organization = organization
         self._create_waybillfolder()
+        logging.basicConfig(filename=LOGFILE, encoding='utf-8',
+                            format="%(levelname)s: %(asctime)s %(message)s",
+                            datefmt="%Y.%m.%d %H:%M:%S", level=logging.INFO)
 
     def _create_waybillfolder(self) -> None:
         try:
@@ -64,6 +69,7 @@ class FileSession:
                 f.write(f"{idx+1:0>3}.    {item.withdraw_view}")
                 f.write("\n")
             f.write(textrep.waybill_footer())
+        logging.info(f"withdraw: {socket.gethostname()} {waybill_number}")
 
     def _get_exportfolder(self, projectnumber:Projectnumber) -> pathlib.Path:
         """Identify an existing or create a new folder for this export."""
