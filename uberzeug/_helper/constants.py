@@ -14,6 +14,7 @@ EXTENSION = "txt"
 STOCKNAME = "Raktárkészlet"
 WITHDRAW_TITLE = "Kivét raktárból"
 WAYBILL_TITLE = "Szállítólevél"
+TAKEBACK_TITLE = "Visszavét projektről"
 
 PADX = 2
 PADY = 2

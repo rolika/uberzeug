@@ -4,6 +4,7 @@ from typing import List
 
 from uberzeug._helper.constants import *
 from uberzeug._helper.projectnumber import Projectnumber
+from uberzeug._record.logrecord import LogRecord
 from uberzeug._record.stockitemrecord import StockItemRecord
 
 
@@ -175,9 +176,28 @@ VALUES (?, ?, ?, ?, date(), ?)
                     VALUES (?, ?, ?, ?, date(), ?)
                 """, (name, item.unitprice, item.unit, item.change,
                       str(projectnumber)))
-    
-    def load_all_log_entries(self):
-        return self.execute("""
-            SELECT megnevezes, SUM(valtozas) AS total_quantity
+
+    def _load_log_entries(self, projectnumber:Projectnumber) -> List[LogRecord]:
+        logentries = self.execute("""
+            SELECT *, SUM(valtozas) AS total_change
             FROM raktar_naplo
-            GROUP BY megnevezes;""")
+            WHERE projektszam = ?
+            GROUP BY megnevezes;""", (str(projectnumber), ))
+        return [LogRecord(**item) for item in logentries]
+
+    def get_project_stock(self, projectnumber:Projectnumber)\
+        -> List[StockItemRecord]:
+        all_items = self.load_all_items()
+        log_records = self._load_log_entries(projectnumber)
+        project_stock = []
+        for entry in log_records:
+            for item in all_items:
+                if item.manufacturer:
+                    name = item.manufacturer + " " + item.name
+                else:
+                    name = item.name
+                change = abs(entry.change)
+                if name == entry.name and change > 0:
+                    item.stock = change
+                    project_stock.append(item)
+        return project_stock

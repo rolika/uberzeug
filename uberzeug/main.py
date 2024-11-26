@@ -43,6 +43,20 @@ class Uberzeug():
         projectnumber = ask_projectnumber(self.__ui)
         if not projectnumber:
             return
+        takeback_items = withdraw_dialog(self.__ui,
+            self.__dbsession.get_project_stock(projectnumber), projectnumber,
+            TAKEBACK_TITLE)
+        new_stock = []
+        if len(takeback_items):
+            all_items = self.__dbsession.load_all_items()
+            for takeback in takeback_items:
+                for item in all_items:
+                    if takeback.articlenumber == item.articlenumber:
+                        item.change = abs(takeback.change)
+                        item.apply_change()
+                        new_stock.append(item)
+            self.__dbsession.log_stock_change(new_stock, projectnumber)
+            self.__filesession.export_waybill(new_stock, projectnumber)
 
 
 if __name__ == "__main__":
