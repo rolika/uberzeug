@@ -198,6 +198,7 @@ VALUES (?, ?, ?, ?, date(), ?)
                     name = item.name
                 change = abs(entry.change)
                 if name == entry.name and change > 0:
+                    setattr(item, "backup_stock", item.stock)
                     item.stock = change
                     project_stock.append(item)
         return project_stock
