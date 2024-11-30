@@ -28,8 +28,8 @@ class TitleUI(Frame):
         canvas.pack(padx=5, pady=5)
         box.pack(padx=5, pady=5)
         box = ttk.LabelFrame(self, text="Anyagok kezelése")
-        ttk.Button(box, text="Új anyag", state=DISABLED)\
-            .pack(fill=X, padx=5, pady=5)
+        self.__newitem_button = ttk.Button(box, text="Új anyag")
+        self.__newitem_button.pack(fill=X, padx=5, pady=5)
         ttk.Button(box, text="Meglévő anyag módosítása",
                    state=DISABLED).pack(fill=X, padx=5, pady=5)
         ttk.Button(box, text="Anyag törlése", state=DISABLED)\
@@ -40,10 +40,6 @@ class TitleUI(Frame):
         self.__withdraw_button.pack(fill=X, padx=5, pady=5)
         self.__takeback_button =ttk.Button(box, text="Visszavét projektről")
         self.__takeback_button.pack(fill=X, padx=5, pady=5)
-        ttk.Button(box, text="Új raktári tétel", state=DISABLED)\
-            .pack(fill=X, padx=5, pady=5)
-        ttk.Button(box, text="Meglévő raktári tétel törlése", state=DISABLED)\
-            .pack(fill=X, padx=5, pady=5)
         ttk.Button(box, text="Raktárkészlet exportálása", state=DISABLED)\
             .pack(fill=X, padx=5, pady=5)
         box.pack(fill=BOTH, padx=5, pady=5)
@@ -63,6 +59,14 @@ class TitleUI(Frame):
     @takeback_button.setter
     def takeback_button(self, command:callable) -> None:
         self.__takeback_button["command"] = command
+
+    @property
+    def newitem_button(self) -> ttk.Button:
+        return self.__newitem_button
+
+    @takeback_button.setter
+    def newitem_button(self, command:callable) -> None:
+        self.__newitem_button["command"] = command
 
 
 if __name__ == "__main__":

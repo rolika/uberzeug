@@ -9,6 +9,7 @@ locale.setlocale(locale.LC_ALL, "")
 
 from uberzeug._helper.constants import *
 from uberzeug._gui.askprojectnumber import ask_projectnumber
+from uberzeug._gui.stockitemdialog import stockitem_dialog
 from uberzeug._gui.title_ui import TitleUI
 from uberzeug._gui.withdrawdialog import withdraw_dialog
 from uberzeug._persistence.databasesession import DatabaseSession
@@ -28,6 +29,7 @@ class Uberzeug():
     def _bindings(self) -> None:
         self.__ui.withdraw_button = self._withdraw
         self.__ui.takeback_button = self._takeback
+        self.__ui.newitem_button = self._newitem
 
     def _withdraw(self) -> None:
         projectnumber = ask_projectnumber(self.__ui)
@@ -60,6 +62,11 @@ class Uberzeug():
                                                                projectnumber)
             messagebox.showinfo(TAKEBACK_TITLE,
                                 WAYBILL_TITLE + " száma: " + waybill_number)
+
+    def _newitem(self) -> None:
+        newitem = stockitem_dialog(self.__ui, "Új raktári tétel")
+        if newitem:
+            self.__dbsession.write_item(newitem)
 
 
 if __name__ == "__main__":
