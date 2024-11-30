@@ -3,11 +3,12 @@ from tkinter import *
 from tkinter import ttk
 from typing import List
 
+from uberzeug._helper.constants import *
 from uberzeug._record.stockitemrecord import StockItemRecord
 
 
 class ItemListbox(LabelFrame):
-    def __init__(self, root=None, title="Raktárkészlet",
+    def __init__(self, root=None, title=STOCKNAME,
                  master_list:List[StockItemRecord]=None) -> None:
         super().__init__(root, text=title)
         self.__master_list = master_list

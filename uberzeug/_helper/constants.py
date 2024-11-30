@@ -3,7 +3,7 @@ ORGANIZATION = ["Pohlen-Dach Hungária Bt.", "8440-Herend", "Dózsa utca 49."]
 CLIENT = ["...................", "...................", "..................."]
 
 LOG_COLUMNS = "megnevezes, egysegar, egyseg, valtozas, datum, projektszam"
-DATABASE = "data/adatok.db"
+DATABASE = r"data/adatok.db"
 
 TITLE_IMAGE = r"data/titleimg.gif"
 WINDOWS_ICON = r"data/pohlen.ico"
@@ -14,6 +14,7 @@ EXTENSION = "txt"
 STOCKNAME = "Raktárkészlet"
 WITHDRAW_TITLE = "Kivét raktárból"
 WAYBILL_TITLE = "Szállítólevél"
+TAKEBACK_TITLE = "Visszavét projektről"
 
 PADX = 2
 PADY = 2
@@ -24,4 +25,4 @@ MAX_YEAR = 99
 MIN_SERIAL = 0
 MAX_SERIAL = 999
 
-LOGFILE = "data/uberzeug.log"
+LOGFILE = r"data/uberzeug.log"

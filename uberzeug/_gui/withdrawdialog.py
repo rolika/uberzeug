@@ -16,11 +16,12 @@ from uberzeug._record.stockitemrecord import StockItemRecord
 
 class _WithdrawDialog(simpledialog.Dialog):
     def __init__(self, root:Widget, master_list:List[StockItemRecord],
-                 projectnumber:Projectnumber) -> None:
+                 projectnumber:Projectnumber, title:str) -> None:
         self.__master_list = master_list
         self.__withdraw_list:List[StockItemRecord] = []
         self.__temp_list:List[StockItemRecord] = []
-        super().__init__(root, title=f"{projectnumber.legal}: {WITHDRAW_TITLE}")
+        self.__title = title
+        super().__init__(root, title=f"{projectnumber.legal}: {title}")
 
     def body(self, root:Widget) -> None:
         """Create dialog body. Return widget that should have initial focus."""
@@ -50,7 +51,7 @@ class _WithdrawDialog(simpledialog.Dialog):
 
     def _withdraw(self, _:Event) -> float:
         item = self.__itemlistbox.get_record()
-        change = ask_localfloat(title="Kivét", prompt=item.name, root=self,
+        change = ask_localfloat(title=self.__title, prompt=item.name, root=self,
                                 initvalue=item.stock, minvalue=0,
                                 maxvalue=item.stock, unit=item.unit)
         already_withdrawed = False
@@ -77,6 +78,7 @@ class _WithdrawDialog(simpledialog.Dialog):
 
 
 def withdraw_dialog(root:Widget, master_list:List[StockItemRecord],
-                    projectnumber:Projectnumber) -> List[StockItemRecord]|None:
-    withdrawed_items = _WithdrawDialog(root, master_list, projectnumber)
+                    projectnumber:Projectnumber,
+                    title:str=WITHDRAW_TITLE) -> List[StockItemRecord]|None:
+    withdrawed_items = _WithdrawDialog(root, master_list, projectnumber, title)
     return withdrawed_items.withdraw_list

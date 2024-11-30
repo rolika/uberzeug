@@ -25,7 +25,8 @@ class Uberzeug():
         self.__ui.mainloop()
 
     def _bindings(self) -> None:
-        self.__ui.withdraw_button= self._withdraw
+        self.__ui.withdraw_button = self._withdraw
+        self.__ui.takeback_button = self._takeback
 
     def _withdraw(self) -> None:
         projectnumber = ask_projectnumber(self.__ui)
@@ -37,6 +38,21 @@ class Uberzeug():
         if len(withdrawed_items):
             self.__dbsession.log_stock_change(withdrawed_items, projectnumber)
             self.__filesession.export_waybill(withdrawed_items, projectnumber)
+
+    def _takeback(self) -> None:
+        projectnumber = ask_projectnumber(self.__ui)
+        if not projectnumber:
+            return
+        takeback_items = withdraw_dialog(self.__ui,
+            self.__dbsession.get_project_stock(projectnumber), projectnumber,
+            TAKEBACK_TITLE)
+        if len(takeback_items):
+            for takeback in takeback_items:
+                takeback.stock = takeback.backup_stock
+                takeback.change = abs(takeback.change)
+                takeback.apply_change()
+            self.__dbsession.log_stock_change(takeback_items, projectnumber)
+            self.__filesession.export_waybill(takeback_items, projectnumber)
 
 
 if __name__ == "__main__":
