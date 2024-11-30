@@ -54,7 +54,7 @@ class FileSession:
             f.write(content)
 
     def export_waybill(self, items:List[StockItemRecord],
-                       projectnumber:Projectnumber) -> None:
+                       projectnumber:Projectnumber) -> str:
         exportfolder = self._get_exportfolder(projectnumber)
         projectfolder = pathlib.Path("/".join(exportfolder.parts[:-2]))
         next_waybill_number = self._count_waybills(projectfolder) + 1
@@ -73,6 +73,7 @@ class FileSession:
                     direction = "takeback"
             f.write(textrep.waybill_footer())
         logging.info(f"{direction}: {socket.gethostname()} {waybill_number}")
+        return waybill_number
 
     def _get_exportfolder(self, projectnumber:Projectnumber) -> pathlib.Path:
         """Identify an existing or create a new folder for this export."""

@@ -3,6 +3,7 @@ INVENTORY APPLICATION
 """
 
 import locale
+from tkinter import messagebox
 from typing import List
 locale.setlocale(locale.LC_ALL, "")
 
@@ -37,7 +38,10 @@ class Uberzeug():
                                            projectnumber)
         if len(withdrawed_items):
             self.__dbsession.log_stock_change(withdrawed_items, projectnumber)
-            self.__filesession.export_waybill(withdrawed_items, projectnumber)
+            waybill_number = self.__filesession.export_waybill(withdrawed_items,
+                                                               projectnumber)
+            messagebox.showinfo(WITHDRAW_TITLE,
+                                WAYBILL_TITLE + " száma: " + waybill_number)
 
     def _takeback(self) -> None:
         projectnumber = ask_projectnumber(self.__ui)
@@ -52,7 +56,10 @@ class Uberzeug():
                 takeback.change = abs(takeback.change)
                 takeback.apply_change()
             self.__dbsession.log_stock_change(takeback_items, projectnumber)
-            self.__filesession.export_waybill(takeback_items, projectnumber)
+            waybill_number = self.__filesession.export_waybill(takeback_items,
+                                                               projectnumber)
+            messagebox.showinfo(TAKEBACK_TITLE,
+                                WAYBILL_TITLE + " száma: " + waybill_number)
 
 
 if __name__ == "__main__":
