@@ -81,31 +81,6 @@ class DatabaseSession(sqlite3.Connection):
                             SET keszlet = ?, utolso_modositas = date()
                             WHERE cikkszam = ?;""", (quantity, primary_key))
 
-    def write_item(self, stockitem:StockItemRecord) -> None:
-        if getattr(stockitem, "articlenumber", False):
-            with self:
-                self.execute("""
-        UPDATE raktar
-        SET keszlet = ?, megnevezes = ?, becenev = ?, gyarto = ?, leiras = ?,
-            szin = ?, megjegyzes = ?, egyseg = ?, egysegar = ?, kiszereles = ?,
-            hely = ?, lejarat = ?, gyartasido = ?, utolso_modositas = date()
-        WHERE cikkszam = ?;
-        """, (stockitem.stock, stockitem.name, stockitem.nickname,
-              stockitem.manufacturer, stockitem.description, stockitem.color, stockitem.comment, stockitem.unit, stockitem.unitprice,
-              stockitem.packaging, stockitem.place, stockitem.shelflife, stockitem.productiondate, stockitem.articlenumber))
-            print(stockitem.name, "modified")
-        else:
-            with self:
-                self.execute("""
-        INSERT INTO raktar (keszlet, megnevezes, becenev, gyarto, leiras, szin,
-                            megjegyzes, egyseg, egysegar, kiszereles, hely,
-                            lejarat, gyartasido, letrehozas, utolso_modositas)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, date(), date())
-        """, (stockitem.stock, stockitem.name, stockitem.nickname,
-              stockitem.manufacturer, stockitem.description, stockitem.color, stockitem.comment, stockitem.unit, stockitem.unitprice,
-              stockitem.packaging, stockitem.place, stockitem.shelflife, stockitem.productiondate))
-            print(stockitem.name, "inserted")
-
     def get_last_rowid(self) -> int:
         return self.execute("""SELECT last_insert_rowid();""").fetchone()[0]
 
@@ -202,3 +177,32 @@ VALUES (?, ?, ?, ?, date(), ?)
                     item.stock = change
                     project_stock.append(item)
         return project_stock
+
+    def lookup(self, newitem:StockItemRecord) -> StockItemRecord|None:
+        for stockitem in self.load_all_items():
+            if stockitem.is_almost_same(newitem):
+                return stockitem
+        return None
+
+    def update(self, stockitem:StockItemRecord) -> None:
+        with self:
+            self.execute("""
+        UPDATE raktar
+        SET keszlet = ?, megnevezes = ?, becenev = ?, gyarto = ?, leiras = ?,
+            szin = ?, megjegyzes = ?, egyseg = ?, egysegar = ?, kiszereles = ?,
+            hely = ?, lejarat = ?, gyartasido = ?, utolso_modositas = date()
+        WHERE cikkszam = ?;
+        """, (stockitem.stock, stockitem.name, stockitem.nickname,
+              stockitem.manufacturer, stockitem.description, stockitem.color, stockitem.comment, stockitem.unit, stockitem.unitprice,
+              stockitem.packaging, stockitem.place, stockitem.shelflife, stockitem.productiondate, stockitem.articlenumber))
+
+    def insert(self, stockitem:StockItemRecord) -> None:
+        with self:
+            self.execute("""
+        INSERT INTO raktar (keszlet, megnevezes, becenev, gyarto, leiras, szin,
+                            megjegyzes, egyseg, egysegar, kiszereles, hely,
+                            lejarat, gyartasido, letrehozas, utolso_modositas)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, date(), date())
+        """, (stockitem.stock, stockitem.name, stockitem.nickname,
+              stockitem.manufacturer, stockitem.description, stockitem.color, stockitem.comment, stockitem.unit, stockitem.unitprice,
+              stockitem.packaging, stockitem.place, stockitem.shelflife, stockitem.productiondate))

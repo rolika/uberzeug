@@ -20,7 +20,7 @@ class StockItemForm(LabelFrame):
         super().__init__(root, text="Raktári tétel")
         self._init_controll_variables()
         self._build_interface()
-        self._set_default_values()
+        self._clear()
 
     def _init_controll_variables(self) -> None:
         self.__name_var = StringVar()
@@ -217,7 +217,7 @@ class StockItemForm(LabelFrame):
     def is_valid(self) -> bool:
         return styles.is_entry_ok(self)
     
-    def clear(self) -> None:
+    def _clear(self) -> None:
         for child in self.winfo_children():
             if child.winfo_class() == "TEntry":
                 child.delete(0, END)
@@ -248,3 +248,7 @@ class StockItemForm(LabelFrame):
             return locale.format_string(f="%.2f", val=attribute, grouping=True)
         except TypeError:
             return "0,00"
+    
+    @property
+    def name_entry(self) -> ttk.Entry:
+        return self.__name_entry

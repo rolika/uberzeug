@@ -23,7 +23,7 @@ class _WithdrawDialog(simpledialog.Dialog):
         self.__title = title
         super().__init__(root, title=f"{projectnumber.legal}: {title}")
 
-    def body(self, root:Widget) -> None:
+    def body(self, root:Widget) -> Widget:
         """Create dialog body. Return widget that should have initial focus."""
         box = Frame(self)
         self.__itemlistbox = ItemListbox(box, master_list=self.__master_list)
