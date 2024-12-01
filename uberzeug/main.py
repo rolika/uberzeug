@@ -75,7 +75,8 @@ class Uberzeug():
         newitem = stockitem_dialog(self.__ui, "Új raktári tétel")
         host = socket.gethostname()
         if newitem:
-            message = f"new: {newitem.name} {newitem.stock}"
+            log = f"new: {newitem.name} {newitem.stock}"
+            message = f"új anyag: {newitem.name} {newitem.stock} {newitem.unit}"
             existing_stockitem = self.__dbsession.lookup(newitem)
             if existing_stockitem:
                 answer = ask_newexistcancel(self.__ui)
@@ -85,10 +86,11 @@ class Uberzeug():
                     setattr(existing_stockitem, "change", newitem.stock)
                     existing_stockitem.apply_change()
                     self.__dbsession.update(existing_stockitem)
-                    message = f"update: {newitem.name} +{newitem.stock}"
+                    log = f"update: {newitem.name} +{newitem.stock}"
             else:
                 self.__dbsession.insert(newitem)
-        logging.info(f"{host} {message}")
+        logging.info(f"{host} {log}")
+        messagebox.showinfo("Felvéve a raktárba", message)
 
 
 if __name__ == "__main__":
