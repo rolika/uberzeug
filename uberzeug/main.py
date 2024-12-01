@@ -3,9 +3,11 @@ INVENTORY APPLICATION
 """
 
 import locale
+locale.setlocale(locale.LC_ALL, "")
+import logging
+import socket
 from tkinter import messagebox
 from typing import List
-locale.setlocale(locale.LC_ALL, "")
 
 from uberzeug._helper.constants import *
 from uberzeug._gui.asknewexistcancel import ask_newexistcancel
@@ -25,6 +27,9 @@ class Uberzeug():
         self.__ui = TitleUI(title, organization, root=self)
         self._bindings()
         self.__ui.pack()
+        logging.basicConfig(filename=LOGFILE, encoding='utf-8',
+                            format="%(levelname)s: %(asctime)s %(message)s",
+                            datefmt="%Y.%m.%d %H:%M:%S", level=logging.INFO)
         self.__ui.mainloop()
 
     def _bindings(self) -> None:
@@ -43,6 +48,7 @@ class Uberzeug():
             self.__dbsession.log_stock_change(withdrawed_items, projectnumber)
             waybill_number = self.__filesession.export_waybill(withdrawed_items,
                                                                projectnumber)
+            logging.info(f"{socket.gethostname()} withdraw: {waybill_number}")
             messagebox.showinfo(WITHDRAW_TITLE,
                                 WAYBILL_TITLE + " száma: " + waybill_number)
 
@@ -61,12 +67,15 @@ class Uberzeug():
             self.__dbsession.log_stock_change(takeback_items, projectnumber)
             waybill_number = self.__filesession.export_waybill(takeback_items,
                                                                projectnumber)
+            logging.info(f"{socket.gethostname()} takeback: {waybill_number}")
             messagebox.showinfo(TAKEBACK_TITLE,
                                 WAYBILL_TITLE + " száma: " + waybill_number)
 
     def _newitem(self) -> None:
         newitem = stockitem_dialog(self.__ui, "Új raktári tétel")
+        host = socket.gethostname()
         if newitem:
+            message = f"new: {newitem.name} {newitem.stock}"
             existing_stockitem = self.__dbsession.lookup(newitem)
             if existing_stockitem:
                 answer = ask_newexistcancel(self.__ui)
@@ -76,8 +85,10 @@ class Uberzeug():
                     setattr(existing_stockitem, "change", newitem.stock)
                     existing_stockitem.apply_change()
                     self.__dbsession.update(existing_stockitem)
+                    message = f"update: {newitem.name} +{newitem.stock}"
             else:
                 self.__dbsession.insert(newitem)
+        logging.info(f"{host} {message}")
 
 
 if __name__ == "__main__":
