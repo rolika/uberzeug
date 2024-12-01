@@ -4,7 +4,6 @@ from tkinter import simpledialog
 
 from uberzeug._helper.constants import *
 from uberzeug._gui.stockitemform import StockItemForm
-from uberzeug._gui import styles
 from uberzeug._record.stockitemrecord import StockItemRecord
 
 

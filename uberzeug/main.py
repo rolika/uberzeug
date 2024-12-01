@@ -8,6 +8,7 @@ from typing import List
 locale.setlocale(locale.LC_ALL, "")
 
 from uberzeug._helper.constants import *
+from uberzeug._gui.asknewexistcancel import ask_newexistcancel
 from uberzeug._gui.askprojectnumber import ask_projectnumber
 from uberzeug._gui.stockitemdialog import stockitem_dialog
 from uberzeug._gui.title_ui import TitleUI
@@ -66,7 +67,17 @@ class Uberzeug():
     def _newitem(self) -> None:
         newitem = stockitem_dialog(self.__ui, "Új raktári tétel")
         if newitem:
-            self.__dbsession.write_item(newitem)
+            existing_stockitem = self.__dbsession.lookup(newitem)
+            if existing_stockitem:
+                answer = ask_newexistcancel(self.__ui)
+                if answer == "new":
+                    self.__dbsession.write_item(newitem)
+                elif answer == "exist":
+                    setattr(existing_stockitem, "change", newitem.stock)
+                    existing_stockitem.apply_change()
+                    self.__dbsession.write_item(existing_stockitem)
+            else:
+                self.__dbsession.write_item(newitem)
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@ import locale
 locale.setlocale(locale.LC_ALL, "")
 
 from datetime import date
+from typing import Self
 
 from uberzeug._record.record import Record
 
@@ -62,7 +63,7 @@ class StockItemRecord(Record):
 
     def contains(self, term:str) -> bool:
         for attribute in TRANSLATE_ATTRIBUTES.values():
-            if term in str(getattr(self, attribute, None)).lower():
+            if term.lower() in str(getattr(self, attribute, None)).lower():
                 return True
         return False
 
@@ -75,6 +76,12 @@ class StockItemRecord(Record):
         """Change is signed: - for withdraw, + for deposit"""
         assert self.change
         self.stock -= self.change
+    
+    def is_almost_same(self, item:Self) -> bool:
+        if self.contains(item.name) and self.unitprice == item.unitprice:
+            return True
+        else:
+            return False
 
     @property
     def withdraw_view(self) -> str:

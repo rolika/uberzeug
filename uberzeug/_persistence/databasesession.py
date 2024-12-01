@@ -202,3 +202,9 @@ VALUES (?, ?, ?, ?, date(), ?)
                     item.stock = change
                     project_stock.append(item)
         return project_stock
+    
+    def lookup(self, newitem:StockItemRecord) -> StockItemRecord|None:
+        for stockitem in self.load_all_items():
+            if stockitem.is_almost_same(newitem):
+                return stockitem
+        return None
