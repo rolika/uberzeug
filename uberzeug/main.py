@@ -71,13 +71,13 @@ class Uberzeug():
             if existing_stockitem:
                 answer = ask_newexistcancel(self.__ui)
                 if answer == "new":
-                    self.__dbsession.write_item(newitem)
+                    self.__dbsession.insert(newitem)
                 elif answer == "exist":
                     setattr(existing_stockitem, "change", newitem.stock)
                     existing_stockitem.apply_change()
-                    self.__dbsession.write_item(existing_stockitem)
+                    self.__dbsession.update(existing_stockitem)
             else:
-                self.__dbsession.write_item(newitem)
+                self.__dbsession.insert(newitem)
 
 
 if __name__ == "__main__":
