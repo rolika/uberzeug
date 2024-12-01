@@ -78,7 +78,7 @@ class StockItemRecord(Record):
         self.stock -= self.change
     
     def is_almost_same(self, item:Self) -> bool:
-        if self.contains(item.name) and self.unitprice == item.unitprice:
+        if item.name in self.name and self.unitprice == item.unitprice:
             return True
         else:
             return False

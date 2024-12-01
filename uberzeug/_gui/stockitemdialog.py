@@ -29,6 +29,7 @@ class _StockItemDialog(simpledialog.Dialog):
         box.pack()
     
     def apply(self) -> None:
+        self.unbind_all("<Key>")
         if self.__stockitemform.is_valid():
             self.__stockitem = self.__stockitemform.retrieve()
     
