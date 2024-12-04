@@ -16,15 +16,15 @@ from uberzeug._record.stockitemrecord import StockItemRecord
 
 class _StockChangeDialog(simpledialog.Dialog):
     def __init__(self, root:Widget, master_list:List[StockItemRecord],
-                 projectnumber:Projectnumber, title:str, deposit=False) -> None:
+                 projectnumber:Projectnumber, title:str, mode:Mode) -> None:
         self.__master_list = master_list
         self.__withdraw_list:List[StockItemRecord] = []
         self.__temp_list:List[StockItemRecord] = []
-        self.__deposit = deposit
-        if deposit:
-            self.__title = title
-        else:
+        self.__mode = mode
+        if projectnumber:
             self.__title = f"{projectnumber.legal}: {title}"
+        else:
+            self.__title = title
         super().__init__(root, title=self.__title)
 
     def body(self, root:Widget) -> Widget:
@@ -32,7 +32,7 @@ class _StockChangeDialog(simpledialog.Dialog):
         box = Frame(self)
         self.__itemlistbox = ItemListbox(box, master_list=self.__master_list)
         self.__itemlistbox.pack(side=LEFT, padx=PADX, pady=PADY)
-        self.__itemlistbox.bind_selection(self._withdraw)
+        self.__itemlistbox.bind_selection(self._stockchange)
         self.__waybillpanel = WaybillPanel(root=box,
                                             temp_list=self.__temp_list,
                                             itemlistbox=self.__itemlistbox)
@@ -53,16 +53,20 @@ class _StockChangeDialog(simpledialog.Dialog):
     def apply(self) -> None:
         self.__withdraw_list = self.__temp_list
 
-    def _withdraw(self, _:Event) -> float:
+    def _stockchange(self, _:Event) -> float:
         item = self.__itemlistbox.get_record()
-        if self.__deposit:
+        if self.__mode == Mode.DEPOSIT:
             initvalue = None
             maxvalue = None
             sign = 1
-        else:
+        elif self.__mode == Mode.WITHDRAW:
             initvalue = item.stock
             maxvalue = item.stock
             sign = -1
+        elif self.__mode == Mode.TAKEBACK:
+            initvalue = item.stock
+            maxvalue = item.stock
+            sign = 1
         change = ask_localfloat(title=self.__title, prompt=item.name, root=self,
                                 initvalue=initvalue, minvalue=0,
                                 maxvalue=maxvalue, unit=item.unit)
@@ -76,12 +80,14 @@ class _StockChangeDialog(simpledialog.Dialog):
                 withdrawed.undo_change()
                 withdrawed.change += (sign * change)
                 withdrawed.apply_change()
-                self.__itemlistbox.update_item(withdrawed)
+                if self.__mode != Mode.DEPOSIT:
+                    self.__itemlistbox.update_item(withdrawed)
             else:
                 setattr(item, "change", sign * change)
                 item.apply_change()
                 self.__temp_list.append(item)
-                self.__itemlistbox.update_item(item)
+                if self.__mode != Mode.DEPOSIT:
+                    self.__itemlistbox.update_item(item)
             self.__waybillpanel.update_waybill()
 
     @property
@@ -90,22 +96,21 @@ class _StockChangeDialog(simpledialog.Dialog):
 
 
 def withdraw_dialog(root:Widget, master_list:List[StockItemRecord],
-                    projectnumber:Projectnumber,
-                    title:str=WITHDRAW_TITLE) -> List[StockItemRecord]|None:
-    withdrawed_items = _StockChangeDialog(root, master_list, projectnumber, title)
+                    projectnumber:Projectnumber) -> List[StockItemRecord]|None:
+    withdrawed_items = _StockChangeDialog(root, master_list, projectnumber,
+                                          WITHDRAW_TITLE, Mode.WITHDRAW)
     return withdrawed_items.withdraw_list
 
 
 def takeback_dialog(root:Widget, master_list:List[StockItemRecord],
-                    projectnumber:Projectnumber,
-                    title:str=WITHDRAW_TITLE) -> List[StockItemRecord]|None:
-    takeback_items = _StockChangeDialog(root, master_list, projectnumber, title)
+                    projectnumber:Projectnumber) -> List[StockItemRecord]|None:
+    takeback_items = _StockChangeDialog(root, master_list, projectnumber,
+                                        TAKEBACK_TITLE, Mode.TAKEBACK)
     return takeback_items.withdraw_list
 
 
-def deposit_dialog(root:Widget, master_list:List[StockItemRecord],
-                    projectnumber:Projectnumber=None, title:str=DEPOSIT_TITLE,
-                    deposit=True) -> List[StockItemRecord]|None:
-    deposit_items = _StockChangeDialog(root, master_list, projectnumber, title,
-                                    deposit)
+def deposit_dialog(root:Widget, master_list:List[StockItemRecord])\
+    -> List[StockItemRecord]|None:
+    deposit_items = _StockChangeDialog(root, master_list, None, DEPOSIT_TITLE,
+                                       Mode.DEPOSIT)
     return deposit_items.withdraw_list

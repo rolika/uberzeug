@@ -1,3 +1,5 @@
+import enum
+
 APPLICATION_TITLE = "ÜBERZEUG"
 ORGANIZATION = ["Pohlen-Dach Hungária Bt.", "8440-Herend", "Dózsa utca 49."]
 CLIENT = ["...................", "...................", "..................."]
@@ -27,3 +29,7 @@ MIN_SERIAL = 0
 MAX_SERIAL = 999
 
 LOGFILE = r"data/uberzeug.log"
+
+Mode = enum.Enum("Mode", [("WITHDRAW", 1),
+                          ("TAKEBACK", 2),
+                          ("DEPOSIT",  3)])

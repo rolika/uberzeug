@@ -58,9 +58,8 @@ class Uberzeug():
         projectnumber = ask_projectnumber(self.__ui)
         if not projectnumber:
             return
-        takeback_items = takeback_dialog(self.__ui,
-            self.__dbsession.get_project_stock(projectnumber), projectnumber,
-            TAKEBACK_TITLE)
+        master_list = self.__dbsession.get_project_stock(projectnumber)
+        takeback_items = takeback_dialog(self.__ui, master_list, projectnumber)
         if len(takeback_items):
             for takeback in takeback_items:
                 takeback.stock = takeback.backup_stock
@@ -72,7 +71,7 @@ class Uberzeug():
             logging.info(f"{socket.gethostname()} takeback: {waybill_number}")
             messagebox.showinfo(TAKEBACK_TITLE,
                                 WAYBILL_TITLE + " száma: " + waybill_number)
-    
+
     def _desposit(self) -> None:
         master_list = self.__dbsession.load_all_items()
         deposit_items = deposit_dialog(self.__ui, master_list)
