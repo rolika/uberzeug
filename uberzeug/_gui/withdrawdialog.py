@@ -16,12 +16,16 @@ from uberzeug._record.stockitemrecord import StockItemRecord
 
 class _WithdrawDialog(simpledialog.Dialog):
     def __init__(self, root:Widget, master_list:List[StockItemRecord],
-                 projectnumber:Projectnumber, title:str) -> None:
+                 projectnumber:Projectnumber, title:str, deposit=False) -> None:
         self.__master_list = master_list
         self.__withdraw_list:List[StockItemRecord] = []
         self.__temp_list:List[StockItemRecord] = []
-        self.__title = title
-        super().__init__(root, title=f"{projectnumber.legal}: {title}")
+        self.__deposit = deposit
+        if deposit:
+            self.__title = title
+        else:
+            self.__title = f"{projectnumber.legal}: {title}"
+        super().__init__(root, title=self.__title)
 
     def body(self, root:Widget) -> Widget:
         """Create dialog body. Return widget that should have initial focus."""
@@ -51,9 +55,17 @@ class _WithdrawDialog(simpledialog.Dialog):
 
     def _withdraw(self, _:Event) -> float:
         item = self.__itemlistbox.get_record()
+        if self.__deposit:
+            initvalue = None
+            maxvalue = None
+            sign = 1
+        else:
+            initvalue = item.stock
+            maxvalue = item.stock
+            sign = -1
         change = ask_localfloat(title=self.__title, prompt=item.name, root=self,
-                                initvalue=item.stock, minvalue=0,
-                                maxvalue=item.stock, unit=item.unit)
+                                initvalue=initvalue, minvalue=0,
+                                maxvalue=maxvalue, unit=item.unit)
         already_withdrawed = False
         if change:
             for withdrawed in self.__temp_list:
@@ -62,11 +74,11 @@ class _WithdrawDialog(simpledialog.Dialog):
                     break  # there can be only one
             if already_withdrawed:
                 withdrawed.undo_change()
-                withdrawed.change -= change
+                withdrawed.change += (sign * change)
                 withdrawed.apply_change()
                 self.__itemlistbox.update_item(withdrawed)
             else:
-                setattr(item, "change", -change)
+                setattr(item, "change", sign * change)
                 item.apply_change()
                 self.__temp_list.append(item)
                 self.__itemlistbox.update_item(item)
@@ -82,3 +94,18 @@ def withdraw_dialog(root:Widget, master_list:List[StockItemRecord],
                     title:str=WITHDRAW_TITLE) -> List[StockItemRecord]|None:
     withdrawed_items = _WithdrawDialog(root, master_list, projectnumber, title)
     return withdrawed_items.withdraw_list
+
+
+def takeback_dialog(root:Widget, master_list:List[StockItemRecord],
+                    projectnumber:Projectnumber,
+                    title:str=WITHDRAW_TITLE) -> List[StockItemRecord]|None:
+    takeback_items = _WithdrawDialog(root, master_list, projectnumber, title)
+    return takeback_items.withdraw_list
+
+
+def deposit_dialog(root:Widget, master_list:List[StockItemRecord],
+                    projectnumber:Projectnumber=None, title:str=DEPOSIT_TITLE,
+                    deposit=True) -> List[StockItemRecord]|None:
+    deposit_items = _WithdrawDialog(root, master_list, projectnumber, title,
+                                    deposit)
+    return deposit_items.withdraw_list
