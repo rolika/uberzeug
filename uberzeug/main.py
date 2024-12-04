@@ -14,7 +14,8 @@ from uberzeug._gui.asknewexistcancel import ask_newexistcancel
 from uberzeug._gui.askprojectnumber import ask_projectnumber
 from uberzeug._gui.stockitemdialog import stockitem_dialog
 from uberzeug._gui.title_ui import TitleUI
-from uberzeug._gui.withdrawdialog import withdraw_dialog
+from uberzeug._gui.stockchangedialog\
+    import deposit_dialog, takeback_dialog, withdraw_dialog
 from uberzeug._persistence.databasesession import DatabaseSession
 from uberzeug._persistence.filesession import FileSession
 
@@ -35,6 +36,7 @@ class Uberzeug():
     def _bindings(self) -> None:
         self.__ui.withdraw_button = self._withdraw
         self.__ui.takeback_button = self._takeback
+        self.__ui.deposit_button = self._desposit
         self.__ui.newitem_button = self._newitem
 
     def _withdraw(self) -> None:
@@ -56,9 +58,8 @@ class Uberzeug():
         projectnumber = ask_projectnumber(self.__ui)
         if not projectnumber:
             return
-        takeback_items = withdraw_dialog(self.__ui,
-            self.__dbsession.get_project_stock(projectnumber), projectnumber,
-            TAKEBACK_TITLE)
+        master_list = self.__dbsession.get_project_stock(projectnumber)
+        takeback_items = takeback_dialog(self.__ui, master_list, projectnumber)
         if len(takeback_items):
             for takeback in takeback_items:
                 takeback.stock = takeback.backup_stock
@@ -70,6 +71,15 @@ class Uberzeug():
             logging.info(f"{socket.gethostname()} takeback: {waybill_number}")
             messagebox.showinfo(TAKEBACK_TITLE,
                                 WAYBILL_TITLE + " száma: " + waybill_number)
+
+    def _desposit(self) -> None:
+        master_list = self.__dbsession.load_all_items()
+        deposit_items = deposit_dialog(self.__ui, master_list)
+        pieces = len(deposit_items)
+        if pieces:
+            self.__dbsession.update_stock(deposit_items)
+            logging.info(f"{socket.gethostname()} deposit: {pieces} items")
+            messagebox.showinfo(DEPOSIT_TITLE, f"{pieces} tétel bevételezve.")
 
     def _newitem(self) -> None:
         newitem = stockitem_dialog(self.__ui, "Új raktári tétel")
@@ -89,8 +99,8 @@ class Uberzeug():
                     log = f"update: {newitem.name} +{newitem.stock}"
             else:
                 self.__dbsession.insert(newitem)
-        logging.info(f"{host} {log}")
-        messagebox.showinfo("Felvéve a raktárba", message)
+            logging.info(f"{host} {log}")
+            messagebox.showinfo("Felvéve a raktárba", message)
 
 
 if __name__ == "__main__":

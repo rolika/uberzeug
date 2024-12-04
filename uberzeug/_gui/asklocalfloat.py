@@ -9,8 +9,8 @@ from uberzeug._gui import styles
 
 class _AskLocalFloat(simpledialog.Dialog):
     """Ask for a float number and verify it considering locale settings."""
-    def __init__(self, title:str, prompt:str, root:Widget=None, initvalue:float=None,
-                 minvalue:float=None, maxvalue:float=None,
+    def __init__(self, title:str, prompt:str, root:Widget=None,
+                 initvalue:float=None, minvalue:float=None, maxvalue:float=None,
                  unit:str=None) -> None:
         self.__prompt = prompt
         self.__minvalue = minvalue

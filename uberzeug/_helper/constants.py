@@ -1,3 +1,5 @@
+import enum
+
 APPLICATION_TITLE = "ÜBERZEUG"
 ORGANIZATION = ["Pohlen-Dach Hungária Bt.", "8440-Herend", "Dózsa utca 49."]
 CLIENT = ["...................", "...................", "..................."]
@@ -13,6 +15,7 @@ WAYBILLFOLDER = r"data/Szállítólevelek/"
 EXTENSION = "txt"
 STOCKNAME = "Raktárkészlet"
 WITHDRAW_TITLE = "Kivét raktárból"
+DEPOSIT_TITLE = "Bevételezés raktárba"
 WAYBILL_TITLE = "Szállítólevél"
 TAKEBACK_TITLE = "Visszavét projektről"
 
@@ -26,3 +29,7 @@ MIN_SERIAL = 0
 MAX_SERIAL = 999
 
 LOGFILE = r"data/uberzeug.log"
+
+Mode = enum.Enum("Mode", [("WITHDRAW", 1),
+                          ("TAKEBACK", 2),
+                          ("DEPOSIT",  3)])

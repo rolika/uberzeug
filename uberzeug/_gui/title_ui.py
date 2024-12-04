@@ -38,10 +38,10 @@ class TitleUI(Frame):
         box = ttk.LabelFrame(self, text="Raktárkészlet-kezelés")
         self.__withdraw_button =ttk.Button(box, text="Kivét projektre")
         self.__withdraw_button.pack(fill=X, padx=5, pady=5)
-        self.__takeback_button =ttk.Button(box, text="Visszavét projektről")
+        self.__takeback_button = ttk.Button(box, text="Visszavét projektről")
         self.__takeback_button.pack(fill=X, padx=5, pady=5)
-        ttk.Button(box, text="Raktárkészlet exportálása", state=DISABLED)\
-            .pack(fill=X, padx=5, pady=5)
+        self.__deposit_button = ttk.Button(box, text="Bevételezés raktárba")
+        self.__deposit_button.pack(fill=X, padx=5, pady=5)
         box.pack(fill=BOTH, padx=5, pady=5)
 
     @property
@@ -59,6 +59,14 @@ class TitleUI(Frame):
     @takeback_button.setter
     def takeback_button(self, command:callable) -> None:
         self.__takeback_button["command"] = command
+
+    @property
+    def deposit_button(self) -> ttk.Button:
+        return self.__deposit_button
+
+    @takeback_button.setter
+    def deposit_button(self, command:callable) -> None:
+        self.__deposit_button["command"] = command
 
     @property
     def newitem_button(self) -> ttk.Button:
