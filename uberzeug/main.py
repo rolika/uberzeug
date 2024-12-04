@@ -14,7 +14,7 @@ from uberzeug._gui.asknewexistcancel import ask_newexistcancel
 from uberzeug._gui.askprojectnumber import ask_projectnumber
 from uberzeug._gui.stockitemdialog import stockitem_dialog
 from uberzeug._gui.title_ui import TitleUI
-from uberzeug._gui.withdrawdialog\
+from uberzeug._gui.stockchangedialog\
     import deposit_dialog, takeback_dialog, withdraw_dialog
 from uberzeug._persistence.databasesession import DatabaseSession
 from uberzeug._persistence.filesession import FileSession

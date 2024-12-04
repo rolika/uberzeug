@@ -14,7 +14,7 @@ from uberzeug._helper.projectnumber import Projectnumber
 from uberzeug._record.stockitemrecord import StockItemRecord
 
 
-class _WithdrawDialog(simpledialog.Dialog):
+class _StockChangeDialog(simpledialog.Dialog):
     def __init__(self, root:Widget, master_list:List[StockItemRecord],
                  projectnumber:Projectnumber, title:str, deposit=False) -> None:
         self.__master_list = master_list
@@ -92,20 +92,20 @@ class _WithdrawDialog(simpledialog.Dialog):
 def withdraw_dialog(root:Widget, master_list:List[StockItemRecord],
                     projectnumber:Projectnumber,
                     title:str=WITHDRAW_TITLE) -> List[StockItemRecord]|None:
-    withdrawed_items = _WithdrawDialog(root, master_list, projectnumber, title)
+    withdrawed_items = _StockChangeDialog(root, master_list, projectnumber, title)
     return withdrawed_items.withdraw_list
 
 
 def takeback_dialog(root:Widget, master_list:List[StockItemRecord],
                     projectnumber:Projectnumber,
                     title:str=WITHDRAW_TITLE) -> List[StockItemRecord]|None:
-    takeback_items = _WithdrawDialog(root, master_list, projectnumber, title)
+    takeback_items = _StockChangeDialog(root, master_list, projectnumber, title)
     return takeback_items.withdraw_list
 
 
 def deposit_dialog(root:Widget, master_list:List[StockItemRecord],
                     projectnumber:Projectnumber=None, title:str=DEPOSIT_TITLE,
                     deposit=True) -> List[StockItemRecord]|None:
-    deposit_items = _WithdrawDialog(root, master_list, projectnumber, title,
+    deposit_items = _StockChangeDialog(root, master_list, projectnumber, title,
                                     deposit)
     return deposit_items.withdraw_list
