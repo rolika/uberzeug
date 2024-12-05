@@ -59,14 +59,10 @@ class _StockChangeDialog(simpledialog.Dialog):
             initvalue = None
             maxvalue = None
             sign = 1
-        elif self.__mode == Mode.WITHDRAW:
+        else:
             initvalue = item.stock
             maxvalue = item.stock
             sign = -1
-        elif self.__mode == Mode.TAKEBACK:
-            initvalue = item.stock
-            maxvalue = item.stock
-            sign = 1
         change = ask_localfloat(title=self.__title, prompt=item.name, root=self,
                                 initvalue=initvalue, minvalue=0,
                                 maxvalue=maxvalue, unit=item.unit)
