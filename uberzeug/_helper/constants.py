@@ -18,6 +18,7 @@ WITHDRAW_TITLE = "Kivét raktárból"
 DEPOSIT_TITLE = "Bevételezés raktárba"
 WAYBILL_TITLE = "Szállítólevél"
 TAKEBACK_TITLE = "Visszavét projektről"
+MODIFIY_TITLE = "Anyag módosítása"
 
 PADX = 2
 PADY = 2

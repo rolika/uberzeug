@@ -1,5 +1,5 @@
 """
-INVENTORY APPLICATION
+ÜBERZEUG
 """
 
 import locale
@@ -12,6 +12,7 @@ from typing import List
 from uberzeug._helper.constants import *
 from uberzeug._gui.asknewexistcancel import ask_newexistcancel
 from uberzeug._gui.askprojectnumber import ask_projectnumber
+from uberzeug._gui.modifyitemdialog import modifyitem_dialog
 from uberzeug._gui.stockitemdialog import stockitem_dialog
 from uberzeug._gui.title_ui import TitleUI
 from uberzeug._gui.stockchangedialog\
@@ -38,6 +39,7 @@ class Uberzeug():
         self.__ui.takeback_button = self._takeback
         self.__ui.deposit_button = self._desposit
         self.__ui.newitem_button = self._newitem
+        self.__ui.modify_button = self._modify
 
     def _withdraw(self) -> None:
         projectnumber = ask_projectnumber(self.__ui)
@@ -101,6 +103,15 @@ class Uberzeug():
                 self.__dbsession.insert(newitem)
             logging.info(f"{host} {log}")
             messagebox.showinfo("Felvéve a raktárba", message)
+
+    def _modify(self) -> None:
+        master_list = self.__dbsession.load_all_items()
+        item = modifyitem_dialog(self.__ui, master_list)
+        if item:
+            self.__dbsession.update(item)
+            logging.info\
+                (f"{socket.gethostname()} modify: {item.name} {item.stock}")
+            messagebox.showinfo(MODIFIY_TITLE, item.name)
 
 
 if __name__ == "__main__":
