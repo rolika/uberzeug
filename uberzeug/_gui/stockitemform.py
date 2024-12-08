@@ -21,6 +21,7 @@ class StockItemForm(LabelFrame):
         self._init_controll_variables()
         self._build_interface()
         self._clear()
+        self._default_values()
 
     def _init_controll_variables(self) -> None:
         self.__name_var = StringVar()
@@ -191,64 +192,59 @@ class StockItemForm(LabelFrame):
         )
 
     def populate(self, stockitem:StockItemRecord) -> None:
+        self._clear()
         self.__primary_key = stockitem.articlenumber
-        self.__name_var.set(stockitem.name)
+        self.__name_entry.insert(0, stockitem.name)
         self.__nickname_var.set(stockitem.nickname)
-        self.__manufacturer_var.set(stockitem.manufacturer)
+        self.__manufacturer_entry.insert(0, stockitem.manufacturer)
         self.__description_var.set(stockitem.description)
         self.__color_var.set(stockitem.color)
         self.__comment_var.set(stockitem.comment)
-        self.__unit_var.set(stockitem.unit)
-        self.__packaging_var.set(self._get_formatted(stockitem.packaging))
-        self.__shelflife_var.set(self._get_formatted(stockitem.shelflife))
-        self.__stock_var.set(self._get_formatted(stockitem.stock))
-        self.__unitprice_var.set(self._get_formatted(stockitem.unitprice))
+        self.__unit_entry.insert(0, stockitem.unit)
+        self.__packaging_entry.insert(0,
+                                      self._get_formatted(stockitem.packaging))
+        self.__shelflife_entry.insert(0,
+                                      self._get_formatted(stockitem.shelflife))
+        self.__stock_entry.insert(0, self._get_formatted(stockitem.stock))
+        self.__unitprice_entry.insert(0,
+                                      self._get_formatted(stockitem.unitprice))
         self.__place_var.set(stockitem.place)
-        self.__productiondate_var.set(stockitem.productiondate)
-        self.__name_entry["style"] = "okstyle.TEntry"
-        self.__manufacturer_entry["style"] = "okstyle.TEntry"
-        self.__packaging_entry["style"] = "okstyle.TEntry"
-        self.__unit_entry["style"] = "okstyle.TEntry"
-        self.__shelflife_entry["style"] = "okstyle.TEntry"
-        self.__stock_entry["style"] = "okstlye.TEntry"
-        self.__unitprice_entry["style"] = "okstlye.TEntry"
-        self.__productiondate_entry["style"] = "okstlye.TEntry"
+        self.__productiondate_entry.insert(0, stockitem.productiondate)
 
     def is_valid(self) -> bool:
         return styles.is_entry_ok(self)
-    
+
     def _clear(self) -> None:
         for child in self.winfo_children():
             if child.winfo_class() == "TEntry":
                 child.delete(0, END)
-        self._set_default_values()
         self.__name_entry["style"] = "errorstyle.TEntry"
         self.__manufacturer_entry["style"] = "errorstyle.TEntry"
         self.__unit_entry["style"] = "errorstyle.TEntry"
         self.__stock_entry["style"] = "errorstyle.TEntry"
         self.__unitprice_entry["style"] = "errorstyle.TEntry"
-        self.__packaging_entry["style"] = "okstyle.TEntry"
-        self.__shelflife_entry["style"] = "okstyle.TEntry"
-        self.__productiondate_entry["style"] = "okstlye.TEntry"
-    
-    def _set_default_values(self) -> None:
+        self.__packaging_entry["style"] = "errorstyle.TEntry"
+        self.__shelflife_entry["style"] = "errorstyle.TEntry"
+        self.__productiondate_entry["style"] = "errorstyle.TEntry"
+
+    def _default_values(self) -> None:
         self.__primary_key = None
-        self.__shelflife_var.set(60)
-        self.__packaging_var.set(1)
-        self.__productiondate_var.set(date.today().isoformat())
-    
+        self.__shelflife_entry.insert(0, 60)
+        self.__packaging_entry.insert(0, 1)
+        self.__productiondate_entry.insert(0, date.today().isoformat())
+
     def _get_var(self, string_var:StringVar) -> float:
         try:
             return locale.atof(string_var.get())
         except ValueError:
             return 0.0
-    
+
     def _get_formatted(self, attribute:str|float) -> str:
         try:
             return locale.format_string(f="%.2f", val=attribute, grouping=True)
         except TypeError:
             return "0,00"
-    
+
     @property
     def name_entry(self) -> ttk.Entry:
         return self.__name_entry
