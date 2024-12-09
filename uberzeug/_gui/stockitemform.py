@@ -149,6 +149,8 @@ class StockItemForm(LabelFrame):
             .grid(row=6, column=6, sticky=E+W, padx=PADX, pady=PADY,
                   columnspan=2)
 
+        self.bind_class("TEntry", "<FocusIn>", self._select_all)
+
     def _is_number(self, text:str, name:str) -> bool:
         try:
             number = locale.atof(text)
@@ -254,7 +256,8 @@ class StockItemForm(LabelFrame):
         except TypeError:
             return "0,00"
 
-
+    def _select_all(self, event:Event) -> None:
+        event.widget.selection_range(0, END)
 
     @property
     def name_entry(self) -> ttk.Entry:
