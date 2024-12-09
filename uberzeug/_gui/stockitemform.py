@@ -201,20 +201,30 @@ class StockItemForm(LabelFrame):
         self.__color_var.set(stockitem.color)
         self.__comment_var.set(stockitem.comment)
         self.__unit_entry.insert(0, stockitem.unit)
-        self.__packaging_entry.insert(0,
-                                      self._get_formatted(stockitem.packaging))
-        self.__shelflife_entry.insert(0,
-                                      self._get_formatted(stockitem.shelflife))
+        if stockitem.packaging:
+            self.__packaging_entry.insert(0,
+                self._get_formatted(stockitem.packaging))
+        else:
+            self.__packaging_entry.insert(0, 1)
+        if stockitem.shelflife:
+            self.__shelflife_entry.insert(0,
+                self._get_formatted(stockitem.shelflife))
+        else:
+            self.__shelflife_entry.insert(0, 60)
         self.__stock_entry.insert(0, self._get_formatted(stockitem.stock))
         self.__unitprice_entry.insert(0,
                                       self._get_formatted(stockitem.unitprice))
         self.__place_var.set(stockitem.place)
-        self.__productiondate_entry.insert(0, stockitem.productiondate)
+        if stockitem.productiondate:
+            self.__productiondate_entry.insert(0, stockitem.productiondate)
+        else:
+            self.__productiondate_entry.insert(0, date.today().isoformat())
 
     def is_valid(self) -> bool:
         return styles.is_entry_ok(self)
 
     def _clear(self) -> None:
+        self.__primary_key = None
         for child in self.winfo_children():
             if child.winfo_class() == "TEntry":
                 child.delete(0, END)
@@ -228,7 +238,6 @@ class StockItemForm(LabelFrame):
         self.__productiondate_entry["style"] = "errorstyle.TEntry"
 
     def _default_values(self) -> None:
-        self.__primary_key = None
         self.__shelflife_entry.insert(0, 60)
         self.__packaging_entry.insert(0, 1)
         self.__productiondate_entry.insert(0, date.today().isoformat())
@@ -244,6 +253,8 @@ class StockItemForm(LabelFrame):
             return locale.format_string(f="%.2f", val=attribute, grouping=True)
         except TypeError:
             return "0,00"
+
+
 
     @property
     def name_entry(self) -> ttk.Entry:
