@@ -211,3 +211,10 @@ VALUES (?, ?, ?, ?, date(), ?)
                     SET keszlet = ?, utolso_modositas = date()
                     WHERE cikkszam = ?;
                 """, (item.stock, item.articlenumber))
+    
+    def delete(self, item:StockItemRecord) -> None:
+        with self:
+            self.execute("""
+                        DELETE FROM raktar
+                        WHERE cikkszam = ?;
+                         """, (item.articlenumber, ))

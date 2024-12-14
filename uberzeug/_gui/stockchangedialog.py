@@ -33,9 +33,15 @@ class _StockChangeDialog(simpledialog.Dialog):
         self.__itemlistbox = ItemListbox(box, master_list=self.__master_list)
         self.__itemlistbox.pack(side=LEFT, padx=PADX, pady=PADY)
         self.__itemlistbox.bind_selection(self._stockchange)
-        self.__waybillpanel = WaybillPanel(root=box,
-                                            temp_list=self.__temp_list,
-                                            itemlistbox=self.__itemlistbox)
+        if self.__mode == Mode.DELETE:
+            self.__waybillpanel = WaybillPanel(root=box,
+                                               title=DELETE_TITLE,
+                                               temp_list=self.__temp_list,
+                                               itemlistbox=self.__itemlistbox)
+        else:
+            self.__waybillpanel = WaybillPanel(root=box,
+                                               temp_list=self.__temp_list,
+                                               itemlistbox=self.__itemlistbox)
         self.__waybillpanel.pack(padx=PADX, pady=PADY)
         box.pack()
         return self.__itemlistbox.lookup_entry
@@ -53,12 +59,19 @@ class _StockChangeDialog(simpledialog.Dialog):
     def apply(self) -> None:
         self.__withdraw_list = self.__temp_list
 
-    def _stockchange(self, _:Event) -> float:
+    def _stockchange(self, _:Event) -> None:
         item = self.__itemlistbox.get_record()
         if self.__mode == Mode.DEPOSIT:
             initvalue = None
             maxvalue = None
             sign = 1
+        if self.__mode == Mode.DELETE:
+            item.change = -(item.stock)
+            item.stock = 0.0
+            self.__itemlistbox.delete_item(item)
+            self.__temp_list.append(item)
+            self.__waybillpanel.update_waybill()
+            return
         else:
             initvalue = item.stock
             maxvalue = item.stock
@@ -109,4 +122,11 @@ def deposit_dialog(root:Widget, master_list:List[StockItemRecord])\
     -> List[StockItemRecord]|None:
     deposit_items = _StockChangeDialog(root, master_list, None, DEPOSIT_TITLE,
                                        Mode.DEPOSIT)
+    return deposit_items.withdraw_list
+
+
+def delete_dialog(root:Widget, master_list:List[StockItemRecord])\
+    -> List[StockItemRecord]|None:
+    deposit_items = _StockChangeDialog(root, master_list, None,DELETE_TITLE,
+                                       Mode.DELETE)
     return deposit_items.withdraw_list

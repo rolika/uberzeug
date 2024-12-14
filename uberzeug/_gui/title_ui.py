@@ -32,8 +32,8 @@ class TitleUI(Frame):
         self.__newitem_button.pack(fill=X, padx=5, pady=5)
         self.__modify_button =ttk.Button(box, text="Meglévő anyag módosítása")
         self.__modify_button.pack(fill=X, padx=5, pady=5)
-        ttk.Button(box, text="Anyag törlése", state=DISABLED)\
-            .pack(fill=X, padx=5, pady=5)
+        self.__delete_button = ttk.Button(box, text="Anyag törlése")
+        self.__delete_button.pack(fill=X, padx=5, pady=5)
         box.pack(side=LEFT, fill=BOTH, padx=5, pady=5)
         box = ttk.LabelFrame(self, text="Raktárkészlet-kezelés")
         self.__withdraw_button =ttk.Button(box, text="Kivét projektre")
@@ -83,6 +83,14 @@ class TitleUI(Frame):
     @modify_button.setter
     def modify_button(self, command:callable) -> None:
         self.__modify_button["command"] = command
+
+    @property
+    def delete_button(self) -> ttk.Button:
+        return self.__delete_button
+
+    @delete_button.setter
+    def delete_button(self, command:callable) -> None:
+        self.__delete_button["command"] = command
 
 
 if __name__ == "__main__":
