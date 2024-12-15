@@ -112,7 +112,8 @@ class Uberzeug():
             self.__dbsession.update(item)
             logging.info\
                 (f"{socket.gethostname()} modify: {item.name} {item.stock}")
-            messagebox.showinfo(MODIFIY_TITLE, item.name)
+            messagebox.showinfo(MODIFIY_TITLE,
+                f"{item.name} {item.stock} {item.unit}")
     
     def _delete(self) -> None:
         master_list = self.__dbsession.load_all_items()
