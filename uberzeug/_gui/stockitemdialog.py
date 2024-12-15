@@ -29,7 +29,6 @@ class _StockItemDialog(simpledialog.Dialog):
         box.pack()
     
     def apply(self) -> None:
-        self.unbind_all("<Key>")
         if self.__stockitemform.is_valid():
             self.__stockitem = self.__stockitemform.retrieve()
     
@@ -45,4 +44,5 @@ class _StockItemDialog(simpledialog.Dialog):
 
 def stockitem_dialog(parent:Widget, title:str) -> StockItemRecord|None:
     stockitem = _StockItemDialog(parent, title)
+    stockitem.unbind_all("<Key>")
     return stockitem.get()
