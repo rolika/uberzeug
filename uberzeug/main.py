@@ -16,7 +16,7 @@ from uberzeug._gui.modifyitemdialog import modifyitem_dialog
 from uberzeug._gui.stockitemdialog import stockitem_dialog
 from uberzeug._gui.title_ui import TitleUI
 from uberzeug._gui.stockchangedialog\
-    import deposit_dialog, takeback_dialog, withdraw_dialog
+    import delete_dialog, deposit_dialog, takeback_dialog, withdraw_dialog
 from uberzeug._persistence.databasesession import DatabaseSession
 from uberzeug._persistence.filesession import FileSession
 
@@ -40,6 +40,7 @@ class Uberzeug():
         self.__ui.deposit_button = self._desposit
         self.__ui.newitem_button = self._newitem
         self.__ui.modify_button = self._modify
+        self.__ui.delete_button = self._delete
 
     def _withdraw(self) -> None:
         projectnumber = ask_projectnumber(self.__ui)
@@ -111,7 +112,19 @@ class Uberzeug():
             self.__dbsession.update(item)
             logging.info\
                 (f"{socket.gethostname()} modify: {item.name} {item.stock}")
-            messagebox.showinfo(MODIFIY_TITLE, item.name)
+            messagebox.showinfo(MODIFIY_TITLE,
+                f"{item.name} {item.stock} {item.unit}")
+    
+    def _delete(self) -> None:
+        master_list = self.__dbsession.load_all_items()
+        items = delete_dialog(self.__ui, master_list)
+        if len(items) and\
+            messagebox.askokcancel(DELETE_TITLE, "Biztos vagy benne?"):
+            for item in items:
+                self.__dbsession.delete(item)
+                logging.info\
+                    (f"{socket.gethostname()} delete: {item.name} {-item.change}")
+            messagebox.showinfo(DELETE_TITLE, "Anyag(ok) törölve.")
 
 
 if __name__ == "__main__":

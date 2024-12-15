@@ -19,6 +19,7 @@ DEPOSIT_TITLE = "Bevételezés raktárba"
 WAYBILL_TITLE = "Szállítólevél"
 TAKEBACK_TITLE = "Visszavét projektről"
 MODIFIY_TITLE = "Anyag módosítása"
+DELETE_TITLE = "Anyag törlése"
 
 PADX = 2
 PADY = 2
@@ -33,4 +34,5 @@ LOGFILE = r"data/uberzeug.log"
 
 Mode = enum.Enum("Mode", [("WITHDRAW", 1),
                           ("TAKEBACK", 2),
-                          ("DEPOSIT",  3)])
+                          ("DEPOSIT",  3),
+                          ("DELETE", 4)])

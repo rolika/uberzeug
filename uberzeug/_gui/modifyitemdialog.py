@@ -37,7 +37,6 @@ class _ModifyItemDialog(simpledialog.Dialog):
         box.pack()
 
     def apply(self) -> None:
-        self.unbind_all("<Key>")
         self.__modified_item = self.__stockitemform.retrieve()
         self.__modified_item.articlenumber = self.__item_to_modify.articlenumber
 
@@ -60,4 +59,5 @@ class _ModifyItemDialog(simpledialog.Dialog):
 def modifyitem_dialog(parent:Widget, master_list:List[StockItemRecord])\
     -> StockItemRecord|None:
     modify = _ModifyItemDialog(parent, MODIFIY_TITLE, master_list)
+    modify.unbind_all("<Key>")
     return modify.item

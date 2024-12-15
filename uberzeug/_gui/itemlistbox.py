@@ -20,7 +20,6 @@ class ItemListbox(LabelFrame):
 
     def _init_controll_variables(self) -> None:
         self.__lookup_var = StringVar()
-        self.__list_var = StringVar()
 
     def _build_interface(self) -> None:
         self.__lookup_entry = ttk.Entry(self, textvariable=self.__lookup_var,
@@ -32,7 +31,6 @@ class ItemListbox(LabelFrame):
         self.__listbox = Listbox(self,
                                  cursor="hand2",
                                  font=("Liberation Mono", "-12"),
-                                 listvariable=self.__list_var,
                                  selectmode=SINGLE,
                                  width=60,
                                  height=23,
@@ -75,6 +73,11 @@ class ItemListbox(LabelFrame):
                 selection = [item for item in selection if item.contains(word)]
         self._populate(selection)
         return True
+    
+    def _find_item_index(self, item:StockItemRecord) -> int:
+        for idx, stockitem in enumerate(self.__display_list):
+            if stockitem.articlenumber == item.articlenumber:
+                return idx
 
     def bind_selection(self, method:callable) -> None:
         self.__listbox.bind("<<ListboxSelect>>", method)
@@ -86,12 +89,19 @@ class ItemListbox(LabelFrame):
             return None
 
     def update_item(self, item:StockItemRecord) -> None:
-        for idx, stockitem in enumerate(self.__display_list):
-            if stockitem.articlenumber == item.articlenumber:
-                break
-        self.__display_list[idx] = item
+        idx = self._find_item_index(item)
+        if idx:
+            self.__display_list[idx] = item
+            self.__listbox.delete(idx)
+            self.__listbox.insert(idx, str(item))
+        else:
+            self.__display_list.append(item)
+            self.__listbox.insert(END, str(item))
+    
+    def delete_item(self, item:StockItemRecord) -> None:
+        idx = self._find_item_index(item)
+        self.__display_list.pop(idx)
         self.__listbox.delete(idx)
-        self.__listbox.insert(idx, str(item))
 
     @property
     def lookup_entry(self) -> ttk.Entry:
