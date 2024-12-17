@@ -18,8 +18,7 @@ class FileSession:
     like: 24_001 -> 2024 -> June.
     The waybill has a number which looks like 24_001_12, the latter being a
     serial number, which is always +1 of all waybills in the projectfolder."""
-    def __init__(self, organization:List[str],
-                 waybillfolder:str=WAYBILLFOLDER,
+    def __init__(self, organization:List[str], waybillfolder:str,
                  extension:str=EXTENSION) -> None:
         self.__waybillfolder = pathlib.Path(waybillfolder)
         self.__extension = extension
