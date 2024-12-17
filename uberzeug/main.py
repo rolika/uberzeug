@@ -2,6 +2,8 @@
 ÜBERZEUG
 """
 
+
+import configparser
 import locale
 locale.setlocale(locale.LC_ALL, "")
 import logging
@@ -24,12 +26,23 @@ from uberzeug._persistence.filesession import FileSession
 class Uberzeug():
     def __init__(self, title:str=APPLICATION_TITLE,
                  organization:List[str]=ORGANIZATION) -> None:
-        self.__dbsession = DatabaseSession()
-        self.__filesession = FileSession(organization)
-        self.__ui = TitleUI(title, organization, root=self)
+        
+        config = configparser.ConfigParser()
+        config.read(CONFIGFILE)
+        database_file = config["DEFAULT"]["database"]
+        waybillfolder = config["DEFAULT"]["waybillfolder"]
+        logfile = config["DEFAULT"]["logfile"]
+        title_image = config["DEFAULT"]["title_image"]
+        windows_icon = config["DEFAULT"]["windows_icon"]
+        linux_icon = config["DEFAULT"]["linux_icon"]
+
+        self.__dbsession = DatabaseSession(database_file)
+        self.__filesession = FileSession(organization, waybillfolder)
+        self.__ui = TitleUI(title, organization, title_image, windows_icon,
+                            linux_icon, root=self)
         self._bindings()
         self.__ui.pack()
-        logging.basicConfig(filename=LOGFILE, encoding='utf-8',
+        logging.basicConfig(filename=logfile, encoding='utf-8',
                             format="%(levelname)s: %(asctime)s %(message)s",
                             datefmt="%Y.%m.%d %H:%M:%S", level=logging.INFO)
         self.__ui.mainloop()

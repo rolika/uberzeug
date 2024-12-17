@@ -3,19 +3,19 @@ from tkinter import *
 from tkinter import ttk
 from typing import List
 
-from uberzeug._helper.constants import *
 import uberzeug._helper.textrep as textrep
 
 
 class TitleUI(Frame):
-    def __init__(self, title:str, organization:List[str], root:Widget=None,
-                 title_image:str=TITLE_IMAGE, **kwargs) -> None:
+    def __init__(self, title:str, organization:List[str],
+                 title_image:str, windows_icon:str, linux_icon:str,
+                 root:Widget=None, **kwargs) -> None:
         super().__init__(**kwargs)
         if os.name == "posix":
-            icon = PhotoImage(file = LINUX_ICON)
+            icon = PhotoImage(file = linux_icon)
             self.master.tk.call("wm", "iconphoto", self.master._w, icon)
         else:
-            self.master.iconbitmap(default = WINDOWS_ICON)
+            self.master.iconbitmap(default = windows_icon)
         self.master.title(textrep.explode(title, width=3))
         self.__company = organization[0]
         self.__title_image = PhotoImage(file=title_image)
