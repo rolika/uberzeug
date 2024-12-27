@@ -11,7 +11,7 @@ from uberzeug._record.stockitemrecord import StockItemRecord
 class DatabaseSession(sqlite3.Connection):
     """This class handles all database-related stuff."""
 
-    def __init__(self, filepath:str=DATABASE) -> None:
+    def __init__(self, filepath:str) -> None:
         """Initialize an sqlite database connection."""
         super().__init__(pathlib.Path(filepath))
         self.row_factory = sqlite3.Row  # access results with column-names
