@@ -19,7 +19,10 @@ class TitleUI(Frame):
             except TclError:
                 pass
         else:
-            self.master.iconbitmap(default = windows_icon)
+            try:
+                self.master.iconbitmap(default = windows_icon)
+            except TclError:
+                pass
         self.master.title(textrep.explode(title, width=3))
         self.__company = organization[0]
         try:
