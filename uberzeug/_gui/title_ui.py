@@ -1,4 +1,5 @@
 import os
+import logging
 from tkinter import *
 from tkinter import ttk
 from typing import List
@@ -12,19 +13,26 @@ class TitleUI(Frame):
                  root:Widget=None, **kwargs) -> None:
         super().__init__(**kwargs)
         if os.name == "posix":
-            icon = PhotoImage(file = linux_icon)
-            self.master.tk.call("wm", "iconphoto", self.master._w, icon)
+            try:
+                icon = PhotoImage(file = linux_icon)
+                self.master.tk.call("wm", "iconphoto", self.master._w, icon)
+            except TclError:
+                pass
         else:
             self.master.iconbitmap(default = windows_icon)
         self.master.title(textrep.explode(title, width=3))
         self.__company = organization[0]
-        self.__title_image = PhotoImage(file=title_image)
+        try:
+            self.__title_image = PhotoImage(file=title_image)
+        except TclError:
+            self.__title_image = None
         self._body()
 
     def _body(self) -> None:
         box = LabelFrame(self, text=self.__company, labelanchor=N)
         canvas = Canvas(box, width=640, height=295)
-        canvas.create_image(0, 0, image=self.__title_image, anchor=NW)
+        if self.__title_image:
+            canvas.create_image(0, 0, image=self.__title_image, anchor=NW)
         canvas.pack(padx=5, pady=5)
         box.pack(padx=5, pady=5)
         box = ttk.LabelFrame(self, text="Anyagok kezelése")
