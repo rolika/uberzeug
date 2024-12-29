@@ -51,7 +51,7 @@ class Uberzeug():
     def _bindings(self) -> None:
         self.__ui.withdraw_button = self._withdraw
         self.__ui.takeback_button = self._takeback
-        self.__ui.deposit_button = self._desposit
+        self.__ui.deposit_button = self._deposit
         self.__ui.newitem_button = self._newitem
         self.__ui.modify_button = self._modify
         self.__ui.delete_button = self._delete
@@ -89,7 +89,7 @@ class Uberzeug():
             messagebox.showinfo(TAKEBACK_TITLE,
                                 WAYBILL_TITLE + " száma: " + waybill_number)
 
-    def _desposit(self) -> None:
+    def _deposit(self) -> None:
         master_list = self.__dbsession.load_all_items()
         deposit_items = deposit_dialog(self.__ui, master_list)
         pieces = len(deposit_items)
