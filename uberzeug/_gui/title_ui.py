@@ -55,6 +55,14 @@ class TitleUI(Frame):
         self.__deposit_button.pack(fill=X, padx=5, pady=5)
         box.pack(fill=BOTH, padx=5, pady=5)
 
+    def switch_button_state(self, empty_db:bool) -> None:
+        state = "disabled" if empty_db else "normal"
+        self.__withdraw_button["state"] = state
+        self.__takeback_button["state"] = state
+        self.__deposit_button["state"] = state
+        self.__modify_button["state"] = state
+        self.__delete_button["state"] = state
+
     @property
     def withdraw_button(self) -> ttk.Button:
         return self.__withdraw_button
