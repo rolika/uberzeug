@@ -74,10 +74,11 @@ class ItemListbox(LabelFrame):
         self._populate(selection)
         return True
     
-    def _find_item_index(self, item:StockItemRecord) -> int:
+    def _find_item_index(self, item:StockItemRecord) -> int|None:
         for idx, stockitem in enumerate(self.__display_list):
             if stockitem.articlenumber == item.articlenumber:
                 return idx
+        return None
 
     def bind_selection(self, method:callable) -> None:
         self.__listbox.bind("<<ListboxSelect>>", method)
@@ -90,7 +91,7 @@ class ItemListbox(LabelFrame):
 
     def update_item(self, item:StockItemRecord) -> None:
         idx = self._find_item_index(item)
-        if idx:
+        if idx is not None:
             self.__display_list[idx] = item
             self.__listbox.delete(idx)
             self.__listbox.insert(idx, str(item))

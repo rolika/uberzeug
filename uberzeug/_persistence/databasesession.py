@@ -35,6 +35,7 @@ class DatabaseSession(sqlite3.Connection):
                     lejarat,
                     gyartasido,
                     szin,
+                    jeloles,
                     letrehozas,
                     utolso_modositas);
                 """)
@@ -202,7 +203,7 @@ VALUES (?, ?, ?, ?, date(), ?)
         """, (stockitem.stock, stockitem.name, stockitem.nickname,
               stockitem.manufacturer, stockitem.description, stockitem.color, stockitem.comment, stockitem.unit, stockitem.unitprice,
               stockitem.packaging, stockitem.place, stockitem.shelflife, stockitem.productiondate))
-    
+
     def update_stock(self, items:List[StockItemRecord]) -> None:
         with self:
             for item in items:
@@ -211,7 +212,7 @@ VALUES (?, ?, ?, ?, date(), ?)
                     SET keszlet = ?, utolso_modositas = date()
                     WHERE cikkszam = ?;
                 """, (item.stock, item.articlenumber))
-    
+
     def delete(self, item:StockItemRecord) -> None:
         with self:
             self.execute("""

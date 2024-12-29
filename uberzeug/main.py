@@ -26,7 +26,7 @@ from uberzeug._persistence.filesession import FileSession
 class Uberzeug():
     def __init__(self, title:str=APPLICATION_TITLE,
                  organization:List[str]=ORGANIZATION) -> None:
-        
+
         config = configparser.ConfigParser()
         config.read(CONFIGFILE)
         database_file = config["DEFAULT"]["database"]
@@ -41,6 +41,7 @@ class Uberzeug():
         self.__ui = TitleUI(title, organization, title_image, windows_icon,
                             linux_icon, root=self)
         self._bindings()
+        self._update_buttons()
         self.__ui.pack()
         logging.basicConfig(filename=logfile, encoding='utf-8',
                             format="%(levelname)s: %(asctime)s %(message)s",
@@ -50,7 +51,7 @@ class Uberzeug():
     def _bindings(self) -> None:
         self.__ui.withdraw_button = self._withdraw
         self.__ui.takeback_button = self._takeback
-        self.__ui.deposit_button = self._desposit
+        self.__ui.deposit_button = self._deposit
         self.__ui.newitem_button = self._newitem
         self.__ui.modify_button = self._modify
         self.__ui.delete_button = self._delete
@@ -88,7 +89,7 @@ class Uberzeug():
             messagebox.showinfo(TAKEBACK_TITLE,
                                 WAYBILL_TITLE + " száma: " + waybill_number)
 
-    def _desposit(self) -> None:
+    def _deposit(self) -> None:
         master_list = self.__dbsession.load_all_items()
         deposit_items = deposit_dialog(self.__ui, master_list)
         pieces = len(deposit_items)
@@ -117,6 +118,7 @@ class Uberzeug():
                 self.__dbsession.insert(newitem)
             logging.info(f"{host} {log}")
             messagebox.showinfo("Felvéve a raktárba", message)
+        self._update_buttons()
 
     def _modify(self) -> None:
         master_list = self.__dbsession.load_all_items()
@@ -127,7 +129,7 @@ class Uberzeug():
                 (f"{socket.gethostname()} modify: {item.name} {item.stock}")
             messagebox.showinfo(MODIFIY_TITLE,
                 f"{item.name} {item.stock} {item.unit}")
-    
+
     def _delete(self) -> None:
         master_list = self.__dbsession.load_all_items()
         items = delete_dialog(self.__ui, master_list)
@@ -138,6 +140,11 @@ class Uberzeug():
                 logging.info\
                     (f"{socket.gethostname()} delete: {item.name} {-item.change}")
             messagebox.showinfo(DELETE_TITLE, "Anyag(ok) törölve.")
+        self._update_buttons()
+
+    def _update_buttons(self) -> None:
+        empty_db = not len(self.__dbsession.load_all_items())
+        self.__ui.switch_button_state(empty_db)
 
 
 if __name__ == "__main__":
