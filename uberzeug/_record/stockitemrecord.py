@@ -69,12 +69,12 @@ class StockItemRecord(Record):
 
     def apply_change(self) -> None:
         """Change is signed: - for withdraw, + for deposit"""
-        assert self.change
+        assert  hasattr(self, "change")
         self.stock += self.change
 
     def undo_change(self) -> None:
         """Change is signed: - for withdraw, + for deposit"""
-        assert self.change
+        assert  hasattr(self, "change")
         self.stock -= self.change
     
     def is_almost_same(self, item:Self) -> bool:
@@ -85,7 +85,7 @@ class StockItemRecord(Record):
 
     @property
     def withdraw_view(self) -> str:
-        assert self.change
+        assert hasattr(self, "change")
         space = " " if self.manufacturer else ""
         return "{:<41} {:>10} {:<7}".format(
                 (self.manufacturer + space + self.name)[0:41],
