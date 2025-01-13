@@ -1,5 +1,4 @@
 import os
-import logging
 from tkinter import *
 from tkinter import ttk
 from typing import List
