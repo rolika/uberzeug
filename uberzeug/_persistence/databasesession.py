@@ -164,15 +164,12 @@ VALUES (?, ?, ?, ?, date(), ?)
         project_stock = []
         for entry in log_records:
             for item in all_items:
-                if item.manufacturer:
-                    name = item.manufacturer + " " + item.name
-                else:
-                    name = item.name
                 change = abs(entry.change)
-                if name == entry.name and change > 0:
+                if entry.is_referring_to(item) and change > 0:
                     setattr(item, "backup_stock", item.stock)
                     item.stock = change
                     project_stock.append(item)
+                    break
         return project_stock
 
     def lookup(self, newitem:StockItemRecord) -> StockItemRecord|None:

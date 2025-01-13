@@ -2,6 +2,7 @@
 
 
 from datetime import date
+import re
 from typing import List
 
 from uberzeug._helper.constants import *
@@ -54,7 +55,14 @@ def waybillpanel_header() -> str:
         .format("megnevezés", "változás", "egység")
 
 
+def asci(text:str) -> str:
+    """Return the input as lower-cased alphanumeric text to avoid confusion."""
+    return "".join(re.findall("[a-z0-9]", str(text).lower().\
+        translate(str.maketrans("áéíóöőúüű", "aeiooouuu"))))
+
+
 if __name__ == "__main__":
     print(line())
     print(headline("this is a headline"))
     print(line())
+    print(asci("árvíz22tűrő_-22tükörfúrógép"))
