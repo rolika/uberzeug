@@ -40,7 +40,7 @@ def waybill_header(organization:List[str]=ORGANIZATION,
 def waybill_footer() -> str:
     d = date.today()
     result = line() + "\n\n"
-    result += f"Kelt: Herend, {d.strftime("%Y.%m.%d.")}\n\n\n\n\n"
+    result += f"Kelt: Herend, {d.strftime('%Y.%m.%d.')}\n\n\n\n\n"
     result += "\n\n\n\n"
     result +=\
         "              ___________________          ___________________\n"
