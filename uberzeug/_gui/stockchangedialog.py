@@ -66,7 +66,7 @@ class _StockChangeDialog(simpledialog.Dialog):
             maxvalue = None
             sign = 1
         elif self.__mode == Mode.DELETE:
-            item.change = -(item.stock)
+            setattr(item, "change", -(item.stock))
             item.stock = 0.0
             self.__itemlistbox.delete_item(item)
             self.__temp_list.append(item)
