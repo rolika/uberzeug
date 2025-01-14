@@ -1,10 +1,10 @@
 import locale
 locale.setlocale(locale.LC_ALL, "")
 
-from datetime import date
 from typing import Self
 
 from uberzeug._record.record import Record
+import uberzeug._helper.textrep as textrep
 
 
 TRANSLATE_ATTRIBUTES = {
@@ -49,11 +49,9 @@ class StockItemRecord(Record):
     def __bool__(self) -> bool:
         try:
             bool(self.name) and\
-            bool(self.unit) #and\
-            #bool(self.manufacturer)
+            bool(self.unit)
             stock = float(self.stock)
             unitprice = float(self.unitprice)
-            #date.fromisoformat(self.productiondate)
             return (stock >= 0) and (unitprice >= 0)
         except (AttributeError, ValueError):
             return False
@@ -78,7 +76,8 @@ class StockItemRecord(Record):
         self.stock -= self.change
     
     def is_almost_same(self, item:Self) -> bool:
-        if item.name in self.name and self.unitprice == item.unitprice:
+        if textrep.asci(item.name) in textrep.asci(self.name) and\
+            self.unitprice == item.unitprice:
             return True
         else:
             return False
