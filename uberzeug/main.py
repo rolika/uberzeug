@@ -60,7 +60,7 @@ class Uberzeug():
         projectnumber = ask_projectnumber(self.__ui)
         if not projectnumber:
             return
-        master_list = self.__dbsession.load_all_items()
+        master_list = self.__dbsession.load_withdrawable_items()
         withdrawed_items = withdraw_dialog(self.__ui, master_list,
                                            projectnumber)
         if len(withdrawed_items):

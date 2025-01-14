@@ -135,6 +135,10 @@ VALUES (?, ?, ?, ?, date(), ?)
     def load_all_items(self) -> List[StockItemRecord]:
         return [StockItemRecord(**item) for item in self.select_all_items()]
 
+    def load_withdrawable_items(self) -> List[StockItemRecord]:
+        return [StockItemRecord(**item) for item in self.select_all_items()
+                if item["keszlet"] > 0]
+
     def log_stock_change(self, items:List[StockItemRecord],
                          projectnumber:Projectnumber) -> None:
         self.update_stock(items)
