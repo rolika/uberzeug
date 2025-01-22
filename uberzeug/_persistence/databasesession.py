@@ -165,16 +165,15 @@ VALUES (?, ?, ?, ?, date(), ?)
         -> List[StockItemRecord]:
         all_items = self.load_all_items()
         log_records = self._load_log_entries(projectnumber)
-        project_stock = []
+        project_stock = set()
         for entry in log_records:
             for item in all_items:
                 change = abs(entry.change)
                 if entry.is_referring_to(item) and change > 0:
                     setattr(item, "backup_stock", item.stock)
                     item.stock = change
-                    project_stock.append(item)
-                    break
-        return project_stock
+                    project_stock.add(item)
+        return list(project_stock)
 
     def lookup(self, newitem:StockItemRecord) -> StockItemRecord|None:
         for stockitem in self.load_all_items():
