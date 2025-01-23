@@ -74,7 +74,7 @@ class StockItemRecord(Record):
         """Change is signed: - for withdraw, + for deposit"""
         assert  hasattr(self, "change")
         self.stock -= self.change
-    
+
     def is_almost_same(self, item:Self) -> bool:
         if textrep.asci(item.name) in textrep.asci(self.name) and\
             self.unitprice == item.unitprice:
@@ -90,3 +90,7 @@ class StockItemRecord(Record):
                 (self.manufacturer + space + self.name)[0:41],
                 locale.format_string(f="%+.2f", val=self.change, grouping=True),
                 self.unit)
+
+    @property
+    def tooltip_view(self) -> str:
+        return f"kiszerelés: {self.packaging} {self.unit}"

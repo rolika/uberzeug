@@ -1,6 +1,7 @@
 import re
 from tkinter import *
 from tkinter import ttk
+from tktooltip import ToolTip
 from typing import List
 
 from uberzeug._helper.constants import *
@@ -38,22 +39,35 @@ class ItemListbox(LabelFrame):
                                  exportselection=False)
         vertical_scroll["command"]=self.__listbox.yview
 
-        self.__listbox.bind("<Button-4>",
-                            lambda _: self.__listbox.yview_scroll(-1, UNITS))
-        self.__listbox.bind("<Button-5>",
-                            lambda _: self.__listbox.yview_scroll(1, UNITS))
-        self.__listbox.bind("<MouseWheel>",
-            lambda e: self.__listbox.yview_scroll(int(e.delta / 120), UNITS))
+        ToolTip(self.__listbox, msg=self._get_item_info, refresh=0.05)
 
         self.__lookup_entry.grid(row=0, column=0, sticky=E+W)
         self.__listbox.grid(row=1, column=0)
         vertical_scroll.grid(row=1, column=1, sticky=N+S)
 
     def _bindings(self) -> None:
+        self.__listbox.bind("<Button-4>",
+                            lambda _: self.__listbox.yview_scroll(-1, UNITS))
+        self.__listbox.bind("<Button-5>",
+                            lambda _: self.__listbox.yview_scroll(1, UNITS))
+        self.__listbox.bind("<MouseWheel>",
+            lambda e: self.__listbox.yview_scroll(int(e.delta / 120), UNITS))
         lookup = self.__listbox.register(self._lookup)
         self.__lookup_entry["validatecommand"] = (lookup, "%P")
         self.__listbox.bind("<Escape>", self._clear_selection)
         self.__lookup_entry.bind("<Escape>", self._clear_selection)
+        self.__listbox.bind("<Motion>", self._on_mouse_motion, add="+")
+
+    def _on_mouse_motion(self, event:Event) -> None:
+        self._listbox_idx = self.__listbox.index(f"@{event.x}, {event.y}")
+
+    def _get_item_info(self) -> str:
+        try:
+            return self.__display_list[int(self._listbox_idx)].tooltip_view
+        except AttributeError:
+            return ""
+        except (IndexError, ValueError):
+            return ""
 
     def _clear_selection(self, _=None) -> None:
         self.__lookup_var.set("")
@@ -73,7 +87,7 @@ class ItemListbox(LabelFrame):
                 selection = [item for item in selection if item.contains(word)]
         self._populate(selection)
         return True
-    
+
     def _find_item_index(self, item:StockItemRecord) -> int|None:
         for idx, stockitem in enumerate(self.__display_list):
             if stockitem.articlenumber == item.articlenumber:
@@ -98,7 +112,7 @@ class ItemListbox(LabelFrame):
         else:
             self.__display_list.append(item)
             self.__listbox.insert(END, str(item))
-    
+
     def delete_item(self, item:StockItemRecord) -> None:
         idx = self._find_item_index(item)
         self.__display_list.pop(idx)
