@@ -1,7 +1,7 @@
-import difflib
 import locale
 locale.setlocale(locale.LC_ALL, "")
 
+from uberzeug._helper.textrep import asci
 from uberzeug._record.record import Record
 from uberzeug._record.stockitemrecord import StockItemRecord
 
@@ -31,10 +31,8 @@ class LogRecord(Record):
             self.name[0:41],
             locale.format_string(f="%+.2f", val=self.change, grouping=True),
             self.unit)
-    
+
     def is_referring_to(self, stockitem:StockItemRecord) -> bool:
-        """Returns True if the name of the stocitem is contained in the name
+        """Returns True if the name of the stocitem is referring to the name
         of the log record."""
-        close = difflib.get_close_matches(stockitem.name, [self.name],
-                                          cutoff=0.9)
-        return len(close) > 0
+        return asci(stockitem.name) in asci(self.name)

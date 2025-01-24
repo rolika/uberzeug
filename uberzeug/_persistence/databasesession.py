@@ -173,7 +173,8 @@ VALUES (?, ?, ?, ?, date(), ?)
                     setattr(item, "backup_stock", item.stock)
                     item.stock = change
                     project_stock.add(item)
-        return list(project_stock)
+                    break
+        return sorted(project_stock, key=str)
 
     def lookup(self, newitem:StockItemRecord) -> StockItemRecord|None:
         for stockitem in self.load_all_items():
