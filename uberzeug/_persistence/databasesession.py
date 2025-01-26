@@ -135,6 +135,10 @@ VALUES (?, ?, ?, ?, date(), ?)
     def load_all_items(self) -> List[StockItemRecord]:
         return [StockItemRecord(**item) for item in self.select_all_items()]
 
+    def load_withdrawable_items(self) -> List[StockItemRecord]:
+        return [StockItemRecord(**item) for item in self.select_all_items()
+                if item["keszlet"] > 0]
+
     def log_stock_change(self, items:List[StockItemRecord],
                          projectnumber:Projectnumber) -> None:
         self.update_stock(items)
@@ -161,19 +165,16 @@ VALUES (?, ?, ?, ?, date(), ?)
         -> List[StockItemRecord]:
         all_items = self.load_all_items()
         log_records = self._load_log_entries(projectnumber)
-        project_stock = []
+        project_stock = set()
         for entry in log_records:
             for item in all_items:
-                if item.manufacturer:
-                    name = item.manufacturer + " " + item.name
-                else:
-                    name = item.name
                 change = abs(entry.change)
-                if name == entry.name and change > 0:
+                if entry.is_referring_to(item) and change > 0:
                     setattr(item, "backup_stock", item.stock)
                     item.stock = change
-                    project_stock.append(item)
-        return project_stock
+                    project_stock.add(item)
+                    break
+        return sorted(project_stock, key=str)
 
     def lookup(self, newitem:StockItemRecord) -> StockItemRecord|None:
         for stockitem in self.load_all_items():

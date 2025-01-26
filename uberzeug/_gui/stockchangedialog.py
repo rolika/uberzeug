@@ -66,7 +66,7 @@ class _StockChangeDialog(simpledialog.Dialog):
             maxvalue = None
             sign = 1
         elif self.__mode == Mode.DELETE:
-            item.change = -(item.stock)
+            setattr(item, "change", -(item.stock))
             item.stock = 0.0
             self.__itemlistbox.delete_item(item)
             self.__temp_list.append(item)
@@ -78,7 +78,8 @@ class _StockChangeDialog(simpledialog.Dialog):
             sign = -1
         change = ask_localfloat(title=self.__title, prompt=item.name, root=self,
                                 initvalue=initvalue, minvalue=0,
-                                maxvalue=maxvalue, unit=item.unit)
+                                maxvalue=maxvalue, unit=item.unit,
+                                packaging=item.packaging)
         already_withdrawed = False
         if change:
             for withdrawed in self.__temp_list:

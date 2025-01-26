@@ -9,13 +9,14 @@ from uberzeug._gui import styles
 
 class _AskLocalFloat(simpledialog.Dialog):
     """Ask for a float number and verify it considering locale settings."""
-    def __init__(self, title:str, prompt:str, root:Widget=None,
-                 initvalue:float=None, minvalue:float=None, maxvalue:float=None,
-                 unit:str=None) -> None:
+    def __init__(self, title:str, prompt:str, root:Widget, initvalue:float,
+                 minvalue:float, maxvalue:float, unit:str,
+                 packaging:float) -> None:
         self.__prompt = prompt
         self.__minvalue = minvalue
         self.__maxvalue = maxvalue
         self.__unit = unit
+        self.__packaging = packaging
         self.__number = None
         self.__entry_var = StringVar()
         if initvalue:
@@ -31,6 +32,11 @@ class _AskLocalFloat(simpledialog.Dialog):
         entry.select_range(0, END)
         entry.pack(side=LEFT)
         ttk.Label(box, text=self.__unit).pack()
+        box.pack()
+        box = Frame(self)
+        ttk.Label(box, text="Kiszerelés: ").pack(side=LEFT)
+        ttk.Label(box, text=locale.format_string(f="%.2f", val=self.__packaging)).pack(side=LEFT)
+        ttk.Label(box, text=" " + self.__unit).pack()
         box.pack()
         return entry
 
@@ -74,13 +80,14 @@ class _AskLocalFloat(simpledialog.Dialog):
 
 def ask_localfloat(title:str, prompt:str, root:Widget=None,
                    initvalue:float=None, minvalue:float=None,
-                   maxvalue:float=None, unit:str=None) -> float:
+                   maxvalue:float=None, unit:str=None, packaging:float=None) -> float:
     float_ = _AskLocalFloat(title, prompt, root, initvalue, minvalue, maxvalue,
-                            unit)
+                            unit, packaging)
     return float_.number
 
 
 if __name__ == "__main__":
     locale.setlocale(locale.LC_ALL, "")
     print(ask_localfloat(title="Kivét", prompt="Mennyit veszel ki?", root=None,
-                         initvalue=324.5, minvalue=10.0, maxvalue=500.0))
+                         initvalue=324.5, minvalue=10.0, maxvalue=500.0,
+                         unit="kg", packaging=25.0))

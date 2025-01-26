@@ -1,10 +1,10 @@
 import locale
 locale.setlocale(locale.LC_ALL, "")
 
-from datetime import date
 from typing import Self
 
 from uberzeug._record.record import Record
+import uberzeug._helper.textrep as textrep
 
 
 TRANSLATE_ATTRIBUTES = {
@@ -49,11 +49,9 @@ class StockItemRecord(Record):
     def __bool__(self) -> bool:
         try:
             bool(self.name) and\
-            bool(self.unit) #and\
-            #bool(self.manufacturer)
+            bool(self.unit)
             stock = float(self.stock)
             unitprice = float(self.unitprice)
-            #date.fromisoformat(self.productiondate)
             return (stock >= 0) and (unitprice >= 0)
         except (AttributeError, ValueError):
             return False
@@ -69,25 +67,30 @@ class StockItemRecord(Record):
 
     def apply_change(self) -> None:
         """Change is signed: - for withdraw, + for deposit"""
-        assert self.change
+        assert  hasattr(self, "change")
         self.stock += self.change
 
     def undo_change(self) -> None:
         """Change is signed: - for withdraw, + for deposit"""
-        assert self.change
+        assert  hasattr(self, "change")
         self.stock -= self.change
-    
+
     def is_almost_same(self, item:Self) -> bool:
-        if item.name in self.name and self.unitprice == item.unitprice:
+        if textrep.asci(item.name) in textrep.asci(self.name) and\
+            self.unitprice == item.unitprice:
             return True
         else:
             return False
 
     @property
     def withdraw_view(self) -> str:
-        assert self.change
+        assert hasattr(self, "change")
         space = " " if self.manufacturer else ""
         return "{:<41} {:>10} {:<7}".format(
                 (self.manufacturer + space + self.name)[0:41],
                 locale.format_string(f="%+.2f", val=self.change, grouping=True),
                 self.unit)
+
+    @property
+    def tooltip_view(self) -> str:
+        return f"kiszerelés: {self.packaging} {self.unit}"
