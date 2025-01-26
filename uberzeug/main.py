@@ -49,12 +49,12 @@ class Uberzeug():
         self.__ui.mainloop()
 
     def _bindings(self) -> None:
-        self.__ui.withdraw_button = self._withdraw
-        self.__ui.takeback_button = self._takeback
-        self.__ui.deposit_button = self._deposit
-        self.__ui.newitem_button = self._newitem
-        self.__ui.modify_button = self._modify
-        self.__ui.delete_button = self._delete
+        self.__ui.stockui.withdraw_button = self._withdraw
+        self.__ui.stockui.takeback_button = self._takeback
+        self.__ui.stockui.deposit_button = self._deposit
+        self.__ui.stockui.newitem_button = self._newitem
+        self.__ui.stockui.modify_button = self._modify
+        self.__ui.stockui.delete_button = self._delete
 
     def _withdraw(self) -> None:
         projectnumber = ask_projectnumber(self.__ui)
@@ -144,7 +144,7 @@ class Uberzeug():
 
     def _update_buttons(self) -> None:
         empty_db = not len(self.__dbsession.load_all_items())
-        self.__ui.switch_button_state(empty_db)
+        self.__ui.stockui.switch_button_state(empty_db)
 
 
 if __name__ == "__main__":
