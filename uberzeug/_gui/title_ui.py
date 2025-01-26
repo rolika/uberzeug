@@ -4,6 +4,7 @@ from tkinter import ttk
 from typing import List
 
 import uberzeug._helper.textrep as textrep
+from uberzeug._gui.mainmenu import MainMenu
 from uberzeug._gui.stock_ui import StockUI
 
 
@@ -38,6 +39,7 @@ class TitleUI(Frame):
             canvas.create_image(0, 0, image=self.__title_image, anchor=NW)
         canvas.pack(padx=5, pady=5)
         box.pack(padx=5, pady=5)
+        MainMenu(self).pack(fill=X, padx=5, pady=5)
         self.__stockui = StockUI(self)
         self.__stockui.pack(fill=BOTH, padx=5, pady=5)
 
