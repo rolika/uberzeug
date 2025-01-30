@@ -4,7 +4,7 @@ from tkinter import ttk
 from typing import List
 
 import uberzeug._helper.textrep as textrep
-from uberzeug._gui.stock_ui import StockUI
+from uberzeug.gui.stock_ui import StockUI
 
 
 class TitleUI(Frame):

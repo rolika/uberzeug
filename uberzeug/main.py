@@ -12,15 +12,15 @@ from tkinter import messagebox
 from typing import List
 
 from uberzeug._helper.constants import *
-from uberzeug._gui.asknewexistcancel import ask_newexistcancel
-from uberzeug._gui.askprojectnumber import ask_projectnumber
-from uberzeug._gui.modifyitemdialog import modifyitem_dialog
-from uberzeug._gui.stockitemdialog import stockitem_dialog
-from uberzeug._gui.title_ui import TitleUI
-from uberzeug._gui.stockchangedialog\
+from uberzeug.gui.asknewexistcancel import ask_newexistcancel
+from uberzeug.gui.askprojectnumber import ask_projectnumber
+from uberzeug.gui.modifyitemdialog import modifyitem_dialog
+from uberzeug.gui.stockitemdialog import stockitem_dialog
+from uberzeug.gui.title_ui import TitleUI
+from uberzeug.gui.stockchangedialog\
     import delete_dialog, deposit_dialog, takeback_dialog, withdraw_dialog
-from uberzeug._persistence.databasesession import DatabaseSession
-from uberzeug._persistence.filesession import FileSession
+from uberzeug.persistence.databasesession import DatabaseSession
+from uberzeug.persistence.filesession import FileSession
 
 
 class Uberzeug():

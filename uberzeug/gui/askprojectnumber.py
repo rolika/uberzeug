@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import simpledialog
 
-from uberzeug._gui import styles
+from uberzeug.gui import styles
 from uberzeug._helper.projectnumber import Projectnumber
 
 

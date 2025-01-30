@@ -3,10 +3,10 @@ from tkinter import ttk
 from tkinter import simpledialog
 from typing import List
 
-from uberzeug._gui.itemlistbox import ItemListbox
+from uberzeug.gui.itemlistbox import ItemListbox
 from uberzeug._helper.constants import *
-from uberzeug._gui.stockitemform import StockItemForm
-from uberzeug._record.stockitemrecord import StockItemRecord
+from uberzeug.gui.stockitemform import StockItemForm
+from uberzeug.record.stockitemrecord import StockItemRecord
 
 
 class _ModifyItemDialog(simpledialog.Dialog):

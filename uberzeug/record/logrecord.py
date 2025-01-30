@@ -2,8 +2,8 @@ import locale
 locale.setlocale(locale.LC_ALL, "")
 
 from uberzeug._helper.textrep import asci
-from uberzeug._record.record import Record
-from uberzeug._record.stockitemrecord import StockItemRecord
+from uberzeug.record.record import Record
+from uberzeug.record.stockitemrecord import StockItemRecord
 
 
 TRANSLATE_ATTRIBUTES = {
@@ -36,3 +36,10 @@ class LogRecord(Record):
         """Returns True if the name of the stocitem is referring to the name
         of the log record."""
         return asci(stockitem.name) in asci(self.name)
+    
+    @property
+    def controlling_view(self) -> str:
+        return "{:<41} {:>10} {:<7} x {:<10} Ft/{:<7}".format(
+            self.name[0:41],
+            locale.format_string(f="%+.2f", val=self.change, grouping=True),
+            self.unit, self.unitprice, self.unit)

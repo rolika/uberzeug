@@ -4,7 +4,7 @@ import os
 import socket
 
 from uberzeug._helper.constants import *
-from uberzeug._persistence.databasesession import DatabaseSession
+from uberzeug.persistence.databasesession import DatabaseSession
 
 # Read the configuration file.
 config = configparser.ConfigParser()

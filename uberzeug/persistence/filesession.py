@@ -6,7 +6,7 @@ from typing import List
 from uberzeug._helper import textrep
 from uberzeug._helper.constants import *
 from uberzeug._helper.projectnumber import Projectnumber
-from uberzeug._record.stockitemrecord import StockItemRecord
+from uberzeug.record.stockitemrecord import StockItemRecord
 
 
 class FileSession:

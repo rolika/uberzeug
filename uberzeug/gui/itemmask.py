@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 
-from uberzeug._gui import styles
+from uberzeug.gui import styles
 from uberzeug.itemrecord import ItemRecord
 
 

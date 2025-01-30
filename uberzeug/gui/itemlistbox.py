@@ -5,7 +5,7 @@ from tktooltip import ToolTip
 from typing import List
 
 from uberzeug._helper.constants import *
-from uberzeug._record.stockitemrecord import StockItemRecord
+from uberzeug.record.stockitemrecord import StockItemRecord
 
 
 class ItemListbox(LabelFrame):
