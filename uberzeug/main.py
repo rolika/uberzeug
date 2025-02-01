@@ -11,7 +11,7 @@ import socket
 from tkinter import messagebox
 from typing import List
 
-from uberzeug._helper.constants import *
+from uberzeug.utils.constants import *
 from uberzeug.gui.asknewexistcancel import ask_newexistcancel
 from uberzeug.gui.askprojectnumber import ask_projectnumber
 from uberzeug.gui.modifyitemdialog import modifyitem_dialog

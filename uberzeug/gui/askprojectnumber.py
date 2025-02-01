@@ -3,7 +3,7 @@ from tkinter import ttk
 from tkinter import simpledialog
 
 from uberzeug.gui import styles
-from uberzeug._helper.projectnumber import Projectnumber
+from uberzeug.utils.projectnumber import Projectnumber
 
 
 class _AskProjectNumber(simpledialog.Dialog):

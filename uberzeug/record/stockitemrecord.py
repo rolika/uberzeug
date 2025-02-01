@@ -4,7 +4,7 @@ locale.setlocale(locale.LC_ALL, "")
 from typing import Self
 
 from uberzeug.record.record import Record
-import uberzeug._helper.textrep as textrep
+import uberzeug.utils.textrep as textrep
 
 
 TRANSLATE_ATTRIBUTES = {

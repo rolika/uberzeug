@@ -3,7 +3,7 @@ from tkinter import *
 from tkinter import ttk
 from typing import List
 
-import uberzeug._helper.textrep as textrep
+import uberzeug.utils.textrep as textrep
 from uberzeug.gui.stock_ui import StockUI
 
 

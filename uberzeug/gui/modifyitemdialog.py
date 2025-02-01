@@ -4,7 +4,7 @@ from tkinter import simpledialog
 from typing import List
 
 from uberzeug.gui.itemlistbox import ItemListbox
-from uberzeug._helper.constants import *
+from uberzeug.utils.constants import *
 from uberzeug.gui.stockitemform import StockItemForm
 from uberzeug.record.stockitemrecord import StockItemRecord
 

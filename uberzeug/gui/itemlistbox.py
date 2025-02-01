@@ -4,7 +4,7 @@ from tkinter import ttk
 from tktooltip import ToolTip
 from typing import List
 
-from uberzeug._helper.constants import *
+from uberzeug.utils.constants import *
 from uberzeug.record.stockitemrecord import StockItemRecord
 
 

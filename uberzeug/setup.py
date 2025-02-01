@@ -3,7 +3,7 @@ import logging
 import os
 import socket
 
-from uberzeug._helper.constants import *
+from uberzeug.utils.constants import *
 from uberzeug.persistence.databasesession import DatabaseSession
 
 # Read the configuration file.

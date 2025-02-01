@@ -1,6 +1,6 @@
 import re
 
-from uberzeug._helper.constants import *
+from uberzeug.utils.constants import *
 
 
 class Projectnumber():

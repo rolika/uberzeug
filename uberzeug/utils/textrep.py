@@ -5,8 +5,8 @@ from datetime import date
 import re
 from typing import List
 
-from uberzeug._helper.constants import *
-from uberzeug._helper.projectnumber import Projectnumber
+from uberzeug.utils.constants import *
+from uberzeug.utils.projectnumber import Projectnumber
 
 
 def line(char:str="_", length:int=80) -> str:

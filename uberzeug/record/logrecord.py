@@ -1,7 +1,7 @@
 import locale
 locale.setlocale(locale.LC_ALL, "")
 
-from uberzeug._helper.textrep import asci
+from uberzeug.utils.textrep import asci
 from uberzeug.record.record import Record
 from uberzeug.record.stockitemrecord import StockItemRecord
 

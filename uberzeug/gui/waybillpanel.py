@@ -3,8 +3,8 @@ from tkinter import ttk
 from typing import List
 
 from uberzeug.gui.itemlistbox import ItemListbox
-from uberzeug._helper.constants import *
-import uberzeug._helper.textrep as textrep
+from uberzeug.utils.constants import *
+import uberzeug.utils.textrep as textrep
 from uberzeug.record.stockitemrecord import StockItemRecord
 
 

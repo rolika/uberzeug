@@ -9,8 +9,8 @@ from typing import List
 from uberzeug.gui.asklocalfloat import ask_localfloat
 from uberzeug.gui.itemlistbox import ItemListbox
 from uberzeug.gui.waybillpanel import WaybillPanel
-from uberzeug._helper.constants import *
-from uberzeug._helper.projectnumber import Projectnumber
+from uberzeug.utils.constants import *
+from uberzeug.utils.projectnumber import Projectnumber
 from uberzeug.record.stockitemrecord import StockItemRecord
 
 
