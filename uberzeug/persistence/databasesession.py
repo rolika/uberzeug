@@ -2,10 +2,10 @@ import pathlib
 import sqlite3
 from typing import List
 
-from uberzeug.utils.constants import *
-from uberzeug.utils.projectnumber import Projectnumber
-from uberzeug.record.logrecord import LogRecord
-from uberzeug.record.stockitemrecord import StockItemRecord
+from utils.constants import *
+from utils.projectnumber import Projectnumber
+from record.logrecord import LogRecord
+from record.stockitemrecord import StockItemRecord
 
 
 class DatabaseSession(sqlite3.Connection):

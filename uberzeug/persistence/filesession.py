@@ -3,10 +3,10 @@ import os
 import pathlib
 from typing import List
 
-from uberzeug.utils import textrep
-from uberzeug.utils.constants import *
-from uberzeug.utils.projectnumber import Projectnumber
-from uberzeug.record.stockitemrecord import StockItemRecord
+from utils import textrep
+from utils.constants import *
+from utils.projectnumber import Projectnumber
+from record.stockitemrecord import StockItemRecord
 
 
 class FileSession:

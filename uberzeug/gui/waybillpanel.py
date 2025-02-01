@@ -2,10 +2,10 @@ from tkinter import *
 from tkinter import ttk
 from typing import List
 
-from uberzeug.gui.itemlistbox import ItemListbox
-from uberzeug.utils.constants import *
-import uberzeug.utils.textrep as textrep
-from uberzeug.record.stockitemrecord import StockItemRecord
+from gui.itemlistbox import ItemListbox
+from utils.constants import *
+import utils.textrep as textrep
+from record.stockitemrecord import StockItemRecord
 
 
 class WaybillPanel(LabelFrame):

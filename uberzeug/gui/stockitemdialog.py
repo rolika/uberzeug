@@ -2,9 +2,9 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import simpledialog
 
-from uberzeug.utils.constants import *
-from uberzeug.gui.stockitemform import StockItemForm
-from uberzeug.record.stockitemrecord import StockItemRecord
+from utils.constants import *
+from gui.stockitemform import StockItemForm
+from record.stockitemrecord import StockItemRecord
 
 
 class _StockItemDialog(simpledialog.Dialog):

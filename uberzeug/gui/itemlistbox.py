@@ -4,8 +4,8 @@ from tkinter import ttk
 from tktooltip import ToolTip
 from typing import List
 
-from uberzeug.utils.constants import *
-from uberzeug.record.stockitemrecord import StockItemRecord
+from utils.constants import *
+from record.stockitemrecord import StockItemRecord
 
 
 class ItemListbox(LabelFrame):

@@ -3,8 +3,8 @@ locale.setlocale(locale.LC_ALL, "")
 
 from typing import Self
 
-from uberzeug.record.record import Record
-import uberzeug.utils.textrep as textrep
+from record.record import Record
+import utils.textrep as textrep
 
 
 TRANSLATE_ATTRIBUTES = {

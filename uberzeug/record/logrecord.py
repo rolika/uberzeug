@@ -1,9 +1,9 @@
 import locale
 locale.setlocale(locale.LC_ALL, "")
 
-from uberzeug.utils.textrep import asci
-from uberzeug.record.record import Record
-from uberzeug.record.stockitemrecord import StockItemRecord
+from utils.textrep import asci
+from record.record import Record
+from record.stockitemrecord import StockItemRecord
 
 
 TRANSLATE_ATTRIBUTES = {

@@ -6,12 +6,12 @@ from tkinter import ttk
 from tkinter import simpledialog
 from typing import List
 
-from uberzeug.gui.asklocalfloat import ask_localfloat
-from uberzeug.gui.itemlistbox import ItemListbox
-from uberzeug.gui.waybillpanel import WaybillPanel
-from uberzeug.utils.constants import *
-from uberzeug.utils.projectnumber import Projectnumber
-from uberzeug.record.stockitemrecord import StockItemRecord
+from gui.asklocalfloat import ask_localfloat
+from gui.itemlistbox import ItemListbox
+from gui.waybillpanel import WaybillPanel
+from utils.constants import *
+from utils.projectnumber import Projectnumber
+from record.stockitemrecord import StockItemRecord
 
 
 class _StockChangeDialog(simpledialog.Dialog):

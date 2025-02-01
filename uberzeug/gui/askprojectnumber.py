@@ -2,8 +2,8 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import simpledialog
 
-from uberzeug.gui import styles
-from uberzeug.utils.projectnumber import Projectnumber
+from gui import styles
+from utils.projectnumber import Projectnumber
 
 
 class _AskProjectNumber(simpledialog.Dialog):

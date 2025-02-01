@@ -11,16 +11,16 @@ import socket
 from tkinter import messagebox
 from typing import List
 
-from uberzeug.utils.constants import *
-from uberzeug.gui.asknewexistcancel import ask_newexistcancel
-from uberzeug.gui.askprojectnumber import ask_projectnumber
-from uberzeug.gui.modifyitemdialog import modifyitem_dialog
-from uberzeug.gui.stockitemdialog import stockitem_dialog
-from uberzeug.gui.title_ui import TitleUI
-from uberzeug.gui.stockchangedialog\
+from utils.constants import *
+from gui.asknewexistcancel import ask_newexistcancel
+from gui.askprojectnumber import ask_projectnumber
+from gui.modifyitemdialog import modifyitem_dialog
+from gui.stockitemdialog import stockitem_dialog
+from gui.title_ui import TitleUI
+from gui.stockchangedialog\
     import delete_dialog, deposit_dialog, takeback_dialog, withdraw_dialog
-from uberzeug.persistence.databasesession import DatabaseSession
-from uberzeug.persistence.filesession import FileSession
+from persistence.databasesession import DatabaseSession
+from persistence.filesession import FileSession
 
 
 class Uberzeug():

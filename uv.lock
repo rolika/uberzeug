@@ -1,0 +1,22 @@
+version = 1
+requires-python = ">=3.13"
+
+[[package]]
+name = "tkinter-tooltip"
+version = "3.1.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a9/f1/e864d09013055e4c372995214efbd217415d8c8e91af2dbc91aaabe81f39/tkinter_tooltip-3.1.2.tar.gz", hash = "sha256:dac8a6720c851936dfea2d96f90920a4dac31b46b78379c5e0ef0b6ed8af2964", size = 859778 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fa/a0/b1d00dce752c2a3dad72515196da8b40816eac8385b2f901352cee9086c5/tkinter_tooltip-3.1.2-py3-none-any.whl", hash = "sha256:5bad74f2d476d9e2418598b2438f06e4b658dd6a89ee39a0bbfebb4fb7fdeb7f", size = 7793 },
+]
+
+[[package]]
+name = "uberzeug"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "tkinter-tooltip" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "tkinter-tooltip", specifier = ">=3.1.2" }]

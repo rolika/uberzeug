@@ -3,8 +3,8 @@ from tkinter import *
 from tkinter import ttk
 from typing import List
 
-import uberzeug.utils.textrep as textrep
-from uberzeug.gui.stock_ui import StockUI
+import utils.textrep as textrep
+from gui.stock_ui import StockUI
 
 
 class TitleUI(Frame):
