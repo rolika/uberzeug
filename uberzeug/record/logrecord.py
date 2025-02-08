@@ -25,6 +25,7 @@ class LogRecord(Record):
                  **kwargs) -> None:
         super().__init__(translate_attributes, **kwargs)
         self.change = self.total_change
+        self._value = self._unitprice * self._change
 
     def __str__(self) -> str:
         return "{:<41} {:>10} {:<7}".format(
@@ -36,10 +37,15 @@ class LogRecord(Record):
         """Returns True if the name of the stocitem is referring to the name
         of the log record."""
         return asci(stockitem.name) in asci(self.name)
-    
+
     @property
-    def controlling_view(self) -> str:
-        return "{:<41} {:>10} {:<7} x {:<10} Ft/{:<7}".format(
-            self.name[0:41],
-            locale.format_string(f="%+.2f", val=self.change, grouping=True),
-            self.unit, self.unitprice, self.unit)
+    def controll_view(self) -> str:
+        return "{name:<28} {change:>6} {unit:<4} x {up:>7} = {value:>13} Ft".\
+                format(name=self._name,
+                       change=locale.format_string(f="%+.2f", val=self.change,
+                                                   grouping=True),
+                       unit=self._unit,
+                       up=locale.format_string(f="%+.2f", val=self.unitprice,
+                                               grouping=True),
+                       value=locale.format_string(f="%+.2f", val=self._value,
+                                                  grouping=True))

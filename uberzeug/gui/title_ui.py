@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter import ttk
 from typing import List
 
+from gui.controll_ui import ControllUI
 import utils.textrep as textrep
 from gui.stock_ui import StockUI
 
@@ -38,14 +39,20 @@ class TitleUI(Frame):
             canvas.create_image(0, 0, image=self.__title_image, anchor=NW)
         canvas.pack(padx=5, pady=5)
         box.pack(padx=5, pady=5)
-        self.__mainmenu = ttk.Notebook(self)
-        self.__stockui = StockUI(self.__mainmenu)
+        self.__shortcut = ttk.Notebook(self)
+        self.__stockui = StockUI(self.__shortcut)
         self.__stockui.pack(fill=BOTH, padx=5, pady=5)
-        self.__mainmenu.add(self.__stockui, text="Raktár")
-        self.__mainmenu.add(ttk.Frame(self.__mainmenu), text="Kontrolling")
-        self.__mainmenu.add(ttk.Frame(self.__mainmenu), text="Projektek")
-        self.__mainmenu.pack(fill=BOTH, padx=5, pady=5)
+        self.__controllui = ControllUI(self.__shortcut)
+        self.__controllui.pack(fill=BOTH, padx=5, pady=5)
+        self.__shortcut.add(self.__stockui, text="Raktár")
+        self.__shortcut.add(self.__controllui, text="Kontrolling")
+        self.__shortcut.add(ttk.Frame(self.__shortcut), text="Projektek")
+        self.__shortcut.pack(fill=BOTH, padx=5, pady=5)
 
     @property
     def stockui(self) -> StockUI:
         return self.__stockui
+
+    @property
+    def controllui(self) -> ControllUI:
+        return self.__controllui

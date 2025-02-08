@@ -55,6 +55,9 @@ class Uberzeug():
         self.__ui.stockui.newitem_button = self._newitem
         self.__ui.stockui.modify_button = self._modify
         self.__ui.stockui.delete_button = self._delete
+        self.__ui.controllui.controlling_button = self._controlling
+        self.__ui.controllui.transfer_button = self._transfer
+        self.__ui.controllui.export_button = self._export
 
     def _withdraw(self) -> None:
         projectnumber = ask_projectnumber(self.__ui)
@@ -145,6 +148,15 @@ class Uberzeug():
     def _update_buttons(self) -> None:
         empty_db = not len(self.__dbsession.load_all_items())
         self.__ui.stockui.switch_button_state(empty_db)
+
+    def _controlling(self) -> None:
+        pass
+
+    def _transfer(self) -> None:
+        pass
+
+    def _export(self) -> None:
+        pass
 
 
 if __name__ == "__main__":
