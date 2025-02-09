@@ -220,3 +220,10 @@ VALUES (?, ?, ?, ?, date(), ?)
                         DELETE FROM raktar
                         WHERE cikkszam = ?;
                          """, (item.articlenumber, ))
+    
+    def load_log(self) -> List[LogRecord]:
+        return [LogRecord(**item) for item in self.execute("""
+            SELECT *, SUM(valtozas) AS total_change
+            FROM raktar_naplo
+            GROUP BY megnevezes;
+            """)]

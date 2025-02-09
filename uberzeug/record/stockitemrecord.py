@@ -4,7 +4,7 @@ locale.setlocale(locale.LC_ALL, "")
 from typing import Self
 
 from record.record import Record
-import utils.textrep as textrep
+from utils.textrep import asci
 
 
 TRANSLATE_ATTRIBUTES = {
@@ -61,7 +61,8 @@ class StockItemRecord(Record):
 
     def contains(self, term:str) -> bool:
         for attribute in TRANSLATE_ATTRIBUTES.values():
-            if term.lower() in str(getattr(self, attribute, None)).lower():
+            if asci(term) in\
+                asci(str(getattr(self, attribute, None))):
                 return True
         return False
 
@@ -76,7 +77,7 @@ class StockItemRecord(Record):
         self.stock -= self.change
 
     def is_almost_same(self, item:Self) -> bool:
-        if textrep.asci(item.name) in textrep.asci(self.name) and\
+        if asci(item.name) in asci(self.name) and\
             self.unitprice == item.unitprice:
             return True
         else:
@@ -94,3 +95,7 @@ class StockItemRecord(Record):
     @property
     def tooltip_view(self) -> str:
         return f"kiszerelés: {self.packaging} {self.unit}"
+    
+    @property
+    def listview(self) -> str:
+        return self.__str__()

@@ -5,12 +5,12 @@ from tktooltip import ToolTip
 from typing import List
 
 from utils.constants import *
-from record.stockitemrecord import StockItemRecord
+from record.stockitemrecord import Record
 
 
 class ItemListbox(LabelFrame):
     def __init__(self, root=None, title=STOCKNAME,
-                 master_list:List[StockItemRecord]=None) -> None:
+                 master_list:List[Record]=None) -> None:
         super().__init__(root, text=title)
         self.__master_list = master_list
         self.__display_list = None
@@ -74,11 +74,11 @@ class ItemListbox(LabelFrame):
         self._lookup("")
         self.__lookup_entry.focus()
 
-    def _populate(self, item_list:list) -> None:
+    def _populate(self, item_list:List) -> None:
         self.__listbox.delete(0, END)
         self.__display_list = item_list
         for item in item_list:
-            self.__listbox.insert(END, str(item))
+            self.__listbox.insert(END, item.listview)
 
     def _lookup(self, term:str) -> bool:
         selection = self.__master_list
@@ -88,7 +88,7 @@ class ItemListbox(LabelFrame):
         self._populate(selection)
         return True
 
-    def _find_item_index(self, item:StockItemRecord) -> int|None:
+    def _find_item_index(self, item:Record) -> int|None:
         for idx, stockitem in enumerate(self.__display_list):
             if stockitem.articlenumber == item.articlenumber:
                 return idx
@@ -97,13 +97,13 @@ class ItemListbox(LabelFrame):
     def bind_selection(self, method:callable) -> None:
         self.__listbox.bind("<<ListboxSelect>>", method)
 
-    def get_record(self) -> StockItemRecord:
+    def get_record(self) -> Record:
         try:
             return self.__display_list[self.__listbox.curselection()[0]]
         except IndexError:  # empty list
             return None
 
-    def update_item(self, item:StockItemRecord) -> None:
+    def update_item(self, item:Record) -> None:
         idx = self._find_item_index(item)
         if idx is not None:
             self.__display_list[idx] = item
@@ -113,10 +113,13 @@ class ItemListbox(LabelFrame):
             self.__display_list.append(item)
             self.__listbox.insert(END, str(item))
 
-    def delete_item(self, item:StockItemRecord) -> None:
+    def delete_item(self, item:Record) -> None:
         idx = self._find_item_index(item)
         self.__display_list.pop(idx)
         self.__listbox.delete(idx)
+    
+    def set_width(self, width:int) -> None:
+        self.__listbox.config(width=width)
 
     @property
     def lookup_entry(self) -> ttk.Entry:
