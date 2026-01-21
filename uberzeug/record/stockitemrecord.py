@@ -91,10 +91,6 @@ class StockItemRecord(Record):
                 (self.manufacturer + space + self.name)[0:41],
                 locale.format_string(f="%+.2f", val=self.change, grouping=True),
                 self.unit)
-
-    @property
-    def tooltip_view(self) -> str:
-        return f"kiszerelés: {self.packaging} {self.unit}"
     
     @property
     def listview(self) -> str:

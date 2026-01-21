@@ -1,7 +1,6 @@
 import re
 from tkinter import *
 from tkinter import ttk
-from tktooltip import ToolTip
 from typing import List
 
 from utils.constants import *
@@ -39,8 +38,6 @@ class ItemListbox(LabelFrame):
                                  exportselection=False)
         vertical_scroll["command"]=self.__listbox.yview
 
-        ToolTip(self.__listbox, msg=self._get_item_info, refresh=0.05)
-
         self.__lookup_entry.grid(row=0, column=0, sticky=E+W)
         self.__listbox.grid(row=1, column=0)
         vertical_scroll.grid(row=1, column=1, sticky=N+S)
@@ -56,18 +53,6 @@ class ItemListbox(LabelFrame):
         self.__lookup_entry["validatecommand"] = (lookup, "%P")
         self.__listbox.bind("<Escape>", self._clear_selection)
         self.__lookup_entry.bind("<Escape>", self._clear_selection)
-        self.__listbox.bind("<Motion>", self._on_mouse_motion, add="+")
-
-    def _on_mouse_motion(self, event:Event) -> None:
-        self._listbox_idx = self.__listbox.index(f"@{event.x}, {event.y}")
-
-    def _get_item_info(self) -> str:
-        try:
-            return self.__display_list[int(self._listbox_idx)].tooltip_view
-        except AttributeError:
-            return ""
-        except (IndexError, ValueError):
-            return ""
 
     def _clear_selection(self, _=None) -> None:
         self.__lookup_var.set("")
