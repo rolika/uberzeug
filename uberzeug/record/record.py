@@ -9,3 +9,10 @@ class Record():
 
     def __str__(self) -> str:
         raise NotImplementedError
+
+    def contains(self, term:str) -> bool:
+        raise NotImplementedError
+    
+    @property
+    def listview(self) -> str:
+        raise NotImplementedError

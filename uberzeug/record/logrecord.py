@@ -25,7 +25,7 @@ class LogRecord(Record):
                  **kwargs) -> None:
         super().__init__(translate_attributes, **kwargs)
         self.change = self.total_change
-        self._value = self._unitprice * self._change
+        self._value = self.unitprice * self.change
 
     def __str__(self) -> str:
         return "{:<41} {:>10} {:<7}".format(
@@ -38,13 +38,20 @@ class LogRecord(Record):
         of the log record."""
         return asci(stockitem.name) in asci(self.name)
 
+    def contains(self, term:str) -> bool:
+        for attribute in TRANSLATE_ATTRIBUTES.values():
+            if asci(term) in\
+                asci(str(getattr(self, attribute, None))):
+                return True
+        return False
+
     @property
-    def controll_view(self) -> str:
+    def listview(self) -> str:
         return "{name:<28} {change:>6} {unit:<4} x {up:>7} = {value:>13} Ft".\
-                format(name=self._name,
+                format(name=self.name,
                        change=locale.format_string(f="%+.2f", val=self.change,
                                                    grouping=True),
-                       unit=self._unit,
+                       unit=self.unit,
                        up=locale.format_string(f="%+.2f", val=self.unitprice,
                                                grouping=True),
                        value=locale.format_string(f="%+.2f", val=self._value,

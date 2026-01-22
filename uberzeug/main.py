@@ -5,6 +5,7 @@
 
 import configparser
 import locale
+
 locale.setlocale(locale.LC_ALL, "")
 import logging
 import socket
@@ -14,6 +15,7 @@ from typing import List
 from utils.constants import *
 from gui.asknewexistcancel import ask_newexistcancel
 from gui.askprojectnumber import ask_projectnumber
+from gui.controllingdialog import ControllingDialog
 from gui.modifyitemdialog import modifyitem_dialog
 from gui.stockitemdialog import stockitem_dialog
 from gui.title_ui import TitleUI
@@ -150,7 +152,8 @@ class Uberzeug():
         self.__ui.stockui.switch_button_state(empty_db)
 
     def _controlling(self) -> None:
-        pass
+        log_list = self.__dbsession.load_log()
+        ControllingDialog(self.__ui, log_list, "Kontrolling")
 
     def _transfer(self) -> None:
         pass
