@@ -102,9 +102,12 @@ class ItemListbox(LabelFrame):
         idx = self._find_item_index(item)
         self.__display_list.pop(idx)
         self.__listbox.delete(idx)
-    
+
     def set_width(self, width:int) -> None:
         self.__listbox.config(width=width)
+
+    def select_first(self) -> None:
+        self.__listbox.selection_set(0)
 
     @property
     def lookup_entry(self) -> ttk.Entry:

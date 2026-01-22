@@ -35,12 +35,16 @@ class _ModifyItemDialog(simpledialog.Dialog):
         ttk.Button(box, text="Mégse", width=10, command=self.cancel)\
             .pack(side=LEFT, padx=5, pady=5)
         box.pack()
+        # selects and displays first item
+        # needs to be here, as it checks on the buttons
+        self.__itemlistbox.select_first()
+        self._populate_form()
 
     def apply(self) -> None:
         self.__modified_item = self.__stockitemform.retrieve()
         self.__modified_item.articlenumber = self.__item_to_modify.articlenumber
 
-    def _populate_form(self, _:Event) -> None:
+    def _populate_form(self, _:Event=None) -> None:
         self.__item_to_modify = self.__itemlistbox.get_record()
         self.__stockitemform.populate(self.__item_to_modify)
         self._check_valid_form()
