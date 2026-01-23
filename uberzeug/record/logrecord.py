@@ -25,7 +25,7 @@ class LogRecord(Record):
                  **kwargs) -> None:
         super().__init__(translate_attributes, **kwargs)
         self.change = self.total_change
-        self._value = self.unitprice * self.change
+        self.__value = self.unitprice * self.change
 
     def __str__(self) -> str:
         return "{:<41} {:>10} {:<7}".format(
@@ -54,5 +54,5 @@ class LogRecord(Record):
                        unit=self.unit,
                        up=locale.format_string(f="%+.2f", val=self.unitprice,
                                                grouping=True),
-                       value=locale.format_string(f="%+.2f", val=self._value,
+                       value=locale.format_string(f="%+.2f", val=self.__value,
                                                   grouping=True))
