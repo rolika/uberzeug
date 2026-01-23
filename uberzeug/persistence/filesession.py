@@ -22,7 +22,6 @@ class FileSession:
                  extension:str=EXTENSION) -> None:
         self.__waybillfolder = pathlib.Path(waybillfolder)
         self.__extension = extension
-        self.__organization = organization
         self._create_waybillfolder()
 
     def _create_waybillfolder(self) -> None:
