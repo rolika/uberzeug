@@ -31,22 +31,6 @@ class FileSession:
         except FileExistsError:
             pass
 
-    def export(self, content:str) -> None:
-        if self._projectnumber:
-            waybill_number = "{}_{}".format(self._projectnumber,
-                                            self._count_waybills() + 1,)
-            filename = "{}.{}".format(waybill_number, self._extension)
-        else:
-            d = date.today()
-            filename = "{}_{}.{}".format(self._stockname,
-                                         d.strftime("%Y%m%d"),
-                                         self._extension)
-        with open(self._exportfolder / filename, "w") as f:
-            if self._projectnumber:
-                f.write("{:>79}".format("Szállítólevél száma: {}\n"\
-                                        .format(waybill_number)))
-            f.write(content)
-
     def export_waybill(self, items:List[StockItemRecord],
                        projectnumber:Projectnumber) -> str:
         exportfolder = self._get_exportfolder(projectnumber)
