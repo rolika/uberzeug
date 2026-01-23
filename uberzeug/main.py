@@ -39,7 +39,7 @@ class Uberzeug():
         linux_icon = config["DEFAULT"]["linux_icon"]
 
         self.__dbsession = DatabaseSession(database_file)
-        self.__filesession = FileSession(organization, waybillfolder)
+        self.__filesession = FileSession(waybillfolder)
         self.__ui = TitleUI(title, organization, title_image, windows_icon,
                             linux_icon, root=self)
         self._bindings()
