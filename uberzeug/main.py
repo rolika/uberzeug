@@ -5,8 +5,8 @@
 
 import configparser
 import locale
-
 locale.setlocale(locale.LC_ALL, "")
+from datetime import date, timedelta
 import logging
 import socket
 from tkinter import messagebox
@@ -33,13 +33,14 @@ class Uberzeug():
         config.read(CONFIGFILE)
         database_file = config["DEFAULT"]["database"]
         waybillfolder = config["DEFAULT"]["waybillfolder"]
+        turnoverfolder = config["DEFAULT"]["turnoverfolder"]
         logfile = config["DEFAULT"]["logfile"]
         title_image = config["DEFAULT"]["title_image"]
         windows_icon = config["DEFAULT"]["windows_icon"]
         linux_icon = config["DEFAULT"]["linux_icon"]
 
         self.__dbsession = DatabaseSession(database_file)
-        self.__filesession = FileSession(waybillfolder)
+        self.__filesession = FileSession(waybillfolder, turnoverfolder)
         self.__ui = TitleUI(title, organization, title_image, windows_icon,
                             linux_icon, root=self)
         self._bindings()
