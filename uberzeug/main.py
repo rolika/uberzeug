@@ -153,8 +153,7 @@ class Uberzeug():
         self.__ui.stockui.switch_button_state(empty_db)
 
     def _controlling(self) -> None:
-        log_list = self.__dbsession.load_log()
-        ControllingDialog(self.__ui, log_list, "Kontrolling")
+        ControllingDialog(self.__ui, self.__dbsession, "Kontrolling")
 
     def _transfer(self) -> None:
         pass

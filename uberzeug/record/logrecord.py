@@ -13,8 +13,7 @@ TRANSLATE_ATTRIBUTES = {
     "egysegar": "unitprice",
     "valtozas": "change",
     "datum": "date",
-    "projektszam": "projectnumber",
-    "total_change": "total_change"
+    "projektszam": "projectnumber"
 }
 
 
@@ -24,7 +23,6 @@ class LogRecord(Record):
     def __init__(self, translate_attributes=TRANSLATE_ATTRIBUTES,
                  **kwargs) -> None:
         super().__init__(translate_attributes, **kwargs)
-        self.change = self.total_change
         self.__value = self.unitprice * self.change
 
     def __str__(self) -> str:
@@ -56,3 +54,7 @@ class LogRecord(Record):
                                                grouping=True),
                        value=locale.format_string(f="%+.2f", val=self.__value,
                                                   grouping=True))
+    
+    @property
+    def value(self) -> float:
+        return self.__value

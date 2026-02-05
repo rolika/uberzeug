@@ -115,6 +115,35 @@ VALUES (?, ?, ?, ?, date(), ?)
             AND strftime('%Y-%m', datum) = ?;
         """, (projectnumber, month))
 
+    def query_distinct_years(self) ->List[str]:
+        """Query distinct years in descending order."""
+        years = self.execute("""
+            SELECT DISTINCT strftime('%Y', datum) AS year
+            FROM raktar_naplo
+            ORDER BY year DESC;
+        """)
+        return [year["year"] for year in years]
+    
+    def query_distinct_months(self, year) -> List[str]:
+        """Query distinct months in descending order."""
+        months = self.execute("""
+            SELECT DISTINCT strftime('%m', datum) AS month
+            FROM raktar_naplo
+            WHERE strftime('%Y', datum) = ?
+            ORDER BY month DESC;
+        """, (year, ))
+        return [month["month"] for month in months]
+    
+    def query_distinct_projects(self, year:str, month:str) -> List[str]:
+        """Query distinct projectnumbers in ascending order."""
+        projects = self.execute("""
+            SELECT DISTINCT projektszam
+            FROM raktar_naplo
+            WHERE strftime("%Y-%m", datum) = ?
+            ORDER BY projektszam ASC;
+        """, (f"{year}-{month}", ))
+        return [project["projektszam"] for project in projects]
+
     def query_months(self) -> sqlite3.Cursor:
         """Query distinct months in descending order."""
         return self.execute("""
