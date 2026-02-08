@@ -1,12 +1,8 @@
-from collections import namedtuple
 from functools import reduce
 from operator import attrgetter
 from sqlite3 import Cursor
 
 import record.logrecord as lr
-
-
-LOG_COLUMNS = "megnevezes, egysegar, egyseg, valtozas, datum, projektszam"
 
 
 class LogBook():
