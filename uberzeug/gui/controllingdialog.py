@@ -35,29 +35,32 @@ class ControllingDialog(simpledialog.Dialog):
             else monthoptions[0]
         projectoptions: List = self.__dbsession.query_distinct_projects(
             selected_year, selected_month)
-        
+
         box = Frame(self)
         self.__yearoption_var: StringVar = StringVar()
-        yearoptionmenu: OptionMenu = ttk.OptionMenu(box,
-            self.__yearoption_var, *yearoptions, command= self._update_months)
+        yearoptionmenu: OptionMenu = OptionMenu(
+            box, self.__yearoption_var, *yearoptions)
         self.__yearoption_var.set(selected_year)
+        self.__yearoption_var.trace("w", self._update_months)
         yearoptionmenu.pack(side=LEFT, fill=X, expand=True)
-        
-        monthoption_var: StringVar = StringVar()
-        self.__monthoptionmenu: OptionMenu = ttk.OptionMenu(
-            box, monthoption_var, *monthoptions)
-        monthoption_var.set(selected_month)
+
+        self.__monthoption_var: StringVar = StringVar()
+        self.__monthoptionmenu: OptionMenu = OptionMenu(
+            box, self.__monthoption_var, *monthoptions)
+        self.__monthoption_var.set(selected_month)
+        self.__monthoption_var.trace("w", self._update_projects)
         self.__monthoptionmenu.pack(side=LEFT, fill=X, expand=True)
-        
-        projectoption_var: StringVar = StringVar()
-        projectoptionmenu: OptionMenu = ttk.OptionMenu(box, projectoption_var,
-                                                    *projectoptions)
-        projectoption_var.set(projectoptions[0])
-        projectoptionmenu.pack(side=LEFT, fill=X, expand=True)
+
+        self.__projectoption_var: StringVar = StringVar()
+        self.__projectoptionmenu: OptionMenu = OptionMenu(
+            box, self.__projectoption_var, *projectoptions)
+        self.__projectoption_var.set(projectoptions[0])
+        self.__projectoption_var.trace("w", self._update_log)
+        self.__projectoptionmenu.pack(side=LEFT, fill=X, expand=True)
         box.pack(fill=X, expand=True)
-        
+
         month_of_year: str =\
-            f"{self.__yearoption_var.get()}-{monthoption_var.get()}"
+            f"{self.__yearoption_var.get()}-{self.__monthoption_var.get()}"
         log: sqlite3.Cursor =\
             self.__dbsession.query_log("25_074", month_of_year)
         logbook = LogBook(log)
@@ -68,9 +71,9 @@ class ControllingDialog(simpledialog.Dialog):
         box = Frame(self)
         Label(box, text="Kiválasztás összértéke:").pack(side=LEFT,
                                                         expand=True)
-        totalvalue_var: IntVar = IntVar()
-        totalvalue_var.set(0)
-        Label(box, textvariable=totalvalue_var).pack(side=LEFT)
+        self.__totalvalue_var: IntVar = IntVar()
+        self.__totalvalue_var.set(0)
+        Label(box, textvariable=self.__totalvalue_var).pack(side=LEFT)
         Label(box, text="Ft").pack()
         box.pack()
 
@@ -83,7 +86,7 @@ class ControllingDialog(simpledialog.Dialog):
         ttk.Button(box, text="Kész", width=10, command=self.cancel)\
             .pack(side=LEFT, padx=5, pady=5)
         box.pack()
-    
+
     def _update_months(self, *args) -> None:
         selected_year = self.__yearoption_var.get()
         monthoptions: List = self.__dbsession.\
@@ -98,6 +101,31 @@ class ControllingDialog(simpledialog.Dialog):
             self.__monthoptionmenu.setvar(\
                 self.__monthoptionmenu.cget("textvariable"), monthoptions[0])
         self._update_projects()
-    
-    def _update_projects(self) -> None:
-        pass
+
+    def _update_projects(self, *args) -> None:
+        selected_year = self.__yearoption_var.get()
+        selected_month = self.__monthoption_var.get()
+        projectoptions: List = self.__dbsession.query_distinct_projects(
+            selected_year, selected_month)
+        menu = self.__projectoptionmenu["menu"]
+        menu.delete(0, "end")
+        for project in projectoptions:
+            menu.add_command(label=project, command=lambda value=project:\
+                    self.__projectoptionmenu.setvar(\
+                        self.__projectoptionmenu.cget("textvariable"), value))
+        if projectoptions:
+            self.__projectoptionmenu.setvar(\
+                self.__projectoptionmenu.cget("textvariable"),
+                projectoptions[0])
+        self._update_log()
+
+    def _update_log(self, *args) -> None:
+        selected_year = self.__yearoption_var.get()
+        selected_month = self.__monthoption_var.get()
+        selected_project = self.__projectoption_var.get()
+        month_of_year: str = f"{selected_year}-{selected_month}"
+        log: sqlite3.Cursor =\
+            self.__dbsession.query_log(selected_project, month_of_year)
+        logbook = LogBook(log)
+        self.__listbox.update_list(logbook.records)
+        self.__totalvalue_var.set(logbook.total)

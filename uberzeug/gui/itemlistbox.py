@@ -109,6 +109,10 @@ class ItemListbox(LabelFrame):
     def select_first(self) -> None:
         self.__listbox.selection_set(0)
 
+    def update_list(self, item_list:List[Record]) -> None:
+        self.__master_list = item_list
+        self._populate(item_list)
+
     @property
     def lookup_entry(self) -> ttk.Entry:
         return self.__lookup_entry
