@@ -18,7 +18,7 @@ class ItemListbox(LabelFrame):
         self._init_controll_variables()
         self._build_interface()
         self._bindings()
-        self._clear_selection()
+        self.clear_selection()
 
     def _init_controll_variables(self) -> None:
         self.__lookup_var = StringVar()
@@ -26,7 +26,7 @@ class ItemListbox(LabelFrame):
     def _build_interface(self) -> None:
         self.__lookup_entry = ttk.Entry(self, textvariable=self.__lookup_var,
                                         validate="key")
-        Button(self, bitmap="questhead", command=self._clear_selection)\
+        Button(self, bitmap="questhead", command=self.clear_selection)\
             .grid(row=0, column=1)
 
         vertical_scroll = Scrollbar(self, orient=VERTICAL)
@@ -53,10 +53,10 @@ class ItemListbox(LabelFrame):
             lambda e: self.__listbox.yview_scroll(int(e.delta / 120), UNITS))
         lookup = self.__listbox.register(self._lookup)
         self.__lookup_entry["validatecommand"] = (lookup, "%P")
-        self.__listbox.bind("<Escape>", self._clear_selection)
-        self.__lookup_entry.bind("<Escape>", self._clear_selection)
+        self.__listbox.bind("<Escape>", self.clear_selection)
+        self.__lookup_entry.bind("<Escape>", self.clear_selection)
 
-    def _clear_selection(self, _=None) -> None:
+    def clear_selection(self, _=None) -> None:
         self.__lookup_var.set("")
         self._lookup("")
         self.__lookup_entry.focus()

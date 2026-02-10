@@ -91,6 +91,7 @@ class ControllingDialog(simpledialog.Dialog):
         box.pack()
 
     def _update_months(self, *args) -> None:
+        self.__listbox.clear_selection()
         selected_year = self.__yearoption_var.get()
         monthoptions: List = self.__dbsession.\
             query_distinct_months(selected_year)
@@ -106,6 +107,7 @@ class ControllingDialog(simpledialog.Dialog):
         self._update_projects()
 
     def _update_projects(self, *args) -> None:
+        self.__listbox.clear_selection()
         selected_year = self.__yearoption_var.get()
         selected_month = self.__monthoption_var.get()
         projectoptions: List = self.__dbsession.query_distinct_projects(
@@ -123,6 +125,7 @@ class ControllingDialog(simpledialog.Dialog):
         self._update_log()
 
     def _update_log(self, *args) -> None:
+        self.__listbox.clear_selection()
         selected_year = self.__yearoption_var.get()
         selected_month = self.__monthoption_var.get()
         selected_project = self.__projectoption_var.get()
