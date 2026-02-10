@@ -18,10 +18,11 @@ class _ModifyItemDialog(simpledialog.Dialog):
         super().__init__(parent, title)
 
     def body(self, parent:Widget) -> ttk.Entry:
-        self.__itemlistbox = ItemListbox(self, master_list=self.__master_list)
+        self.__stockitemform = StockItemForm(self)
+        self.__itemlistbox = ItemListbox(self, master_list=self.__master_list,
+            external_lookup_callback=self._clear_form)
         self.__itemlistbox.pack(padx=PADX, pady=PADY, side=LEFT)
         self.__itemlistbox.bind_selection(self._populate_form)
-        self.__stockitemform = StockItemForm(self)
         self.__stockitemform.pack(padx=PADX, pady=PADY)
         self.bind_all("<Key>", self._check_valid_form)
         return self.__itemlistbox.lookup_entry
@@ -54,6 +55,9 @@ class _ModifyItemDialog(simpledialog.Dialog):
             self.__ok_button["state"] = NORMAL
         else:
             self.__ok_button["state"] = DISABLED
+    
+    def _clear_form(self, _:Event=None) -> None:
+        self.__stockitemform.clear()
 
     @property
     def item(self) -> StockItemRecord:
