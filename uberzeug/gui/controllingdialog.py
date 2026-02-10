@@ -59,23 +59,26 @@ class ControllingDialog(simpledialog.Dialog):
         self.__projectoptionmenu.pack(side=LEFT, fill=X, expand=True)
         box.pack(fill=X, expand=True)
 
+        self.__totalvalue_var: IntVar = IntVar()  # declare before itemlistbox
         month_of_year: str =\
             f"{self.__yearoption_var.get()}-{self.__monthoption_var.get()}"
+        project: str = self.__projectoption_var.get()
         log: sqlite3.Cursor =\
-            self.__dbsession.query_log("25_074", month_of_year)
+            self.__dbsession.query_log(project, month_of_year)
         logbook = LogBook(log)
-        self.__listbox = ItemListbox(self, self.__title, logbook.records)
+        self.__listbox = ItemListbox(self, self.__title, logbook.records,
+                                     self._lookup_callback)
         self.__listbox.set_width(80)
         self.__listbox.pack(padx=5, pady=5)
 
         box = Frame(self)
         Label(box, text="Kiválasztás összértéke:").pack(side=LEFT,
                                                         expand=True)
-        self.__totalvalue_var: IntVar = IntVar()
         self.__totalvalue_var.set(0)
         Label(box, textvariable=self.__totalvalue_var).pack(side=LEFT)
         Label(box, text="Ft").pack()
         box.pack()
+        self._lookup_callback(logbook.records)
 
     def buttonbox(self):
         """Override standard buttons."""
@@ -128,4 +131,8 @@ class ControllingDialog(simpledialog.Dialog):
             self.__dbsession.query_log(selected_project, month_of_year)
         logbook = LogBook(log)
         self.__listbox.update_list(logbook.records)
-        self.__totalvalue_var.set(logbook.total)
+        self._lookup_callback(logbook.records)
+    
+    def _lookup_callback(self, selection:List[LogRecord]) -> None:
+        total = sum(record.value for record in selection)
+        self.__totalvalue_var.set(total)

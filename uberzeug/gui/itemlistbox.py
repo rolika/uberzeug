@@ -9,10 +9,12 @@ from record.stockitemrecord import Record
 
 class ItemListbox(LabelFrame):
     def __init__(self, root=None, title=STOCKNAME,
-                 master_list:List[Record]=None) -> None:
+                 master_list:List[Record]=None,
+                 external_lookup_callback:callable=lambda _: None) -> None:
         super().__init__(root, text=title)
         self.__master_list = master_list
         self.__display_list = None
+        self.__external_lookup_callback = external_lookup_callback
         self._init_controll_variables()
         self._build_interface()
         self._bindings()
@@ -71,6 +73,7 @@ class ItemListbox(LabelFrame):
             if word:
                 selection = [item for item in selection if item.contains(word)]
         self._populate(selection)
+        self.__external_lookup_callback(self.__display_list)
         return True
 
     def _find_item_index(self, item:Record) -> int|None:
