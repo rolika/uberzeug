@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import simpledialog
+from tkinter import messagebox
 from typing import List
 
 from gui.itemlistbox import ItemListbox
@@ -40,6 +41,11 @@ class _ModifyItemDialog(simpledialog.Dialog):
         # needs to be here, as it checks on the buttons
         self.__itemlistbox.select_first()
         self._populate_form()
+    
+    def validate(self):
+        return messagebox.showinfo(MODIFIY_TITLE,
+            f"{self.__item_to_modify.name} {self.__item_to_modify.stock} {self.\
+                __item_to_modify.unit}")
 
     def apply(self) -> None:
         self.__modified_item = self.__stockitemform.retrieve()

@@ -6,7 +6,6 @@
 import configparser
 import locale
 locale.setlocale(locale.LC_ALL, "")
-from datetime import date, timedelta
 import logging
 import socket
 from tkinter import messagebox
@@ -133,8 +132,6 @@ class Uberzeug():
             self.__dbsession.update(item)
             logging.info\
                 (f"{socket.gethostname()} modify: {item.name} {item.stock}")
-            messagebox.showinfo(MODIFIY_TITLE,
-                f"{item.name} {item.stock} {item.unit}")
 
     def _delete(self) -> None:
         master_list = self.__dbsession.load_all_items()
