@@ -9,14 +9,17 @@ from typing import List
 
 from gui.itemlistbox import ItemListbox
 from persistence.databasesession import DatabaseSession
+from persistence.filesession import FileSession
 from record.logbook import LogBook
 from record.logrecord import LogRecord
+from utils.projectnumber import Projectnumber
 
 
 class ControllingDialog(simpledialog.Dialog):
     def __init__(self, root:Widget, dbsession:DatabaseSession,
-                 title:str) -> None:
+                 filesession:FileSession, title:str) -> None:
         self.__dbsession = dbsession
+        self.__filesession = filesession
         self.__title = title
         super().__init__(root, title=title)
 
@@ -89,6 +92,19 @@ class ControllingDialog(simpledialog.Dialog):
         ttk.Button(box, text="Kész", width=10, command=self.cancel)\
             .pack(side=LEFT, padx=5, pady=5)
         box.pack()
+    
+    def apply(self) -> None:
+        selected_year = self.__yearoption_var.get()
+        selected_month = self.__monthoption_var.get()
+        selected_project = self.__projectoption_var.get()
+        log:List[LogRecord] = self.__listbox.display_list
+        logbook = LogBook.from_records(log)
+        self.__filesession.export_turnover(
+            projectnumber=Projectnumber(selected_project),
+            yearmonth=date(int(selected_year), int(selected_month), 1),
+            items=logbook.records,
+            total=sum(record.value for record in logbook.records),
+            lookup_term=self.__listbox.lookup_entry.get())
 
     def _update_months(self, *args) -> None:
         self.__listbox.clear_selection()

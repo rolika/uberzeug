@@ -10,6 +10,12 @@ class LogBook():
     def __init__(self, query:Cursor) -> None:
         self._records = [lr.LogRecord(**item) for item in query]
         self._records.sort(key=attrgetter("value", "change"))
+    
+    @classmethod
+    def from_records(cls, records:list[lr.LogRecord]) -> "LogBook":
+        logbook = cls.__new__(cls)
+        logbook._records = records
+        return logbook
 
     def __str__(self) -> str:
         projectnumber = self._records[0].projectnumber

@@ -1,6 +1,8 @@
 """Various function for text representation."""
 
 
+import locale
+locale.setlocale(locale.LC_ALL, "")
 from datetime import date
 import re
 from typing import List
@@ -18,8 +20,12 @@ def explode(text:str, filler:str=" ", width:int=1) -> str:
     return filler.join(char for char in text)
 
 
-def headline(text:str) -> str:
-    return f"{explode(text).upper():^80}"
+def headline(text:str, explode_it:bool=True, uppercase:bool=True) -> str:
+    if explode_it:
+        text = explode(text)
+    if uppercase:
+        text = text.upper()
+    return f"{text:^80}"
 
 
 def waybill_header(organization:List[str]=ORGANIZATION,
@@ -53,6 +59,30 @@ def waybill_footer() -> str:
 def waybillpanel_header() -> str:
     return "ssz. {:<41} {:>10} {:<7}mégse"\
         .format("megnevezés", "változás", "egység")
+
+
+def turnover_header(projectnumber:Projectnumber, yearmonth:date,
+                    lookup_term:str) -> str:
+    result = line() + "\n"
+    year = yearmonth.strftime("%Y")
+    month = yearmonth.strftime("%B").lower()
+    result += headline(f"{projectnumber.legal} - {year}. {month}i forgalom",
+                       explode_it=False, uppercase=False) + "\n"
+    result += line() + "\n"
+    if lookup_term:
+        result += f"Keresési kifejezés: {lookup_term}\n"
+        result += line() + "\n"
+    return result
+
+
+def turnover_footer(total:float) -> str:
+    result = line() + "\n"
+    result +=\
+    f"Összesen: {locale.format_string('%+.2f', total, grouping=True):>66} Ft\n"
+    result += line() + "\n"
+    d = date.today()
+    result += f"Kelt: Herend, {d.strftime('%Y. %B %d.')}\n"
+    return result
 
 
 def asci(text:str) -> str:

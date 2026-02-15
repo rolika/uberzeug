@@ -123,6 +123,10 @@ class ItemListbox(LabelFrame):
     @lookup_entry.setter
     def lookup_entry(self, value:str) -> None:
         self.__lookup_var.set(value)
+    
+    @property
+    def display_list(self) -> List[Record]:
+        return self.__display_list
 
 
 if __name__ == "__main__":
