@@ -138,4 +138,5 @@ class ControllingDialog(simpledialog.Dialog):
     
     def _lookup_callback(self, selection:List[LogRecord]) -> None:
         total = sum(record.value for record in selection)
-        self.__totalvalue_var.set(total)
+        self.__totalvalue_var.set(\
+            locale.format_string("%+.2f", total, grouping=True))
