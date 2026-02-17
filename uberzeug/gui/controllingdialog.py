@@ -27,19 +27,13 @@ class ControllingDialog(simpledialog.Dialog):
         today: date = date.today()
         first: date = today.replace(day=1)
         prev_month_last_day: date = first - timedelta(days=1)
-        prev_month: str = prev_month_last_day.strftime("%m")
+        self.__prev_month: str = prev_month_last_day.strftime("%m")
+
+        box = Frame(self)
         prevmonths_year: str = prev_month_last_day.strftime("%Y")
         yearoptions: List = self.__dbsession.query_distinct_years()
         selected_year: str = prevmonths_year if prevmonths_year in yearoptions\
             else yearoptions[0]
-        monthoptions: List = self.__dbsession.\
-            query_distinct_months(selected_year)
-        selected_month: str = prev_month if prev_month in monthoptions\
-            else monthoptions[0]
-        projectoptions: List = self.__dbsession.query_distinct_projects(
-            selected_year, selected_month)
-
-        box = Frame(self)
         self.__yearoption_var: StringVar = StringVar()
         yearoptionmenu: OptionMenu = OptionMenu(
             box, self.__yearoption_var, *yearoptions)
@@ -49,15 +43,13 @@ class ControllingDialog(simpledialog.Dialog):
 
         self.__monthoption_var: StringVar = StringVar()
         self.__monthoptionmenu: OptionMenu = OptionMenu(
-            box, self.__monthoption_var, *monthoptions)
-        self.__monthoption_var.set(selected_month)
+            box, self.__monthoption_var, "")
         self.__monthoption_var.trace("w", self._update_projects)
         self.__monthoptionmenu.pack(side=LEFT, fill=X, expand=True)
 
         self.__projectoption_var: StringVar = StringVar()
         self.__projectoptionmenu: OptionMenu = OptionMenu(
-            box, self.__projectoption_var, *projectoptions)
-        self.__projectoption_var.set(projectoptions[0])
+            box, self.__projectoption_var, "")
         self.__projectoption_var.trace("w", self._update_log)
         self.__projectoptionmenu.pack(side=LEFT, fill=X, expand=True)
         box.pack(fill=X, expand=True)
@@ -83,6 +75,9 @@ class ControllingDialog(simpledialog.Dialog):
         box.pack()
         self._lookup_callback(logbook.records)
 
+        self._update_months()
+        self._update_projects()
+
     def buttonbox(self):
         """Override standard buttons."""
         box = Frame(self)
@@ -92,7 +87,7 @@ class ControllingDialog(simpledialog.Dialog):
         ttk.Button(box, text="Kész", width=10, command=self.cancel)\
             .pack(side=LEFT, padx=5, pady=5)
         box.pack()
-    
+
     def apply(self) -> None:
         selected_year = self.__yearoption_var.get()
         selected_month = self.__monthoption_var.get()
@@ -118,8 +113,10 @@ class ControllingDialog(simpledialog.Dialog):
                     self.__monthoptionmenu.setvar(\
                         self.__monthoptionmenu.cget("textvariable"), value))
         if monthoptions:
+            month: str = self.__prev_month\
+                if self.__prev_month in monthoptions else monthoptions[0]
             self.__monthoptionmenu.setvar(\
-                self.__monthoptionmenu.cget("textvariable"), monthoptions[0])
+                self.__monthoptionmenu.cget("textvariable"), month)
         self._update_projects()
 
     def _update_projects(self, *args) -> None:
@@ -151,7 +148,7 @@ class ControllingDialog(simpledialog.Dialog):
         logbook = LogBook(log)
         self.__listbox.update_list(logbook.records)
         self._lookup_callback(logbook.records)
-    
+
     def _lookup_callback(self, selection:List[LogRecord]) -> None:
         total = sum(record.value for record in selection)
         self.__totalvalue_var.set(\
