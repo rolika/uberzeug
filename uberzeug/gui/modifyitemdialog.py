@@ -42,10 +42,9 @@ class _ModifyItemDialog(simpledialog.Dialog):
         self.__itemlistbox.select_first()
         self._populate_form()
     
-    def validate(self):
-        return messagebox.showinfo(MODIFIY_TITLE,
-            f"{self.__item_to_modify.name} {self.__item_to_modify.stock} {self.\
-                __item_to_modify.unit}")
+    def apply(self) -> None:
+        self.__modified_item = self.__stockitemform.retrieve()
+        self.__modified_item.articlenumber = self.__item_to_modify.articlenumber
 
     def _populate_form(self, _:Event=None) -> None:
         self.__item_to_modify = self.__itemlistbox.get_record()
