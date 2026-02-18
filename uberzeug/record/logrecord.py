@@ -54,7 +54,11 @@ class LogRecord(Record):
                                                grouping=True)[:9],
                        value=locale.format_string(f="%+.2f", val=self.__value,
                                                   grouping=True))
-    
+
     @property
     def value(self) -> float:
         return self.__value
+
+    @value.setter
+    def value(self, new_value:float) -> None:
+        self.__value = new_value
