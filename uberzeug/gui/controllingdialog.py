@@ -126,8 +126,9 @@ class ControllingDialog(simpledialog.Dialog):
         selected_year = self.__yearoption_var.get()
         selected_month = self.__monthoption_var.get()
         selected_month = datetime.strptime(selected_month, "%B").strftime("%m")
-        projectoptions: List = self.__dbsession.query_distinct_projects(
-            selected_year, selected_month)
+        projectoptions = [Projectnumber(project).legal for project in\
+            self.__dbsession.query_distinct_projects(selected_year,
+                                                     selected_month)]
         menu = self.__projectoptionmenu["menu"]
         menu.delete(0, "end")
         for project in projectoptions:
@@ -145,7 +146,7 @@ class ControllingDialog(simpledialog.Dialog):
         selected_year = self.__yearoption_var.get()
         selected_month = self.__monthoption_var.get()
         selected_month = datetime.strptime(selected_month, "%B").strftime("%m")
-        selected_project = self.__projectoption_var.get()
+        selected_project = str(Projectnumber(self.__projectoption_var.get()))
         month_of_year: str = f"{selected_year}-{selected_month}"
         log: sqlite3.Cursor =\
             self.__dbsession.query_log(selected_project, month_of_year)
