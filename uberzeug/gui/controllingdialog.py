@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import datetime, date, timedelta
 import locale
 locale.setlocale(locale.LC_ALL, "")
 import sqlite3
@@ -27,7 +27,7 @@ class ControllingDialog(simpledialog.Dialog):
         today: date = date.today()
         first: date = today.replace(day=1)
         prev_month_last_day: date = first - timedelta(days=1)
-        self.__prev_month: str = prev_month_last_day.strftime("%m")
+        self.__prev_month: str = prev_month_last_day.strftime("%B")
 
         box = Frame(self)
         prevmonths_year: str = prev_month_last_day.strftime("%Y")
@@ -91,6 +91,7 @@ class ControllingDialog(simpledialog.Dialog):
     def apply(self) -> None:
         selected_year = self.__yearoption_var.get()
         selected_month = self.__monthoption_var.get()
+        selected_month = datetime.strptime(selected_month, "%B").strftime("%m")
         selected_project = self.__projectoption_var.get()
         log:List[LogRecord] = self.__listbox.display_list
         logbook = LogBook.from_records(log)
@@ -104,8 +105,9 @@ class ControllingDialog(simpledialog.Dialog):
     def _update_months(self, *args) -> None:
         self.__listbox.clear_selection()
         selected_year = self.__yearoption_var.get()
-        monthoptions: List = self.__dbsession.\
-            query_distinct_months(selected_year)
+        monthoptions = [date(1900, int(month), 1).strftime("%B")\
+                            for month in self.__dbsession.\
+                                query_distinct_months(selected_year)]
         menu = self.__monthoptionmenu["menu"]
         menu.delete(0, "end")
         for month in monthoptions:
@@ -123,6 +125,7 @@ class ControllingDialog(simpledialog.Dialog):
         self.__listbox.clear_selection()
         selected_year = self.__yearoption_var.get()
         selected_month = self.__monthoption_var.get()
+        selected_month = datetime.strptime(selected_month, "%B").strftime("%m")
         projectoptions: List = self.__dbsession.query_distinct_projects(
             selected_year, selected_month)
         menu = self.__projectoptionmenu["menu"]
@@ -141,6 +144,7 @@ class ControllingDialog(simpledialog.Dialog):
         self.__listbox.clear_selection()
         selected_year = self.__yearoption_var.get()
         selected_month = self.__monthoption_var.get()
+        selected_month = datetime.strptime(selected_month, "%B").strftime("%m")
         selected_project = self.__projectoption_var.get()
         month_of_year: str = f"{selected_year}-{selected_month}"
         log: sqlite3.Cursor =\
