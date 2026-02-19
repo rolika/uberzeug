@@ -77,6 +77,7 @@ class ControllingDialog(simpledialog.Dialog):
 
         self._update_months()
         self._update_projects()
+        return self.__listbox.lookup_entry
 
     def buttonbox(self):
         """Override standard buttons."""
