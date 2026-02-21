@@ -31,7 +31,7 @@ class FileSession:
                        projectnumber:Projectnumber) -> str:
         exportfolder = self._get_waybillexport_folder(projectnumber)
         projectfolder = pathlib.Path("/".join(exportfolder.parts[:-2]))
-        next_waybill_number = self._count_waybills(projectfolder) + 1
+        next_waybill_number = self._count_files(projectfolder) + 1
         waybill_number = "{}_{:0>4}"\
             .format(str(projectnumber), next_waybill_number)
         filename = "{}.{}".format(waybill_number, self.__extension)
