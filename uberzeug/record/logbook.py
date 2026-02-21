@@ -10,10 +10,10 @@ class LogBook():
     def __init__(self, query:Cursor) -> None:
         self.__records = [lr.LogRecord(**item) for item in query]
         self.__records.sort(key=attrgetter("value", "change"))
-        self._merge_same__records()
+        # self._merge_same__records()
 
     @classmethod
-    def from__records(cls, records:list[lr.LogRecord]) -> "LogBook":
+    def from_records(cls, records:list[lr.LogRecord]) -> "LogBook":
         logbook = cls.__new__(cls)
         logbook.__records = records
         return logbook

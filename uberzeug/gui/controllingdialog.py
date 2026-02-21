@@ -7,6 +7,7 @@ from tkinter import ttk
 from tkinter import simpledialog
 from typing import List
 
+import utils.constants as ct
 from gui.itemlistbox import ItemListbox
 from persistence.databasesession import DatabaseSession
 from persistence.filesession import FileSession
@@ -32,6 +33,7 @@ class ControllingDialog(simpledialog.Dialog):
         box = Frame(self)
         prevmonths_year: str = prev_month_last_day.strftime("%Y")
         yearoptions: List = self.__dbsession.query_distinct_years()
+        yearoptions.append(ct.SHOW_ALL)
         selected_year: str = prevmonths_year if prevmonths_year in yearoptions\
             else yearoptions[0]
         self.__yearoption_var: StringVar = StringVar()
@@ -55,13 +57,7 @@ class ControllingDialog(simpledialog.Dialog):
         box.pack(fill=X, expand=True)
 
         self.__totalvalue_var: IntVar = IntVar()  # declare before itemlistbox
-        month_of_year: str =\
-            f"{self.__yearoption_var.get()}-{self.__monthoption_var.get()}"
-        project: str = self.__projectoption_var.get()
-        log: sqlite3.Cursor =\
-            self.__dbsession.query_log(project, month_of_year)
-        logbook = LogBook(log)
-        self.__listbox = ItemListbox(self, self.__title, logbook.records,
+        self.__listbox = ItemListbox(self, self.__title, [],
                                      self._lookup_callback)
         self.__listbox.set_width(80)
         self.__listbox.pack(padx=5, pady=5)
@@ -73,10 +69,11 @@ class ControllingDialog(simpledialog.Dialog):
         Label(box, textvariable=self.__totalvalue_var).pack(side=LEFT)
         Label(box, text="Ft").pack()
         box.pack()
-        self._lookup_callback(logbook.records)
+        #self._lookup_callback(logbook.records)
 
         self._update_months()
         self._update_projects()
+        self._update_log()
         return self.__listbox.lookup_entry
 
     def buttonbox(self):
@@ -106,9 +103,11 @@ class ControllingDialog(simpledialog.Dialog):
     def _update_months(self, *args) -> None:
         self.__listbox.clear_selection()
         selected_year = self.__yearoption_var.get()
-        monthoptions = [date(1900, int(month), 1).strftime("%B")\
-                            for month in self.__dbsession.\
-                                query_distinct_months(selected_year)]
+        if selected_year == ct.SHOW_ALL:
+            monthoptions = self.__dbsession.query_all_distinct_months()
+        else:
+            monthoptions = self.__dbsession.query_distinct_months(selected_year)
+        monthoptions.append(ct.SHOW_ALL)
         menu = self.__monthoptionmenu["menu"]
         menu.delete(0, "end")
         for month in monthoptions:
@@ -126,10 +125,24 @@ class ControllingDialog(simpledialog.Dialog):
         self.__listbox.clear_selection()
         selected_year = self.__yearoption_var.get()
         selected_month = self.__monthoption_var.get()
-        selected_month = datetime.strptime(selected_month, "%B").strftime("%m")
-        projectoptions = [Projectnumber(project).legal for project in\
-            self.__dbsession.query_distinct_projects(selected_year,
-                                                     selected_month)]
+        if selected_month == ct.SHOW_ALL and selected_year == ct.SHOW_ALL:
+            projectoptions = [project.legal for project in\
+                self.__dbsession.query_all_distinct_projects()]
+        elif selected_month == ct.SHOW_ALL:
+            selected_year = datetime.strptime(selected_year, "%Y")
+            projectoptions = [project.legal for project in\
+                self.__dbsession.query_distinct_projects_by_year(selected_year)]
+        elif selected_year == ct.SHOW_ALL:
+             date_:date =\
+                datetime.strptime(f"1900-{selected_month}-01", "%Y-%B-%d")
+             projectoptions = [project.legal for project in\
+                self.__dbsession.query_distinct_projects_by_month(date_)]
+        else:
+            date_:date = datetime.strptime(f"{selected_year}-{selected_month}-01",
+                                           "%Y-%B-%d")
+            projectoptions = [project.legal for project in\
+                self.__dbsession.query_distinct_projects(date_)]
+        projectoptions.append(ct.SHOW_ALL)
         menu = self.__projectoptionmenu["menu"]
         menu.delete(0, "end")
         for project in projectoptions:
@@ -146,11 +159,41 @@ class ControllingDialog(simpledialog.Dialog):
         self.__listbox.clear_selection()
         selected_year = self.__yearoption_var.get()
         selected_month = self.__monthoption_var.get()
-        selected_month = datetime.strptime(selected_month, "%B").strftime("%m")
-        selected_project = str(Projectnumber(self.__projectoption_var.get()))
-        month_of_year: str = f"{selected_year}-{selected_month}"
-        log: sqlite3.Cursor =\
-            self.__dbsession.query_log(selected_project, month_of_year)
+        selected_project = self.__projectoption_var.get()
+        log: sqlite3.Cursor = None
+        if selected_year == ct.SHOW_ALL and selected_month == ct.SHOW_ALL\
+            and selected_project == ct.SHOW_ALL:
+            log = self.__dbsession.query_log_by_all()
+        elif selected_year == ct.SHOW_ALL and selected_month == ct.SHOW_ALL:
+            selected_project = Projectnumber(selected_project)
+            log = self.__dbsession.query_log_by_project(selected_project)
+        elif selected_year == ct.SHOW_ALL and selected_project == ct.SHOW_ALL:
+            selected_month = datetime.strptime(selected_month, "%B")
+            log = self.__dbsession.query_log_by_month(selected_month)
+        elif selected_month == ct.SHOW_ALL and selected_project == ct.SHOW_ALL:
+            selected_year = datetime.strptime(selected_year, "%Y")
+            log = self.__dbsession.query_log_by_year(selected_year)
+        elif selected_year == ct.SHOW_ALL:
+            selected_month = datetime.strptime(selected_month, "%B")
+            selected_project = Projectnumber(selected_project)
+            log = self.__dbsession.query_log_by_month_and_project(
+                selected_month, selected_project)
+        elif selected_month == ct.SHOW_ALL:
+            selected_year = datetime.strptime(selected_year, "%Y")
+            selected_project = Projectnumber(selected_project)
+            log = self.__dbsession.query_log_by_year_and_project(
+                selected_year, selected_project)
+        elif selected_project == ct.SHOW_ALL:
+            date_:date = datetime.strptime(f"{selected_year}-{selected_month}-01",
+                                           "%Y-%B-%d")
+            log = self.__dbsession.query_log_by_year_and_month(date_)
+        else:
+            date_:date =\
+                datetime.strptime(f"{selected_year}-{selected_month}-01",
+                                  "%Y-%B-%d")
+            selected_project = Projectnumber(self.__projectoption_var.get())
+            log: sqlite3.Cursor =\
+                self.__dbsession.query_log(selected_project, date_)
         logbook = LogBook(log)
         self.__listbox.update_list(logbook.records)
         self._lookup_callback(logbook.records)

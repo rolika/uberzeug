@@ -1,3 +1,4 @@
+from datetime import date
 import pathlib
 import sqlite3
 from typing import List
@@ -103,17 +104,87 @@ INSERT INTO
 VALUES (?, ?, ?, ?, date(), ?)
             """, (name, unitprice, unit, change, projectnumber))
 
-    def query_log(self, projectnumber:str, month:str) -> sqlite3.Cursor:
+    def query_log(self, projectnumber:Projectnumber,
+                  date_:date) -> sqlite3.Cursor:
         """Query items belonging to projectnumber and inserted in month.
         Both arguments should be verified for proper formatting before calling:
         projectnumber:  yy_nnn
         month:          yyyy-mm"""
+        month = date_.strftime("%Y-%m")
         return self.execute(f"""
-            SELECT {LOG_COLUMNS}
+            SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
             FROM raktar_naplo
             WHERE projektszam = ?
-            AND strftime('%Y-%m', datum) = ?;
-        """, (projectnumber, month))
+            AND strftime('%Y-%m', datum) = ?
+            GROUP BY megnevezes, egysegar;
+        """, (str(projectnumber), month))
+
+    def query_log_by_year(self, date_:date) -> sqlite3.Cursor:
+        year = date_.strftime("%Y")
+        return self.execute(f"""
+            SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
+            FROM raktar_naplo
+            WHERE strftime('%Y', datum) = ?
+            GROUP BY megnevezes, egysegar;
+        """, (year, ))
+
+    def query_log_by_month(self, date_:date) -> sqlite3.Cursor:
+        # hasn't much sense, but it's easier than exclude the option
+        month = date_.strftime("%m")
+        return self.execute(f"""
+            SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
+            FROM raktar_naplo
+            WHERE strftime('%m', datum) = ?
+            GROUP BY megnevezes, egysegar;
+        """, (month, ))
+
+    def query_log_by_project(self,
+                             projectnumber:Projectnumber) -> sqlite3.Cursor:
+        return self.execute(f"""
+            SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
+            FROM raktar_naplo
+            WHERE projektszam = ?
+            GROUP BY megnevezes, egysegar;
+        """, (str(projectnumber), ))
+
+    def query_log_by_year_and_month(self, date_:date) -> sqlite3.Cursor:
+        yearmonth = date_.strftime("%Y-%m")
+        return self.execute(f"""
+            SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
+            FROM raktar_naplo
+            WHERE strftime('%Y-%m', datum) = ?
+            GROUP BY megnevezes, egysegar;
+        """, (yearmonth, ))
+
+    def query_log_by_year_and_project(self, date_:date,
+                                projectnumber:Projectnumber) -> sqlite3.Cursor:
+        year = date_.strftime("%Y")
+        return self.execute(f"""
+            SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
+            FROM raktar_naplo
+            WHERE strftime('%Y', datum) = ?
+            AND projektszam = ?
+            GROUP BY megnevezes, egysegar;
+        """, (year, str(projectnumber), ))
+
+    def query_log_by_month_and_project(self, date_:date,
+                                projectnumber:Projectnumber) -> sqlite3.Cursor:
+        # hasn't much sense either
+        month = date_.strftime("%m")
+        return self.execute(f"""
+            SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
+            FROM raktar_naplo
+            WHERE strftime('%m', datum) = ?
+            AND projektszam = ?
+            GROUP BY megnevezes, egysegar;
+        """, (month, str(projectnumber), ))
+
+    def query_log_by_all(self) -> sqlite3.Cursor:
+        return self.execute(f"""
+            SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
+            FROM raktar_naplo
+            GROUP BY megnevezes, egysegar;
+        """)
 
     def query_distinct_years(self) ->List[str]:
         """Query distinct years in descending order."""
@@ -123,8 +194,8 @@ VALUES (?, ?, ?, ?, date(), ?)
             ORDER BY year DESC;
         """)
         return [year["year"] for year in years]
-    
-    def query_distinct_months(self, year) -> List[str]:
+
+    def query_distinct_months(self, year:str) -> List[str]:
         """Query distinct months in descending order."""
         months = self.execute("""
             SELECT DISTINCT strftime('%m', datum) AS month
@@ -132,17 +203,59 @@ VALUES (?, ?, ?, ?, date(), ?)
             WHERE strftime('%Y', datum) = ?
             ORDER BY month DESC;
         """, (year, ))
-        return [month["month"] for month in months]
-    
-    def query_distinct_projects(self, year:str, month:str) -> List[str]:
+        return [date(1900, int(month["month"]), 1).strftime("%B")\
+                for month in months]
+
+    def query_all_distinct_months(self) -> List[str]:
+        """Query distinct months in descending order."""
+        months = self.execute("""
+            SELECT DISTINCT strftime('%m', datum) AS month
+            FROM raktar_naplo
+            ORDER BY month DESC;
+        """)
+        return [date(1900, int(month["month"]), 1).strftime("%B")\
+                for month in months]
+
+    def query_distinct_projects(self, date_:date) -> List[Projectnumber]:
+        yearmonth = date_.strftime("%Y-%m")
+        projects = self.execute("""
+            SELECT DISTINCT projektszam AS projectnumber
+            FROM raktar_naplo
+            WHERE strftime('%Y-%m', datum) = ?
+            ORDER BY projektszam ASC;
+        """, (yearmonth, ))
+        return [Projectnumber(project["projectnumber"]) for project in projects]
+
+    def query_distinct_projects_by_month(self,
+                                         date_:date) -> List[Projectnumber]:
+        month = date_.strftime("%m")
+        projects = self.execute("""
+            SELECT DISTINCT projektszam AS projectnumber
+            FROM raktar_naplo
+            WHERE strftime('%m', datum) = ?
+            ORDER BY projektszam ASC;
+        """, (month, ))
+        return [Projectnumber(project["projectnumber"]) for project in projects]
+
+    def query_distinct_projects_by_year(self,
+                                         date_:date) -> List[Projectnumber]:
+        year = date_.strftime("%Y")
+        projects = self.execute("""
+            SELECT DISTINCT projektszam AS projectnumber
+            FROM raktar_naplo
+            WHERE strftime('%Y', datum) = ?
+            ORDER BY projektszam ASC;
+        """, (year, ))
+        return [Projectnumber(project["projectnumber"]) for project in projects]
+
+    def query_all_distinct_projects(self) -> List[Projectnumber]:
         """Query distinct projectnumbers in ascending order."""
         projects = self.execute("""
-            SELECT DISTINCT projektszam
+            SELECT DISTINCT projektszam AS projectnumber
             FROM raktar_naplo
-            WHERE strftime("%Y-%m", datum) = ?
             ORDER BY projektszam ASC;
-        """, (f"{year}-{month}", ))
-        return [project["projektszam"] for project in projects]
+        """)
+        return [Projectnumber(project["projectnumber"]) for project in projects]
 
     def query_months(self) -> sqlite3.Cursor:
         """Query distinct months in descending order."""
@@ -249,7 +362,7 @@ VALUES (?, ?, ?, ?, date(), ?)
                         DELETE FROM raktar
                         WHERE cikkszam = ?;
                          """, (item.articlenumber, ))
-    
+
     def load_log(self) -> List[LogRecord]:
         return [LogRecord(**item) for item in self.execute("""
             SELECT *, SUM(valtozas) AS total_change
