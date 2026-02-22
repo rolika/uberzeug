@@ -51,7 +51,7 @@ class DatabaseSession(sqlite3.Connection):
                     projektszam);
                 """)
 
-    def select_all_items(self) -> sqlite3.Cursor:
+    def _select_all_items(self) -> sqlite3.Cursor:
         return self.execute("""
             SELECT  cikkszam,
                     CAST(keszlet AS REAL) AS keszlet,
@@ -72,37 +72,6 @@ class DatabaseSession(sqlite3.Connection):
                     utolso_modositas
             FROM raktar ORDER BY gyarto, megnevezes;
                """)
-
-    def select_item(self, primary_key:int) -> sqlite3.Cursor:
-        return self.execute("""SELECT * FROM raktar WHERE cikkszam = ?;""",
-                            (primary_key, ))
-
-    def set_stock_quantity(self, primary_key:int, quantity:float) -> None:
-        with self:
-            self.execute("""UPDATE raktar
-                            SET keszlet = ?, utolso_modositas = date()
-                            WHERE cikkszam = ?;""", (quantity, primary_key))
-
-    def get_last_rowid(self) -> int:
-        return self.execute("""SELECT last_insert_rowid();""").fetchone()[0]
-
-    def mark_item(self, primary_key:int, color:str) -> None:
-        with self:
-            self.execute("""UPDATE raktar SET jeloles = ? WHERE cikkszam = ?""",
-                        (color, primary_key))
-
-    def log_change(self,
-                   name:str,
-                   unitprice:float,
-                   unit:str,
-                   change:float,
-                   projectnumber:str) -> None:
-        with self:
-            self.execute("""
-INSERT INTO
-    raktar_naplo(megnevezes, egysegar, egyseg, valtozas, datum, projektszam)
-VALUES (?, ?, ?, ?, date(), ?)
-            """, (name, unitprice, unit, change, projectnumber))
 
     def query_log(self, projectnumber:Projectnumber,
                   date_:date) -> sqlite3.Cursor:
@@ -255,30 +224,13 @@ VALUES (?, ?, ?, ?, date(), ?)
             FROM raktar_naplo
             ORDER BY projektszam ASC;
         """)
-        return [Projectnumber(project["projectnumber"]) for project in projects]
-
-    def query_months(self) -> sqlite3.Cursor:
-        """Query distinct months in descending order."""
-        return self.execute("""
-            SELECT DISTINCT strftime('%Y-%m', datum)
-            FROM raktar_naplo
-            ORDER BY datum DESC;
-        """)
-
-    def query_projects(self, month="2023-04") -> sqlite3.Cursor:
-        """Query distinct projectnumbers in ascending order."""
-        return self.execute("""
-            SELECT DISTINCT projektszam
-            FROM raktar_naplo
-            WHERE strftime("%Y-%m", datum) = ?
-            ORDER BY projektszam ASC;
-        """, (month, ))
+        return [Projectnumber(project["projectnumber"]) for project in projects],
 
     def load_all_items(self) -> List[StockItemRecord]:
-        return [StockItemRecord(**item) for item in self.select_all_items()]
+        return [StockItemRecord(**item) for item in self._select_all_items()]
 
     def load_withdrawable_items(self) -> List[StockItemRecord]:
-        return [StockItemRecord(**item) for item in self.select_all_items()
+        return [StockItemRecord(**item) for item in self._select_all_items()
                 if item["keszlet"] > 0]
 
     def log_stock_change(self, items:List[StockItemRecord],
@@ -361,11 +313,4 @@ VALUES (?, ?, ?, ?, date(), ?)
             self.execute("""
                         DELETE FROM raktar
                         WHERE cikkszam = ?;
-                         """, (item.articlenumber, ))
-
-    def load_log(self) -> List[LogRecord]:
-        return [LogRecord(**item) for item in self.execute("""
-            SELECT *, SUM(valtozas) AS total_change
-            FROM raktar_naplo
-            GROUP BY megnevezes;
-            """)]
+                         """, (item.articlenumber, )),
