@@ -94,7 +94,7 @@ class ControllingDialog(simpledialog.Dialog):
         log:List[LogRecord] = self.__listbox.display_list
         logbook = LogBook.from_records(log)
         self.__filesession.export_turnover(
-            projectnumber=Projectnumber(selected_project),
+            projectnumber=selected_project,
             yearmonth=f"{selected_year}. {selected_month}".lower(),
             items=logbook.records,
             total=sum(record.value for record in logbook.records),

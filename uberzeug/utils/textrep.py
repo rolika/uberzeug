@@ -62,14 +62,18 @@ def waybillpanel_header() -> str:
         .format("megnevezés", "változás", "egység")
 
 
-def turnover_header(projectnumber:Projectnumber, yearmonth:str,
+def turnover_header(projectnumber:str, yearmonth:str,
                     lookup_term:str) -> str:
     result = line() + "\n"
     year = yearmonth.split(".")[0]
     month = yearmonth.split(".")[1].strip()
+    if projectnumber == ct.SHOW_ALL:
+        projectnumber = "összes projekt"
+    if year != ct.SHOW_ALL:
+        year += "."
     if month == ct.SHOW_ALL:
         month = "év"
-    result += headline(f"{projectnumber.legal} - {year}. {month}i forgalom",
+    result += headline(f"{projectnumber} - {year} {month}i forgalom",
                        explode_it=False, uppercase=False) + "\n"
     result += line() + "\n"
     if lookup_term:

@@ -3,6 +3,7 @@ import os
 import pathlib
 from typing import List
 
+import utils.constants as ct
 from utils import textrep
 from utils.constants import *
 from utils.projectnumber import Projectnumber
@@ -45,9 +46,11 @@ class FileSession:
             f.write(textrep.waybill_footer())
         return waybill_number
 
-    def export_turnover(self, projectnumber:Projectnumber, yearmonth:str,
+    def export_turnover(self, projectnumber:str, yearmonth:str,
                         items:List[LogRecord], total:float,
                         lookup_term:str=None) -> None:
+        if projectnumber != ct.SHOW_ALL:
+            projectnumber = str(Projectnumber(projectnumber))
         exportfolder = self._get_turnoverexport_folder(projectnumber, yearmonth)
         nth_export = self._count_files(exportfolder) + 1
         filename:str = f"{projectnumber}_{nth_export}"
@@ -78,12 +81,11 @@ class FileSession:
         os.makedirs(exportfolder, exist_ok=True)
         return exportfolder
 
-    def _get_turnoverexport_folder(self, projectnumber:Projectnumber,
+    def _get_turnoverexport_folder(self, projectnumber:str,
                                    yearmonth:str) -> pathlib.Path:
-        project: str = str(projectnumber)
         year = yearmonth.split(".")[0]
         month = yearmonth.split(".")[1].strip()
-        exportfolder = self.__turnoverfolder  / project / year / month
+        exportfolder = self.__turnoverfolder  / projectnumber / year / month
         os.makedirs(exportfolder, exist_ok=True)
         return exportfolder
 
