@@ -22,6 +22,8 @@ class ControllingDialog(simpledialog.Dialog):
         self.__dbsession = dbsession
         self.__filesession = filesession
         self.__title = title
+        self.__former_month = None
+        self.__former_project = None
         super().__init__(root, title=title)
 
     def body(self, root:Widget) -> Widget:
@@ -69,7 +71,6 @@ class ControllingDialog(simpledialog.Dialog):
         Label(box, textvariable=self.__totalvalue_var).pack(side=LEFT)
         Label(box, text="Ft").pack()
         box.pack()
-        #self._lookup_callback(logbook.records)
 
         self._update_months()
         self._update_projects()
@@ -115,8 +116,12 @@ class ControllingDialog(simpledialog.Dialog):
                     self.__monthoptionmenu.setvar(\
                         self.__monthoptionmenu.cget("textvariable"), value))
         if monthoptions:
-            month: str = self.__prev_month\
-                if self.__prev_month in monthoptions else monthoptions[0]
+            if self.__former_month and self.__former_month in monthoptions:
+                month = self.__former_month
+            elif self.__prev_month in monthoptions:
+                month = self.__prev_month
+            else:
+                month = monthoptions[0]
             self.__monthoptionmenu.setvar(\
                 self.__monthoptionmenu.cget("textvariable"), month)
         self._update_projects()
@@ -125,6 +130,7 @@ class ControllingDialog(simpledialog.Dialog):
         self.__listbox.clear_selection()
         selected_year = self.__yearoption_var.get()
         selected_month = self.__monthoption_var.get()
+        self.__former_month = selected_month
         if selected_month == ct.SHOW_ALL and selected_year == ct.SHOW_ALL:
             projectoptions = [project.legal for project in\
                 self.__dbsession.query_all_distinct_projects()]
@@ -138,16 +144,22 @@ class ControllingDialog(simpledialog.Dialog):
              projectoptions = [project.legal for project in\
                 self.__dbsession.query_distinct_projects_by_month(date_)]
         else:
-            date_:date = datetime.strptime(f"{selected_year}-{selected_month}-01",
-                                           "%Y-%B-%d")
+            date_:date =\
+                datetime.strptime(f"{selected_year}-{selected_month}-01",
+                                  "%Y-%B-%d")
             projectoptions = [project.legal for project in\
                 self.__dbsession.query_distinct_projects(date_)]
         projectoptions.append(ct.SHOW_ALL)
         self.__projectcombobox["values"] = projectoptions
+
         if projectoptions:
+            if self.__former_project\
+                and self.__former_project in projectoptions:
+                project = self.__former_project
+            else:
+                project = projectoptions[0]
             self.__projectcombobox.setvar(\
-                self.__projectcombobox.cget("textvariable"),
-                projectoptions[0])
+                self.__projectcombobox.cget("textvariable"), project)
         self._update_log()
 
     def _update_log(self, *args) -> None:
@@ -155,6 +167,7 @@ class ControllingDialog(simpledialog.Dialog):
         selected_year = self.__yearoption_var.get()
         selected_month = self.__monthoption_var.get()
         selected_project = self.__projectoption_var.get()
+        self.__former_project = selected_project
         log: sqlite3.Cursor = None
         if selected_year == ct.SHOW_ALL and selected_month == ct.SHOW_ALL\
             and selected_project == ct.SHOW_ALL:
