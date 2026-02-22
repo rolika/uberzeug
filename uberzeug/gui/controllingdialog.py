@@ -50,10 +50,10 @@ class ControllingDialog(simpledialog.Dialog):
         self.__monthoptionmenu.pack(side=LEFT, fill=X, expand=True)
 
         self.__projectoption_var: StringVar = StringVar()
-        self.__projectoptionmenu: OptionMenu = OptionMenu(
-            box, self.__projectoption_var, "")
+        self.__projectcombobox: ttk.Combobox = ttk.Combobox(
+            box, textvariable=self.__projectoption_var, state="readonly")
         self.__projectoption_var.trace("w", self._update_log)
-        self.__projectoptionmenu.pack(side=LEFT, fill=X, expand=True)
+        self.__projectcombobox.pack(side=LEFT, fill=X, expand=True)
         box.pack(fill=X, expand=True)
 
         self.__totalvalue_var: IntVar = IntVar()  # declare before itemlistbox
@@ -143,15 +143,10 @@ class ControllingDialog(simpledialog.Dialog):
             projectoptions = [project.legal for project in\
                 self.__dbsession.query_distinct_projects(date_)]
         projectoptions.append(ct.SHOW_ALL)
-        menu = self.__projectoptionmenu["menu"]
-        menu.delete(0, "end")
-        for project in projectoptions:
-            menu.add_command(label=project, command=lambda value=project:\
-                    self.__projectoptionmenu.setvar(\
-                        self.__projectoptionmenu.cget("textvariable"), value))
+        self.__projectcombobox["values"] = projectoptions
         if projectoptions:
-            self.__projectoptionmenu.setvar(\
-                self.__projectoptionmenu.cget("textvariable"),
+            self.__projectcombobox.setvar(\
+                self.__projectcombobox.cget("textvariable"),
                 projectoptions[0])
         self._update_log()
 
