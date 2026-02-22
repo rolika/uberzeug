@@ -47,7 +47,7 @@ def waybill_header(organization:List[str]=ORGANIZATION,
 def waybill_footer() -> str:
     d = date.today()
     result = line() + "\n\n"
-    result += f"Kelt: Herend, {d.strftime('%Y.%m.%d.')}\n\n\n\n\n"
+    result += f"Kelt: {city()}, {d.strftime('%Y.%m.%d.')}\n\n\n\n\n"
     result += "\n\n\n\n"
     result +=\
         "              ___________________          ___________________\n"
@@ -84,7 +84,7 @@ def turnover_footer(total:float) -> str:
     f"Összesen: {locale.format_string('%+.2f', total, grouping=True):>66} Ft\n"
     result += line() + "\n"
     d = date.today()
-    result += f"Kelt: Herend, {d.strftime('%Y. %B %d.')}\n"
+    result += f"Kelt: {city()}, {d.strftime('%Y. %B %d.')}\n"
     return result
 
 
@@ -92,6 +92,11 @@ def asci(text:str) -> str:
     """Return the input as lower-cased alphanumeric text to avoid confusion."""
     return "".join(re.findall("[a-z0-9]", str(text).lower().\
         translate(str.maketrans("áéíóöőúüű", "aeiooouuu"))))
+
+
+def city(organization:List[str]=ct.ORGANIZATION) -> str:
+    """Return the city of the organization."""
+    return organization[1].split("-")[-1].strip()
 
 
 if __name__ == "__main__":
