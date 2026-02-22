@@ -3,6 +3,7 @@ import locale
 locale.setlocale(locale.LC_ALL, "")
 import sqlite3
 from tkinter import *
+from tkinter import messagebox
 from tkinter import ttk
 from tkinter import simpledialog
 from typing import List
@@ -99,6 +100,8 @@ class ControllingDialog(simpledialog.Dialog):
             items=logbook.records,
             total=sum(record.value for record in logbook.records),
             lookup_term=self.__listbox.lookup_entry.get())
+        messagebox.showinfo\
+            (selected_project + " projekt", "Exportálás sikeres!")
 
     def _update_months(self, *args) -> None:
         self.__listbox.clear_selection()
