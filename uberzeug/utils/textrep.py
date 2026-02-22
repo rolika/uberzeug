@@ -69,6 +69,8 @@ def turnover_header(projectnumber:str, yearmonth:str,
     month = yearmonth.split(".")[1].strip()
     if projectnumber == ct.SHOW_ALL:
         projectnumber = "összes projekt"
+    else:
+        projectnumber = Projectnumber(projectnumber).legal
     if year != ct.SHOW_ALL:
         year += "."
     if month == ct.SHOW_ALL:
