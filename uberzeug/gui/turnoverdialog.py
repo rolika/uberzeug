@@ -17,7 +17,7 @@ from record.logrecord import LogRecord
 from utils.projectnumber import Projectnumber
 
 
-class ControllingDialog(simpledialog.Dialog):
+class TurnoverDialog(simpledialog.Dialog):
     def __init__(self, root:Widget, dbsession:DatabaseSession,
                  filesession:FileSession, title:str) -> None:
         self.__dbsession = dbsession
