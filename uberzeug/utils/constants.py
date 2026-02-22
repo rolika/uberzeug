@@ -32,4 +32,4 @@ Mode = enum.Enum("Mode", [("WITHDRAW", 1),
                           ("DEPOSIT",  3),
                           ("DELETE", 4)])
 
-SHOW_ALL: str = "minden"
+SHOW_ALL: str = "összes"

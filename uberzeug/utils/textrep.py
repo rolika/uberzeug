@@ -7,6 +7,7 @@ from datetime import date
 import re
 from typing import List
 
+import utils.constants as ct
 from utils.constants import *
 from utils.projectnumber import Projectnumber
 
@@ -61,16 +62,18 @@ def waybillpanel_header() -> str:
         .format("megnevezés", "változás", "egység")
 
 
-def turnover_header(projectnumber:Projectnumber, yearmonth:date,
+def turnover_header(projectnumber:Projectnumber, yearmonth:str,
                     lookup_term:str) -> str:
     result = line() + "\n"
-    year = yearmonth.strftime("%Y")
-    month = yearmonth.strftime("%B").lower()
+    year = yearmonth.split(".")[0]
+    month = yearmonth.split(".")[1].strip()
+    if month == ct.SHOW_ALL:
+        month = "év"
     result += headline(f"{projectnumber.legal} - {year}. {month}i forgalom",
                        explode_it=False, uppercase=False) + "\n"
     result += line() + "\n"
     if lookup_term:
-        result += f"Keresési kifejezés: {lookup_term}\n"
+        result += f"Keresési kifejezés: {lookup_term.capitalize()}\n"
         result += line() + "\n"
     return result
 

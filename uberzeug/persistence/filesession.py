@@ -45,7 +45,7 @@ class FileSession:
             f.write(textrep.waybill_footer())
         return waybill_number
 
-    def export_turnover(self, projectnumber:Projectnumber, yearmonth:date,
+    def export_turnover(self, projectnumber:Projectnumber, yearmonth:str,
                         items:List[LogRecord], total:float,
                         lookup_term:str=None) -> None:
         exportfolder = self._get_turnoverexport_folder(projectnumber, yearmonth)
@@ -79,10 +79,10 @@ class FileSession:
         return exportfolder
 
     def _get_turnoverexport_folder(self, projectnumber:Projectnumber,
-                                   yearmonth:date) -> pathlib.Path:
+                                   yearmonth:str) -> pathlib.Path:
         project: str = str(projectnumber)
-        year = yearmonth.strftime("%Y")
-        month = yearmonth.strftime("%B")
+        year = yearmonth.split(".")[0]
+        month = yearmonth.split(".")[1].strip()
         exportfolder = self.__turnoverfolder  / project / year / month
         os.makedirs(exportfolder, exist_ok=True)
         return exportfolder

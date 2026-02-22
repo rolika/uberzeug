@@ -90,13 +90,12 @@ class ControllingDialog(simpledialog.Dialog):
     def apply(self) -> None:
         selected_year = self.__yearoption_var.get()
         selected_month = self.__monthoption_var.get()
-        selected_month = datetime.strptime(selected_month, "%B").strftime("%m")
         selected_project = self.__projectoption_var.get()
         log:List[LogRecord] = self.__listbox.display_list
         logbook = LogBook.from_records(log)
         self.__filesession.export_turnover(
             projectnumber=Projectnumber(selected_project),
-            yearmonth=date(int(selected_year), int(selected_month), 1),
+            yearmonth=f"{selected_year}. {selected_month}".lower(),
             items=logbook.records,
             total=sum(record.value for record in logbook.records),
             lookup_term=self.__listbox.lookup_entry.get())
