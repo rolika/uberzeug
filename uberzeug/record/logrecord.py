@@ -48,12 +48,12 @@ class LogRecord(Record):
 
     @property
     def listview(self) -> str:
-        return "{name:33} {change:>9} {unit:<4} x {up:>9} = {value:>13} Ft".\
+        return "{name:33} {change:>9} {unit:<4} x {up:>10} = {value:>13} Ft".\
                 format(name=self.name[:33],
                        change=locale.format_string(f="%+.2f", val=self.change,
                                                    grouping=True)[:9],
                        unit=self.unit,
-                       up=locale.format_string(f="%+.2f", val=self.unitprice,
+                       up=locale.format_string(f="%.2f", val=self.unitprice,
                                                grouping=True)[:9],
                        value=locale.format_string(f="%+.2f", val=self.__value,
                                                   grouping=True))
