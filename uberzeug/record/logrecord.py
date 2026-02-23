@@ -24,7 +24,8 @@ class LogRecord(Record):
     def __init__(self, translate_attributes=TRANSLATE_ATTRIBUTES,
                  **kwargs) -> None:
         super().__init__(translate_attributes, **kwargs)
-        self.change = self.total_change
+        self.change = self.total_change if hasattr(self, "total_change")\
+                                        else self.change
         self.__value = self.unitprice * self.change
 
     def __str__(self) -> str:
@@ -47,12 +48,20 @@ class LogRecord(Record):
 
     @property
     def listview(self) -> str:
-        return "{name:<28} {change:>6} {unit:<4} x {up:>7} = {value:>13} Ft".\
-                format(name=self.name,
+        return "{name:33} {change:>9} {unit:<4} x {up:>10} = {value:>13} Ft".\
+                format(name=self.name[:33],
                        change=locale.format_string(f="%+.2f", val=self.change,
-                                                   grouping=True),
+                                                   grouping=True)[:9],
                        unit=self.unit,
-                       up=locale.format_string(f="%+.2f", val=self.unitprice,
-                                               grouping=True),
+                       up=locale.format_string(f="%.2f", val=self.unitprice,
+                                               grouping=True)[:9],
                        value=locale.format_string(f="%+.2f", val=self.__value,
                                                   grouping=True))
+
+    @property
+    def value(self) -> float:
+        return self.__value
+
+    @value.setter
+    def value(self, new_value:float) -> None:
+        self.__value = new_value

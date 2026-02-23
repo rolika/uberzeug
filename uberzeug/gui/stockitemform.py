@@ -20,7 +20,7 @@ class StockItemForm(LabelFrame):
         super().__init__(root, text="Raktári tétel")
         self._init_controll_variables()
         self._build_interface()
-        self._clear()
+        self.clear()
         self._default_values()
 
     def _init_controll_variables(self) -> None:
@@ -194,7 +194,7 @@ class StockItemForm(LabelFrame):
         )
 
     def populate(self, stockitem:StockItemRecord) -> None:
-        self._clear()
+        self.clear()
         self.__primary_key = stockitem.articlenumber
         self.__name_entry.insert(0, stockitem.name)
         self.__nickname_var.set(stockitem.nickname)
@@ -225,7 +225,7 @@ class StockItemForm(LabelFrame):
     def is_valid(self) -> bool:
         return styles.is_entry_ok(self)
 
-    def _clear(self) -> None:
+    def clear(self) -> None:
         self.__primary_key = None
         for child in self.winfo_children():
             if child.winfo_class() == "TEntry":

@@ -1,0 +1,214 @@
+from datetime import datetime, date, timedelta
+import locale
+locale.setlocale(locale.LC_ALL, "")
+import sqlite3
+from tkinter import *
+from tkinter import messagebox
+from tkinter import ttk
+from tkinter import simpledialog
+from typing import List
+
+import utils.constants as ct
+from gui.itemlistbox import ItemListbox
+from persistence.databasesession import DatabaseSession
+from persistence.filesession import FileSession
+from record.logbook import LogBook
+from record.logrecord import LogRecord
+from utils.projectnumber import Projectnumber
+
+
+class TurnoverDialog(simpledialog.Dialog):
+    def __init__(self, root:Widget, dbsession:DatabaseSession,
+                 filesession:FileSession, title:str) -> None:
+        self.__dbsession = dbsession
+        self.__filesession = filesession
+        self.__title = title
+        self.__former_month = None
+        self.__former_project = None
+        super().__init__(root, title=title)
+
+    def body(self, root:Widget) -> Widget:
+        today: date = date.today()
+        first: date = today.replace(day=1)
+        prev_month_last_day: date = first - timedelta(days=1)
+        self.__prev_month: str = prev_month_last_day.strftime("%B")
+
+        box = Frame(self)
+        prevmonths_year: str = prev_month_last_day.strftime("%Y")
+        yearoptions: List = self.__dbsession.query_distinct_years()
+        yearoptions.append(ct.SHOW_ALL)
+        selected_year: str = prevmonths_year if prevmonths_year in yearoptions\
+            else yearoptions[0]
+        self.__yearoption_var: StringVar = StringVar()
+        yearoptionmenu: OptionMenu = OptionMenu(
+            box, self.__yearoption_var, *yearoptions)
+        self.__yearoption_var.set(selected_year)
+        self.__yearoption_var.trace("w", self._update_months)
+        yearoptionmenu.pack(side=LEFT, fill=X, expand=True)
+
+        self.__monthoption_var: StringVar = StringVar()
+        self.__monthoptionmenu: OptionMenu = OptionMenu(
+            box, self.__monthoption_var, "")
+        self.__monthoption_var.trace("w", self._update_projects)
+        self.__monthoptionmenu.pack(side=LEFT, fill=X, expand=True)
+
+        self.__projectoption_var: StringVar = StringVar()
+        self.__projectcombobox: ttk.Combobox = ttk.Combobox(
+            box, textvariable=self.__projectoption_var, state="readonly")
+        self.__projectoption_var.trace("w", self._update_log)
+        self.__projectcombobox.pack(side=LEFT, fill=X, expand=True)
+        box.pack(fill=X, expand=True)
+
+        self.__totalvalue_var: IntVar = IntVar()  # declare before itemlistbox
+        self.__listbox = ItemListbox(self, self.__title, [],
+                                     self._lookup_callback)
+        self.__listbox.set_width(80)
+        self.__listbox.pack(padx=5, pady=5)
+
+        box = Frame(self)
+        Label(box, text="Kiválasztás összértéke:").pack(side=LEFT,
+                                                        expand=True)
+        self.__totalvalue_var.set(0)
+        Label(box, textvariable=self.__totalvalue_var).pack(side=LEFT)
+        Label(box, text="Ft").pack()
+        box.pack()
+
+        self._update_months()
+        self._update_projects()
+        self._update_log()
+        return self.__listbox.lookup_entry
+
+    def buttonbox(self):
+        """Override standard buttons."""
+        box = Frame(self)
+        self.__ok_button = ttk.Button(box, text="Export", width=10,
+                                      command=self.ok)
+        self.__ok_button.pack(side=LEFT, padx=5, pady=5)
+        ttk.Button(box, text="Kész", width=10, command=self.cancel)\
+            .pack(side=LEFT, padx=5, pady=5)
+        box.pack()
+
+    def apply(self) -> None:
+        selected_year = self.__yearoption_var.get()
+        selected_month = self.__monthoption_var.get()
+        selected_project = self.__projectoption_var.get()
+        log:List[LogRecord] = self.__listbox.display_list
+        logbook = LogBook.from_records(log)
+        self.__filesession.export_turnover(
+            projectnumber=selected_project,
+            yearmonth=f"{selected_year}. {selected_month}".lower(),
+            items=logbook.records,
+            total=sum(record.value for record in logbook.records),
+            lookup_term=self.__listbox.lookup_entry.get())
+        messagebox.showinfo\
+            (selected_project + " projekt", "Exportálás sikeres!")
+
+    def _update_months(self, *args) -> None:
+        self.__listbox.clear_selection()
+        selected_year = self.__yearoption_var.get()
+        if selected_year == ct.SHOW_ALL:
+            monthoptions = self.__dbsession.query_all_distinct_months()
+        else:
+            monthoptions = self.__dbsession.query_distinct_months(selected_year)
+        monthoptions.append(ct.SHOW_ALL)
+        menu = self.__monthoptionmenu["menu"]
+        menu.delete(0, "end")
+        for month in monthoptions:
+            menu.add_command(label=month, command=lambda value=month:\
+                    self.__monthoptionmenu.setvar(\
+                        self.__monthoptionmenu.cget("textvariable"), value))
+        if monthoptions:
+            if self.__former_month and self.__former_month in monthoptions:
+                month = self.__former_month
+            elif self.__prev_month in monthoptions:
+                month = self.__prev_month
+            else:
+                month = monthoptions[0]
+            self.__monthoptionmenu.setvar(\
+                self.__monthoptionmenu.cget("textvariable"), month)
+        self._update_projects()
+
+    def _update_projects(self, *args) -> None:
+        self.__listbox.clear_selection()
+        selected_year = self.__yearoption_var.get()
+        selected_month = self.__monthoption_var.get()
+        self.__former_month = selected_month
+        if selected_month == ct.SHOW_ALL and selected_year == ct.SHOW_ALL:
+            projectoptions = [project.legal for project in\
+                self.__dbsession.query_all_distinct_projects()]
+        elif selected_month == ct.SHOW_ALL:
+            selected_year = datetime.strptime(selected_year, "%Y")
+            projectoptions = [project.legal for project in\
+                self.__dbsession.query_distinct_projects_by_year(selected_year)]
+        elif selected_year == ct.SHOW_ALL:
+             date_:date =\
+                datetime.strptime(f"1900-{selected_month}-01", "%Y-%B-%d")
+             projectoptions = [project.legal for project in\
+                self.__dbsession.query_distinct_projects_by_month(date_)]
+        else:
+            date_:date =\
+                datetime.strptime(f"{selected_year}-{selected_month}-01",
+                                  "%Y-%B-%d")
+            projectoptions = [project.legal for project in\
+                self.__dbsession.query_distinct_projects(date_)]
+        projectoptions.append(ct.SHOW_ALL)
+        self.__projectcombobox["values"] = projectoptions
+
+        if projectoptions:
+            if self.__former_project\
+                and self.__former_project in projectoptions:
+                project = self.__former_project
+            else:
+                project = projectoptions[0]
+            self.__projectcombobox.setvar(\
+                self.__projectcombobox.cget("textvariable"), project)
+        self._update_log()
+
+    def _update_log(self, *args) -> None:
+        self.__listbox.clear_selection()
+        selected_year = self.__yearoption_var.get()
+        selected_month = self.__monthoption_var.get()
+        selected_project = self.__projectoption_var.get()
+        self.__former_project = selected_project
+        log: sqlite3.Cursor = None
+        if selected_year == ct.SHOW_ALL and selected_month == ct.SHOW_ALL\
+            and selected_project == ct.SHOW_ALL:
+            log = self.__dbsession.query_log_by_all()
+        elif selected_year == ct.SHOW_ALL and selected_month == ct.SHOW_ALL:
+            selected_project = Projectnumber(selected_project)
+            log = self.__dbsession.query_log_by_project(selected_project)
+        elif selected_year == ct.SHOW_ALL and selected_project == ct.SHOW_ALL:
+            selected_month = datetime.strptime(selected_month, "%B")
+            log = self.__dbsession.query_log_by_month(selected_month)
+        elif selected_month == ct.SHOW_ALL and selected_project == ct.SHOW_ALL:
+            selected_year = datetime.strptime(selected_year, "%Y")
+            log = self.__dbsession.query_log_by_year(selected_year)
+        elif selected_year == ct.SHOW_ALL:
+            selected_month = datetime.strptime(selected_month, "%B")
+            selected_project = Projectnumber(selected_project)
+            log = self.__dbsession.query_log_by_month_and_project(
+                selected_month, selected_project)
+        elif selected_month == ct.SHOW_ALL:
+            selected_year = datetime.strptime(selected_year, "%Y")
+            selected_project = Projectnumber(selected_project)
+            log = self.__dbsession.query_log_by_year_and_project(
+                selected_year, selected_project)
+        elif selected_project == ct.SHOW_ALL:
+            date_:date = datetime.strptime(f"{selected_year}-{selected_month}-01",
+                                           "%Y-%B-%d")
+            log = self.__dbsession.query_log_by_year_and_month(date_)
+        else:
+            date_:date =\
+                datetime.strptime(f"{selected_year}-{selected_month}-01",
+                                  "%Y-%B-%d")
+            selected_project = Projectnumber(self.__projectoption_var.get())
+            log: sqlite3.Cursor =\
+                self.__dbsession.query_log(selected_project, date_)
+        logbook = LogBook(log)
+        self.__listbox.update_list(logbook.records)
+        self._lookup_callback(logbook.records)
+
+    def _lookup_callback(self, selection:List[LogRecord]) -> None:
+        total = sum(record.value for record in selection)
+        self.__totalvalue_var.set(\
+            locale.format_string("%+.2f", total, grouping=True))

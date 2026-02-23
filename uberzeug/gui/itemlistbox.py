@@ -9,14 +9,16 @@ from record.stockitemrecord import Record
 
 class ItemListbox(LabelFrame):
     def __init__(self, root=None, title=STOCKNAME,
-                 master_list:List[Record]=None) -> None:
+                 master_list:List[Record]=None,
+                 external_lookup_callback:callable=lambda _: None) -> None:
         super().__init__(root, text=title)
         self.__master_list = master_list
         self.__display_list = None
+        self.__external_lookup_callback = external_lookup_callback
         self._init_controll_variables()
         self._build_interface()
         self._bindings()
-        self._clear_selection()
+        self.clear_selection()
 
     def _init_controll_variables(self) -> None:
         self.__lookup_var = StringVar()
@@ -24,7 +26,7 @@ class ItemListbox(LabelFrame):
     def _build_interface(self) -> None:
         self.__lookup_entry = ttk.Entry(self, textvariable=self.__lookup_var,
                                         validate="key")
-        Button(self, bitmap="questhead", command=self._clear_selection)\
+        Button(self, bitmap="questhead", command=self.clear_selection)\
             .grid(row=0, column=1)
 
         vertical_scroll = Scrollbar(self, orient=VERTICAL)
@@ -51,10 +53,10 @@ class ItemListbox(LabelFrame):
             lambda e: self.__listbox.yview_scroll(int(e.delta / 120), UNITS))
         lookup = self.__listbox.register(self._lookup)
         self.__lookup_entry["validatecommand"] = (lookup, "%P")
-        self.__listbox.bind("<Escape>", self._clear_selection)
-        self.__lookup_entry.bind("<Escape>", self._clear_selection)
+        self.__listbox.bind("<Escape>", self.clear_selection)
+        self.__lookup_entry.bind("<Escape>", self.clear_selection)
 
-    def _clear_selection(self, _=None) -> None:
+    def clear_selection(self, _=None) -> None:
         self.__lookup_var.set("")
         self._lookup("")
         self.__lookup_entry.focus()
@@ -71,6 +73,7 @@ class ItemListbox(LabelFrame):
             if word:
                 selection = [item for item in selection if item.contains(word)]
         self._populate(selection)
+        self.__external_lookup_callback(self.__display_list)
         return True
 
     def _find_item_index(self, item:Record) -> int|None:
@@ -109,6 +112,10 @@ class ItemListbox(LabelFrame):
     def select_first(self) -> None:
         self.__listbox.selection_set(0)
 
+    def update_list(self, item_list:List[Record]) -> None:
+        self.__master_list = item_list
+        self._populate(item_list)
+
     @property
     def lookup_entry(self) -> ttk.Entry:
         return self.__lookup_entry
@@ -116,6 +123,10 @@ class ItemListbox(LabelFrame):
     @lookup_entry.setter
     def lookup_entry(self, value:str) -> None:
         self.__lookup_var.set(value)
+    
+    @property
+    def display_list(self) -> List[Record]:
+        return self.__display_list
 
 
 if __name__ == "__main__":

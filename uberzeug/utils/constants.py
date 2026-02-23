@@ -20,7 +20,7 @@ DELETE_TITLE = "Anyag törlése"
 PADX = 2
 PADY = 2
 
-PROJECTNUMBER_PATTERN = r"(?P<year>\d{2})[/ _-](?P<serial>\d{1,3})"
+PROJECTNUMBER_PATTERN = r"(?P<year>\d{1,2})[/ _-](?P<serial>\d{1,3})"
 MIN_YEAR = 0
 MAX_YEAR = 99
 MIN_SERIAL = 0
@@ -31,3 +31,5 @@ Mode = enum.Enum("Mode", [("WITHDRAW", 1),
                           ("TAKEBACK", 2),
                           ("DEPOSIT",  3),
                           ("DELETE", 4)])
+
+SHOW_ALL: str = "összes"

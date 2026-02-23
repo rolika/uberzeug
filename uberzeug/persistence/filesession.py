@@ -1,11 +1,13 @@
-from datetime import date, timedelta
+from datetime import date
 import os
 import pathlib
 from typing import List
 
+import utils.constants as ct
 from utils import textrep
 from utils.constants import *
 from utils.projectnumber import Projectnumber
+from record.logrecord import LogRecord
 from record.stockitemrecord import StockItemRecord
 
 
@@ -30,7 +32,7 @@ class FileSession:
                        projectnumber:Projectnumber) -> str:
         exportfolder = self._get_waybillexport_folder(projectnumber)
         projectfolder = pathlib.Path("/".join(exportfolder.parts[:-2]))
-        next_waybill_number = self._count_waybills(projectfolder) + 1
+        next_waybill_number = self._count_files(projectfolder) + 1
         waybill_number = "{}_{:0>4}"\
             .format(str(projectnumber), next_waybill_number)
         filename = "{}.{}".format(waybill_number, self.__extension)
@@ -44,7 +46,26 @@ class FileSession:
             f.write(textrep.waybill_footer())
         return waybill_number
 
-    def _get_waybillexport_folder(self, projectnumber:Projectnumber) -> pathlib.Path:
+    def export_turnover(self, projectnumber:str, yearmonth:str,
+                        items:List[LogRecord], total:float,
+                        lookup_term:str=None) -> None:
+        if projectnumber != ct.SHOW_ALL:
+            projectnumber = str(Projectnumber(projectnumber))
+        exportfolder = self._get_turnoverexport_folder(projectnumber, yearmonth)
+        nth_export = self._count_files(exportfolder) + 1
+        filename:str = f"{projectnumber}_{nth_export}"
+        if lookup_term:
+            filename += f"_{lookup_term}"
+        filename += f".{self.__extension}"
+        with open(exportfolder / filename, "w") as f:
+            f.write(textrep.turnover_header(projectnumber, yearmonth,
+                                            lookup_term))
+            for item in items:
+                f.write(f"{item.listview}\n")
+            f.write(textrep.turnover_footer(total))
+
+    def _get_waybillexport_folder(self,
+                                  projectnumber:Projectnumber) -> pathlib.Path:
         """Identify an existing or create a new folder for this export."""
         d = date.today()
         year = d.strftime("%Y")
@@ -60,16 +81,13 @@ class FileSession:
         os.makedirs(exportfolder, exist_ok=True)
         return exportfolder
 
-    def _get_turnoverexport_folder(self) -> pathlib.Path:
-        """Always create a new year-previous month folder for turnover export,
-        inside the turnover-folder, format: turnoverfolder/yyyy/mm"""
-        d = date.today()
-        prev = d.replace(day=1) - timedelta(days=1)
-        year = prev.strftime("%Y")
-        month = prev.strftime("%m")
-        exportfolder = self.__turnoverfolder / year / month
+    def _get_turnoverexport_folder(self, projectnumber:str,
+                                   yearmonth:str) -> pathlib.Path:
+        year = yearmonth.split(".")[0]
+        month = yearmonth.split(".")[1].strip()
+        exportfolder = self.__turnoverfolder  / projectnumber / year / month
         os.makedirs(exportfolder, exist_ok=True)
         return exportfolder
 
-    def _count_waybills(self, projectfolder:pathlib.Path) -> int:
-        return sum([len(files) for r, d, files in os.walk(projectfolder)])
+    def _count_files(self, folder:pathlib.Path) -> int:
+        return sum([len(files) for r, d, files in os.walk(folder)])
