@@ -11,8 +11,6 @@ class ControllUI(Frame):
         box = ttk.Frame(self)
         self.__controlling_button = ttk.Button(box, text="Utókalkuláció")
         self.__controlling_button.pack(fill=BOTH, padx=5, pady=5, side=LEFT)
-        self.__transfer_button = ttk.Button(box, text="Átkönyvelés")
-        self.__transfer_button.pack(fill=BOTH, padx=5, pady=5, side=LEFT)
         self.__export_button = ttk.Button(box, text="Raktárkészlet\nexportálása")
         self.__export_button.pack(fill=BOTH, padx=5, pady=5, side=LEFT)
         box.pack(side=LEFT, padx=5, pady=5, anchor=NW)
@@ -24,14 +22,6 @@ class ControllUI(Frame):
     @controlling_button.setter
     def controlling_button(self, command:callable) -> None:
         self.__controlling_button["command"] = command
-
-    @property
-    def transfer_button(self) -> ttk.Button:
-        return self.__transfer_button
-
-    @transfer_button.setter
-    def transfer_button(self, command:callable) -> None:
-        self.__transfer_button["command"] = command
 
     @property
     def export_button(self) -> ttk.Button:
