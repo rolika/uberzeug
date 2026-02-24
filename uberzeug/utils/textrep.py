@@ -94,6 +94,20 @@ def turnover_footer(total:float) -> str:
     return result
 
 
+def stock_header(lookup_term:str=None) -> str:
+    result = line() + "\n"
+    result += headline(STOCKNAME, explode_it=False, uppercase=False) + "\n"
+    result += line() + "\n"
+    if lookup_term:
+        result += f"Keresési kifejezés: {lookup_term.capitalize()}\n"
+        result += line() + "\n"
+    return result
+
+
+def stock_footer(total:float=0.0) -> str:
+    return turnover_footer(total)
+
+
 def asci(text:str) -> str:
     """Return the input as lower-cased alphanumeric text to avoid confusion."""
     return "".join(re.findall("[a-z0-9]", str(text).lower().\

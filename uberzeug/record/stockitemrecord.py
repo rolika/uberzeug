@@ -38,6 +38,7 @@ class StockItemRecord(Record):
         primary key yet."""
         self.articlenumber = None
         super().__init__(translate_attributes=TRANSLATE_ATTRIBUTES, **kwargs)
+        self.__value = self.stock * self.unitprice
 
     def __str__(self) -> str:
         space = " " if self.manufacturer else ""
@@ -95,3 +96,7 @@ class StockItemRecord(Record):
     @property
     def listview(self) -> str:
         return self.__str__()
+
+    @property
+    def value(self) -> float:
+        return self.__value

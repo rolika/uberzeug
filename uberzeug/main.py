@@ -5,10 +5,11 @@
 
 import configparser
 import locale
+
 locale.setlocale(locale.LC_ALL, "")
 import logging
 import socket
-from tkinter import messagebox
+from tkinter import messagebox, simpledialog
 from typing import List
 
 from utils.constants import *
@@ -20,6 +21,7 @@ from gui.stockitemdialog import stockitem_dialog
 from gui.title_ui import TitleUI
 from gui.stockchangedialog\
     import delete_dialog, deposit_dialog, takeback_dialog, withdraw_dialog
+from gui.stockexportdialog import StockExportDialog
 from persistence.databasesession import DatabaseSession
 from persistence.filesession import FileSession
 
@@ -33,13 +35,15 @@ class Uberzeug():
         database_file = config["DEFAULT"]["database"]
         waybillfolder = config["DEFAULT"]["waybillfolder"]
         turnoverfolder = config["DEFAULT"]["turnoverfolder"]
+        stockfolder = config["DEFAULT"]["stockfolder"]
         logfile = config["DEFAULT"]["logfile"]
         title_image = config["DEFAULT"]["title_image"]
         windows_icon = config["DEFAULT"]["windows_icon"]
         linux_icon = config["DEFAULT"]["linux_icon"]
 
         self.__dbsession = DatabaseSession(database_file)
-        self.__filesession = FileSession(waybillfolder, turnoverfolder)
+        self.__filesession = FileSession(waybillfolder, turnoverfolder,
+                                         stockfolder)
         self.__ui = TitleUI(title, organization, title_image, windows_icon,
                             linux_icon, root=self)
         self._bindings()
@@ -58,7 +62,6 @@ class Uberzeug():
         self.__ui.stockui.modify_button = self._modify
         self.__ui.stockui.delete_button = self._delete
         self.__ui.controllui.controlling_button = self._controlling
-        self.__ui.controllui.transfer_button = self._transfer
         self.__ui.controllui.export_button = self._export
 
     def _withdraw(self) -> None:
@@ -143,7 +146,7 @@ class Uberzeug():
             for item in items:
                 self.__dbsession.delete(item)
                 logging.info\
-                    (f"{socket.gethostname()} delete: {item.name} {-item.change}")
+                (f"{socket.gethostname()} delete: {item.name} {-item.change}")
             messagebox.showinfo(DELETE_TITLE, "Anyag(ok) törölve.")
         self._update_buttons()
 
@@ -155,11 +158,15 @@ class Uberzeug():
         TurnoverDialog(self.__ui, self.__dbsession, self.__filesession,
                        "Kontrolling")
 
-    def _transfer(self) -> None:
-        pass
-
     def _export(self) -> None:
-        pass
+        dialog:simpledialog.Dialog = StockExportDialog(self.__ui,
+            "Készlet exportálása",
+            self.__dbsession.select_all_items_for_export())
+        if len(dialog.selected_records):
+            self.__filesession.export_stock(dialog.selected_records,
+                                            dialog.total_value,
+                                            dialog.lookup_term)
+            messagebox.showinfo("Készlet exportálása", "Sikeres exportálás!")
 
 
 if __name__ == "__main__":
