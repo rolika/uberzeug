@@ -314,3 +314,9 @@ class DatabaseSession(sqlite3.Connection):
                         DELETE FROM raktar
                         WHERE cikkszam = ?;
                          """, (item.articlenumber, )),
+
+    def select_all_items_for_export(self) -> List[StockItemRecord]:
+        """Returns all items that are withdawable, i.e. with stock > 0 for
+        export, in descendding order by value, i.e. stock * unitprice. """
+        return sorted(self.load_withdrawable_items(),
+                      key=lambda item: item.value, reverse=True)

@@ -1,7 +1,6 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import simpledialog
-from tkinter import messagebox
 from typing import List
 
 from gui.itemlistbox import ItemListbox

@@ -52,7 +52,7 @@ class LogRecord(Record):
                 format(name=self.name[:33],
                        change=locale.format_string(f="%+.2f", val=self.change,
                                                    grouping=True)[:9],
-                       unit=self.unit,
+                       unit=self.unit[:4],
                        up=locale.format_string(f="%.2f", val=self.unitprice,
                                                grouping=True)[:9],
                        value=locale.format_string(f="%+.2f", val=self.__value,

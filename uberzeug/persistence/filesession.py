@@ -20,13 +20,15 @@ class FileSession:
     like: 24_001 -> 2024 -> June.
     The waybill has a number which looks like 24_001_12, the latter being a
     serial number, which is always +1 of all waybills in the projectfolder."""
-    def __init__(self, waybillfolder:str, turnoverfolder:str,
+    def __init__(self, waybillfolder:str, turnoverfolder:str, stockfolder:str,
                   extension:str=EXTENSION) -> None:
         self.__waybillfolder = pathlib.Path(waybillfolder)
         self.__turnoverfolder = pathlib.Path(turnoverfolder)
+        self.__stockfolder = pathlib.Path(stockfolder)
         self.__extension = extension
         os.makedirs(self.__waybillfolder, exist_ok=True)
         os.makedirs(self.__turnoverfolder, exist_ok=True)
+        os.makedirs(self.__stockfolder, exist_ok=True)
 
     def export_waybill(self, items:List[StockItemRecord],
                        projectnumber:Projectnumber) -> str:
@@ -63,6 +65,20 @@ class FileSession:
             for item in items:
                 f.write(f"{item.listview}\n")
             f.write(textrep.turnover_footer(total))
+
+    def export_stock(self, items:List[StockItemRecord], total:float=0.0,
+                     lookup_term:str=None) -> None:
+        filename = f"készlet_{date.today().strftime('%Y%m%d')}"
+        if lookup_term:
+            filename += f"_{lookup_term}"
+        nth_export = self._count_files(self.__stockfolder) + 1
+        filename += f"_{nth_export}"
+        filename += f".{self.__extension}"
+        with open(self.__stockfolder / filename, "w") as f:
+            f.write(textrep.stock_header(lookup_term))
+            for item in items:
+                f.write(f"{item.valueview}\n")
+            f.write(textrep.stock_footer(total))
 
     def _get_waybillexport_folder(self,
                                   projectnumber:Projectnumber) -> pathlib.Path:
