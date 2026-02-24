@@ -20,7 +20,7 @@ class StockExportDialog(simpledialog.Dialog):
     def body(self, parent:Widget) -> Widget:
         self.__totalvalue_var: IntVar = IntVar()
         self.__itemlistbox = ItemListbox(self, self.__title, self.__master_list,
-                                         self._lookup_callback)
+                                         self._lookup_callback, "valueview")
         self.__itemlistbox.set_width(80)
         self.__itemlistbox.pack(padx=5, pady=5)
         box = Frame(self)

@@ -65,7 +65,7 @@ class FileSession:
             for item in items:
                 f.write(f"{item.listview}\n")
             f.write(textrep.turnover_footer(total))
-    
+
     def export_stock(self, items:List[StockItemRecord], total:float=0.0,
                      lookup_term:str=None) -> None:
         filename = f"készlet_{date.today().strftime('%Y%m%d')}"
@@ -77,7 +77,7 @@ class FileSession:
         with open(self.__stockfolder / filename, "w") as f:
             f.write(textrep.stock_header(lookup_term))
             for item in items:
-                f.write(f"{item.listview}\n")
+                f.write(f"{item.valueview}\n")
             f.write(textrep.stock_footer(total))
 
     def _get_waybillexport_folder(self,

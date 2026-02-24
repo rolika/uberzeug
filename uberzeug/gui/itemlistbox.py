@@ -10,11 +10,13 @@ from record.stockitemrecord import Record
 class ItemListbox(LabelFrame):
     def __init__(self, root=None, title=STOCKNAME,
                  master_list:List[Record]=None,
-                 external_lookup_callback:callable=lambda _: None) -> None:
+                 external_lookup_callback:callable=lambda _: None,
+                 view="listview") -> None:
         super().__init__(root, text=title)
         self.__master_list = master_list
         self.__display_list = None
         self.__external_lookup_callback = external_lookup_callback
+        self.__view = view
         self._init_controll_variables()
         self._build_interface()
         self._bindings()
@@ -65,7 +67,7 @@ class ItemListbox(LabelFrame):
         self.__listbox.delete(0, END)
         self.__display_list = item_list
         for item in item_list:
-            self.__listbox.insert(END, item.listview)
+            self.__listbox.insert(END, getattr(item, self.__view))
 
     def _lookup(self, term:str) -> bool:
         selection = self.__master_list
@@ -123,7 +125,7 @@ class ItemListbox(LabelFrame):
     @lookup_entry.setter
     def lookup_entry(self, value:str) -> None:
         self.__lookup_var.set(value)
-    
+
     @property
     def display_list(self) -> List[Record]:
         return self.__display_list
