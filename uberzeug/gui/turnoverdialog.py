@@ -15,6 +15,7 @@ from persistence.filesession import FileSession
 from record.logbook import LogBook
 from record.logrecord import LogRecord
 from utils.projectnumber import Projectnumber
+from gui.transferdialog import TransferDialog
 
 
 class TurnoverDialog(simpledialog.Dialog):
@@ -64,6 +65,7 @@ class TurnoverDialog(simpledialog.Dialog):
                                      self._lookup_callback)
         self.__listbox.set_width(80)
         self.__listbox.pack(padx=5, pady=5)
+        self.__listbox.bind_selection(self._select_record)
 
         box = Frame(self)
         Label(box, text="Kiválasztás összértéke:").pack(side=LEFT,
@@ -102,6 +104,14 @@ class TurnoverDialog(simpledialog.Dialog):
             lookup_term=self.__listbox.lookup_entry.get())
         messagebox.showinfo\
             (selected_project + " projekt", "Exportálás sikeres!")
+
+    def _select_record(self, _:Event) -> None:
+        record = self.__listbox.get_record()
+        if record:
+            project = Projectnumber(self.__projectoption_var.get())
+            yearmonth = datetime.strptime(f"{self.__yearoption_var.get()}-{self.__monthoption_var.get()}-01", "%Y-%B-%d")
+            TransferDialog(self, "Átvezetés", project, record,
+                           self.__dbsession, yearmonth)
 
     def _update_months(self, *args) -> None:
         self.__listbox.clear_selection()
