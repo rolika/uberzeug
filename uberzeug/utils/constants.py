@@ -6,7 +6,8 @@ CLIENT = ["...................", "...................", "..................."]
 
 CONFIGFILE = r"config.ini"
 
-LOG_COLUMNS = "megnevezes, egysegar, egyseg, valtozas, datum, projektszam"
+LOG_COLUMNS =\
+    "azonosito, megnevezes, egysegar, egyseg, valtozas, datum, projektszam"
 
 EXTENSION = "txt"
 STOCKNAME = "Raktárkészlet"

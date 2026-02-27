@@ -224,7 +224,7 @@ class DatabaseSession(sqlite3.Connection):
             FROM raktar_naplo
             ORDER BY projektszam ASC;
         """)
-        return [Projectnumber(project["projectnumber"]) for project in projects],
+        return [Projectnumber(project["projectnumber"]) for project in projects]
 
     def load_all_items(self) -> List[StockItemRecord]:
         return [StockItemRecord(**item) for item in self._select_all_items()]
@@ -285,8 +285,10 @@ class DatabaseSession(sqlite3.Connection):
             hely = ?, lejarat = ?, gyartasido = ?, utolso_modositas = date()
         WHERE cikkszam = ?;
         """, (stockitem.stock, stockitem.name, stockitem.nickname,
-              stockitem.manufacturer, stockitem.description, stockitem.color, stockitem.comment, stockitem.unit, stockitem.unitprice,
-              stockitem.packaging, stockitem.place, stockitem.shelflife, stockitem.productiondate, stockitem.articlenumber))
+              stockitem.manufacturer, stockitem.description, stockitem.color,
+              stockitem.comment, stockitem.unit, stockitem.unitprice,
+              stockitem.packaging, stockitem.place, stockitem.shelflife,
+              stockitem.productiondate, stockitem.articlenumber))
 
     def insert(self, stockitem:StockItemRecord) -> None:
         with self:
@@ -320,3 +322,11 @@ class DatabaseSession(sqlite3.Connection):
         export, in descendding order by value, i.e. stock * unitprice. """
         return sorted(self.load_withdrawable_items(),
                       key=lambda item: item.value, reverse=True)
+
+    def transfer_log(self, articlenumber:int, project:Projectnumber) -> None:
+        with self:
+            self.execute("""
+                UPDATE raktar_naplo
+                SET projektszam = ?
+                WHERE azonosito = ?;
+            """, (str(project), articlenumber))
