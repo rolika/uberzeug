@@ -31,7 +31,6 @@ class TransferDialog(simpledialog.Dialog):
         self.__projectoption_var: StringVar = StringVar()
         self.__projectcombobox: ttk.Combobox = ttk.Combobox(
             box, textvariable=self.__projectoption_var, state="readonly")
-        self.__projectoption_var.trace("w", self._transfer_log)
         projectoptions = [project.legal for project in\
                 self.__dbsession.query_all_distinct_projects()]
         self.__projectcombobox["values"] = projectoptions
@@ -40,7 +39,7 @@ class TransferDialog(simpledialog.Dialog):
         box.pack()
         return None
 
-    def _transfer_log(self, *args) -> None:
+    def apply(self):
         selected_project = self.__projectoption_var.get()
         if selected_project == self.__project.legal:
             return
