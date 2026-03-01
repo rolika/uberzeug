@@ -106,8 +106,13 @@ class TurnoverDialog(simpledialog.Dialog):
     def _select_record(self, _:Event) -> None:
         record = self.__listbox.get_record()
         if record:
+            selected_year = self.__yearoption_var.get()
+            selected_month = self.__monthoption_var.get()
+            yearmonth = datetime\
+                .strptime(f"{selected_year}-{selected_month}-01", "%Y-%B-%d")
             project = Projectnumber(self.__projectoption_var.get())
-            TransferDialog(self, "Átvezetés", project, record, self.__dbsession)
+            TransferDialog(self, "Átvezetés", project, yearmonth, record,
+                           self.__dbsession)
             self._update_months()  # update log after transfer
 
     def _update_months(self, *args) -> None:
