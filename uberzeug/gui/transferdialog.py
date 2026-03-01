@@ -76,15 +76,18 @@ class TransferDialog(simpledialog.Dialog):
     def _update_project_selection(self, *args):
         project = Projectnumber(self.__projectoption_var.get())
         self.__selected_project_var.set(\
-            f"{project} anyagköltsége átvezetés után:")
+            f"{project.legal} anyagköltsége átvezetés után:")
+        difference = 0.0 if project == self.__project\
+            else self.__logrecord.value
         self.__project_turnover_value.set(\
-            self._get_logbook_value(self.__project))
+            self._get_logbook_value(self.__project, -difference))
         self.__selected_project_turnover_value.set(\
-            self._get_logbook_value(project))
+            self._get_logbook_value(project, difference))
 
-    def _get_logbook_value(self, project:Projectnumber) -> str:
+    def _get_logbook_value(self, project:Projectnumber,
+                           difference:float) -> str:
         logbook = LogBook(\
             self.__dbsession.query_log_by_month_and_project(self.__yearmonth,
                                                             project))
-        return locale.format_string("%+.2f", logbook.total,
+        return locale.format_string("%+.2f", logbook.total + difference,
                                     grouping=True) + " Ft"
