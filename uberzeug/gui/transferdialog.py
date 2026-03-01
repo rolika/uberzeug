@@ -29,22 +29,35 @@ class TransferDialog(simpledialog.Dialog):
     def body(self, root:Widget) -> Widget:
         box = Frame(self)
         Label(box, text=self.__logrecord.listview).pack(padx=PADX, pady=PADY)
+        Label(box, text="Átvezetés célprojektje:")\
+            .pack(side=LEFT, padx=PADX, pady=PADY)
         self.__projectoption_var: StringVar = StringVar()
         self.__projectcombobox: ttk.Combobox = ttk.Combobox(
             box, textvariable=self.__projectoption_var, state="readonly")
         projectoptions = [project.legal for project in\
-                self.__dbsession.query_all_distinct_projects()]
+                self.__dbsession.query_distinct_projects(self.__yearmonth)]
         self.__projectcombobox["values"] = projectoptions
         self.__projectoption_var.set(self.__project.legal)
         self.__projectoption_var.trace("w", self._update_project_selection)
         self.__projectcombobox.pack(fill=X, expand=True)
-        Label(box,
-              text=f"{self.__project.legal} anyagköltsége átkönyvelés után:")\
+        box.pack(padx=PADX, pady=PADY)
+
+        box = Frame(self)
+        text = f"{self.__project.legal} anyagköltsége átvezetés után:"
+        Label(box, text=text).pack(side=LEFT, padx=PADX, pady=PADY)
+        self.__project_turnover_value = StringVar()
+        Label(box, textvariable=self.__project_turnover_value)\
+            .pack(padx=PADX, pady=PADY)
+        box.pack(padx=PADX, pady=PADY)
+
+        box = Frame(self)
+        self.__selected_project_var = StringVar()
+        Label(box, textvariable=self.__selected_project_var)\
             .pack(side=LEFT, padx=PADX, pady=PADY)
-        self.__turnover_value = StringVar()
-        Label(box, textvariable=self.__turnover_value)\
-            .pack(side=LEFT, padx=PADX, pady=PADY)
-        box.pack()
+        self.__selected_project_turnover_value = StringVar()
+        Label(box, textvariable=self.__selected_project_turnover_value)\
+            .pack(padx=PADX, pady=PADY)
+        box.pack(padx=PADX, pady=PADY)
         self._update_project_selection()
         return None
 
@@ -61,9 +74,17 @@ class TransferDialog(simpledialog.Dialog):
         self.destroy()
 
     def _update_project_selection(self, *args):
-        project_logbook = LogBook(\
+        project = Projectnumber(self.__projectoption_var.get())
+        self.__selected_project_var.set(\
+            f"{project} anyagköltsége átvezetés után:")
+        self.__project_turnover_value.set(\
+            self._get_logbook_value(self.__project))
+        self.__selected_project_turnover_value.set(\
+            self._get_logbook_value(project))
+
+    def _get_logbook_value(self, project:Projectnumber) -> str:
+        logbook = LogBook(\
             self.__dbsession.query_log_by_month_and_project(self.__yearmonth,
-                                                            self.__project))
-        self.__turnover_value.set(\
-            locale.format_string("%+.2f",
-                                 project_logbook.total, grouping=True) + " Ft")
+                                                            project))
+        return locale.format_string("%+.2f", logbook.total,
+                                    grouping=True) + " Ft"
