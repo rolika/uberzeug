@@ -28,4 +28,4 @@ class LogBook():
     @property
     def total(self) -> int:
         return reduce(lambda x, y: x + y,
-                      (record.value for record in self.__records))
+                      (record.value for record in self.__records), 0)
