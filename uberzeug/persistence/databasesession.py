@@ -332,3 +332,12 @@ class DatabaseSession(sqlite3.Connection):
                 SET projektszam = ?
                 WHERE azonosito = ?;
             """, (str(project), articlenumber))
+    
+    def update_log_unitprice(self, articlenumber:int,
+                             new_unitprice:float) -> None:
+        with self:
+            self.execute("""
+                UPDATE raktar_naplo
+                SET egysegar = ?
+                WHERE azonosito = ?;
+            """, (new_unitprice, articlenumber))

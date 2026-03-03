@@ -35,7 +35,7 @@ class LogRecord(Record):
             self.unit)
 
     def is_referring_to(self, stockitem:StockItemRecord) -> bool:
-        """Returns True if the name of the stocitem is referring to the name
+        """Returns True if the name of the stockitem is referring to the name
         of the log record."""
         return asci(stockitem.name) in asci(self.name)
 
