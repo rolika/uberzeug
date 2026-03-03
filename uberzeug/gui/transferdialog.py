@@ -106,7 +106,7 @@ class TransferDialog(simpledialog.Dialog):
         self.__selected_project_var.set(\
             f"{project.legal} anyagköltsége átvezetés után:")        
         if project == self.__project:
-            difference =\self.__logrecord.change *\
+            difference = self.__logrecord.change *\
                 (self.__logrecord.unitprice - unitprice)
             project_turnover =\
                 self._get_logbook_value(self.__project, difference)
