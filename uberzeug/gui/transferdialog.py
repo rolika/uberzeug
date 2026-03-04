@@ -103,22 +103,23 @@ class TransferDialog(simpledialog.Dialog):
             unitprice = self.__logrecord.unitprice
         self.__value_var.set(locale.format_string(f="%+.2f",
             val=unitprice * self.__logrecord.change, grouping=True) + " Ft")
-        self.__selected_project_var.set(\
-            f"{project.legal} anyagköltsége átvezetés után:")
         if project == self.__project:
+            self.__selected_project_var.set("")
             difference = self.__logrecord.change *\
                 (self.__logrecord.unitprice - unitprice)
             project_turnover =\
                 self._get_logbook_value(self.__project, difference)
-            selected_project_turnover = project_turnover
+            selected_project_turnover = ""
         else:
+            self.__selected_project_var.set(\
+                f"{project.legal} anyagköltsége átvezetés után:")
             difference = self.__logrecord.change * unitprice
             project_turnover = self._get_logbook_value(self.__project,
                                                        -difference)
             selected_project_turnover = self._get_logbook_value(project,
                                                                 difference)
-        self.__project_turnover_value.set(project_turnover)
         self.__selected_project_turnover_value.set(selected_project_turnover)
+        self.__project_turnover_value.set(project_turnover)
 
     def _get_logbook_value(self, project:Projectnumber,
                            difference:float) -> str:
