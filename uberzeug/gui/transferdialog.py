@@ -104,7 +104,7 @@ class TransferDialog(simpledialog.Dialog):
         self.__value_var.set(locale.format_string(f="%+.2f",
             val=unitprice * self.__logrecord.change, grouping=True) + " Ft")
         self.__selected_project_var.set(\
-            f"{project.legal} anyagköltsége átvezetés után:")        
+            f"{project.legal} anyagköltsége átvezetés után:")
         if project == self.__project:
             difference = self.__logrecord.change *\
                 (self.__logrecord.unitprice - unitprice)
