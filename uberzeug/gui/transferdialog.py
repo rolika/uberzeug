@@ -108,7 +108,7 @@ class TransferDialog(simpledialog.Dialog):
             difference = self.__logrecord.change *\
                 (self.__logrecord.unitprice - unitprice)
             project_turnover =\
-                self._get_logbook_value(self.__project, difference)
+                self._get_logbook_value(self.__project, -difference)
             selected_project_turnover = ""
         else:
             self.__selected_project_var.set(\
@@ -124,7 +124,6 @@ class TransferDialog(simpledialog.Dialog):
     def _get_logbook_value(self, project:Projectnumber,
                            difference:float) -> str:
         logbook = LogBook(\
-            self.__dbsession.query_log_by_month_and_project(self.__yearmonth,
-                                                            project))
+            self.__dbsession.query_log(project, self.__yearmonth))
         return locale.format_string("%+.2f", logbook.total + difference,
                                     grouping=True) + " Ft"
