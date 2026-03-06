@@ -1,1 +1,0 @@
-python scripts/viki_app.py
