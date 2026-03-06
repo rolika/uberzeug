@@ -23,6 +23,7 @@ TRANSLATE_ATTRIBUTES = {
     "gyartasido": "productiondate",
     "szin": "color",
     "jeloles": "notation",
+    "szallitasi_ido": "deliverytime",
     "letrehozas": "created",
     "utolso_modositas": "modified"
 }

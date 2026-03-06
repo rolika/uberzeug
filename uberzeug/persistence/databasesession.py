@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 import pathlib
 import sqlite3
 from typing import List
@@ -12,10 +12,11 @@ from record.stockitemrecord import StockItemRecord
 class DatabaseSession(sqlite3.Connection):
     """This class handles all database-related stuff."""
 
-    def __init__(self, filepath:str) -> None:
+    def __init__(self, filepath:str, lookback_days:int) -> None:
         """Initialize an sqlite database connection."""
         super().__init__(pathlib.Path(filepath))
         self.row_factory = sqlite3.Row  # access results with column-names
+        self.__lookback_days = lookback_days
         self._create_tables()
 
     def _create_tables(self):
@@ -341,3 +342,15 @@ class DatabaseSession(sqlite3.Connection):
                 SET egysegar = ?
                 WHERE azonosito = ?;
             """, (new_unitprice, articlenumber))
+
+    def get_usage(self, stockitem:StockItemRecord) -> int:
+        """Returns the total usage of the stockitem in the lookback period."""
+        name = stockitem.manufacturer + " " + stockitem.name
+        lookback_date = date.today() - timedelta(days=self.__lookback_days)
+        usage = self.execute("""
+            SELECT SUM(valtozas) AS usage
+            FROM raktar_naplo
+            WHERE megnevezes = ?
+            AND datum >= ?;
+        """, (name, lookback_date))
+        return usage.fetchone()["usage"] or 0
