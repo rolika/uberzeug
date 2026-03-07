@@ -82,6 +82,16 @@ class TransferDialog(simpledialog.Dialog):
         self._update_values()
         return entry
 
+    def buttonbox(self):
+        """Override standard buttons."""
+        box = Frame(self)
+        self.__ok_button = ttk.Button(box, text="Kész", width=10,
+                                      command=self.ok)
+        self.__ok_button.pack(side=LEFT, padx=5, pady=5)
+        ttk.Button(box, text="Mégse", width=10, command=self.cancel)\
+            .pack(side=LEFT, padx=5, pady=5)
+        box.pack()
+
     def apply(self):
         selected_project = self.__projectoption_var.get()
         if selected_project == self.__project.legal and\
