@@ -79,8 +79,7 @@ class StockItemRecord(Record):
         self.stock -= self.change
 
     def is_almost_same(self, item:Self) -> bool:
-        if asci(item.name) in asci(self.name) and\
-            self.unitprice == item.unitprice:
+        if self.contains(item.name) and self.unitprice == item.unitprice:
             return True
         else:
             return False
@@ -105,7 +104,7 @@ class StockItemRecord(Record):
                                                grouping=True)[:9],
                        value=locale.format_string(f="%+.2f", val=self.__value,
                                                   grouping=True))
-    
+
     @property
     def deliveryview(self) -> str:
         return "{:<36} {:>10} {:<7}; szállítási idő: {:>3} nap".format(

@@ -37,7 +37,7 @@ class LogRecord(Record):
     def is_referring_to(self, stockitem:StockItemRecord) -> bool:
         """Returns True if the name of the stockitem is referring to the name
         of the log record."""
-        return asci(stockitem.name) in asci(self.name)
+        return self.contains(stockitem.name)
 
     def contains(self, term:str) -> bool:
         for attribute in TRANSLATE_ATTRIBUTES.values():
