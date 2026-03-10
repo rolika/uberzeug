@@ -26,7 +26,7 @@ class ShortageWarningDialog(simpledialog.Dialog):
             "cikkekből fogyás volt, és a szállítási idejüket is figyelembe\n"
             "véve elképzelhető, hogy a készlet nem lesz elegendő.")\
             .pack(padx=PADX, pady=PADY)
-        self.__itemlistbox = ItemListbox(box, title="Rövidülő cikkek",
+        self.__itemlistbox = ItemListbox(box, title="Fogyó készlet",
                                          master_list=self.__shortitems,
                                          view="deliveryview")
         self.__itemlistbox.set_width(80)
@@ -43,6 +43,6 @@ class ShortageWarningDialog(simpledialog.Dialog):
         ttk.Button(box, text="Kész", width=10, command=self.cancel)\
             .pack(side=LEFT, padx=5, pady=5)
         box.pack()
-    
+
     def apply(self):
         return super().apply()

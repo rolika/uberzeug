@@ -51,7 +51,6 @@ class Uberzeug():
         self.__lookback_days = lookback_days
         self._bindings()
         self._update_buttons()
-        self._check_shortages()
         self.__ui.pack()
         logging.basicConfig(filename=logfile, encoding='utf-8',
                             format="%(levelname)s: %(asctime)s %(message)s",
@@ -67,6 +66,7 @@ class Uberzeug():
         self.__ui.stockui.delete_button = self._delete
         self.__ui.controllui.controlling_button = self._controlling
         self.__ui.controllui.export_button = self._export
+        self.__ui.controllui.shortage_button = self._check_shortages
 
     def _withdraw(self) -> None:
         projectnumber = ask_projectnumber(self.__ui)
@@ -171,12 +171,12 @@ class Uberzeug():
                                             dialog.total_value,
                                             dialog.lookup_term)
             messagebox.showinfo("Készlet exportálása", "Sikeres exportálás!")
-    
+
     def _check_shortages(self) -> None:
         short_items = []
         for item in self.__dbsession.get_usage(self.__lookback_days):
-            prediction = round(item.deliverytime * item.usage / self.__lookback_days)
-            print(f"{item.name}: {item.stock} in stock, prediction: {prediction}")
+            prediction =\
+                round(item.deliverytime * item.usage / self.__lookback_days)
             if item.stock < prediction:
                 short_items.append(item)
         if short_items:

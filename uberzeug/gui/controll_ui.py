@@ -11,8 +11,12 @@ class ControllUI(Frame):
         box = ttk.Frame(self)
         self.__controlling_button = ttk.Button(box, text="Utókalkuláció")
         self.__controlling_button.pack(fill=BOTH, padx=5, pady=5, side=LEFT)
-        self.__export_button = ttk.Button(box, text="Raktárkészlet\nexportálása")
+        self.__export_button = ttk.Button(box,
+                                          text="Raktárkészlet\nexportálása")
         self.__export_button.pack(fill=BOTH, padx=5, pady=5, side=LEFT)
+        self.__shortage_button = ttk.Button(box,
+                                            text="Fogyó készlet\nfigyelése")
+        self.__shortage_button.pack(fill=BOTH, padx=5, pady=5)
         box.pack(side=LEFT, padx=5, pady=5, anchor=NW)
 
     @property
@@ -30,6 +34,14 @@ class ControllUI(Frame):
     @export_button.setter
     def export_button(self, command:callable) -> None:
         self.__export_button["command"] = command
+
+    @property
+    def shortage_button(self) -> ttk.Button:
+        return self.__shortage_button
+
+    @shortage_button.setter
+    def shortage_button(self, command:callable) -> None:
+        self.__shortage_button["command"] = command
 
 
 if __name__ == "__main__":
