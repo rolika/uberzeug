@@ -23,7 +23,7 @@ TRANSLATE_ATTRIBUTES = {
     "gyartasido": "productiondate",
     "szin": "color",
     "jeloles": "notation",
-    "szallitasi_ido": "deliverytime",
+    "szallitasido": "deliverytime",
     "letrehozas": "created",
     "utolso_modositas": "modified"
 }
@@ -105,6 +105,14 @@ class StockItemRecord(Record):
                                                grouping=True)[:9],
                        value=locale.format_string(f="%+.2f", val=self.__value,
                                                   grouping=True))
+    
+    @property
+    def deliveryview(self) -> str:
+        return "{:<36} {:>10} {:<7}; szállítási idő: {:>3} nap".format(
+                (self.name)[0:36],
+                locale.format_string(f="%.2f", val=self.stock, grouping=True),
+                self.unit,
+                self.deliverytime)
 
     @property
     def listview(self) -> str:

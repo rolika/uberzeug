@@ -17,6 +17,7 @@ from gui.asknewexistcancel import ask_newexistcancel
 from gui.askprojectnumber import ask_projectnumber
 from gui.turnoverdialog import TurnoverDialog
 from gui.modifyitemdialog import modifyitem_dialog
+from gui.shortagewarningdialog import ShortageWarningDialog
 from gui.stockitemdialog import stockitem_dialog
 from gui.title_ui import TitleUI
 from gui.stockchangedialog\
@@ -47,8 +48,10 @@ class Uberzeug():
                                          stockfolder)
         self.__ui = TitleUI(title, organization, title_image, windows_icon,
                             linux_icon, root=self)
+        self.__lookback_days = lookback_days
         self._bindings()
         self._update_buttons()
+        self._check_shortages()
         self.__ui.pack()
         logging.basicConfig(filename=logfile, encoding='utf-8',
                             format="%(levelname)s: %(asctime)s %(message)s",
@@ -168,6 +171,17 @@ class Uberzeug():
                                             dialog.total_value,
                                             dialog.lookup_term)
             messagebox.showinfo("Készlet exportálása", "Sikeres exportálás!")
+    
+    def _check_shortages(self) -> None:
+        short_items = []
+        for item in self.__dbsession.get_usage(self.__lookback_days):
+            prediction = round(item.deliverytime * item.usage / self.__lookback_days)
+            print(f"{item.name}: {item.stock} in stock, prediction: {prediction}")
+            if item.stock < prediction:
+                short_items.append(item)
+        if short_items:
+            ShortageWarningDialog(self.__ui, "Kifogyó készlet",
+                                  self.__lookback_days, short_items)
 
 
 if __name__ == "__main__":

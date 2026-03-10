@@ -69,6 +69,7 @@ class DatabaseSession(sqlite3.Connection):
                     gyartasido,
                     szin,
                     jeloles,
+                    szallitasido,
                     letrehozas,
                     utolso_modositas
             FROM raktar ORDER BY gyarto, megnevezes;
@@ -343,14 +344,21 @@ class DatabaseSession(sqlite3.Connection):
                 WHERE azonosito = ?;
             """, (new_unitprice, articlenumber))
 
-    def get_usage(self, stockitem:StockItemRecord) -> int:
-        """Returns the total usage of the stockitem in the lookback period."""
-        name = stockitem.manufacturer + " " + stockitem.name
-        lookback_date = date.today() - timedelta(days=self.__lookback_days)
+    def get_usage(self, lookback_days:int) -> List[StockItemRecord]:
         usage = self.execute("""
-            SELECT SUM(valtozas) AS usage
+            SELECT *, SUM(valtozas) AS usage
             FROM raktar_naplo
-            WHERE megnevezes = ?
-            AND datum >= ?;
-        """, (name, lookback_date))
-        return usage.fetchone()["usage"] or 0
+            WHERE datum >= date('2025-11-30', '-' || ? || ' days')
+            GROUP BY megnevezes
+            ORDER BY usage DESC;
+        """, (lookback_days, ))
+        logrecords = [LogRecord(**item) for item in usage]
+        all_items = self.load_all_items()
+        usage_records:List[StockItemRecord] = []
+        for logrecord in logrecords:
+            for item in all_items:
+                if logrecord.is_referring_to(item) and logrecord.usage < 0:
+                    setattr(item, "usage", abs(logrecord.usage))
+                    usage_records.append(item)
+                    break
+        return usage_records
