@@ -106,14 +106,6 @@ class StockItemRecord(Record):
                                                   grouping=True))
 
     @property
-    def deliveryview(self) -> str:
-        return "{:<36} {:>10} {:<7}; szállítási idő: {:>3} nap".format(
-                (self.name)[0:36],
-                locale.format_string(f="%.2f", val=self.stock, grouping=True),
-                self.unit,
-                self.deliverytime)
-
-    @property
     def listview(self) -> str:
         return self.__str__()
 

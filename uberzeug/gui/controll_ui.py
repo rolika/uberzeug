@@ -15,7 +15,7 @@ class ControllUI(Frame):
                                           text="Raktárkészlet\nexportálása")
         self.__export_button.pack(fill=BOTH, padx=5, pady=5, side=LEFT)
         self.__shortage_button = ttk.Button(box,
-                                            text="Fogyó készlet\nfigyelése")
+                                            text="Fogyó készlet\nellenőrzése")
         self.__shortage_button.pack(fill=BOTH, padx=5, pady=5)
         box.pack(side=LEFT, padx=5, pady=5, anchor=NW)
 

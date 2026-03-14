@@ -27,9 +27,7 @@ class ShortageWarningDialog(simpledialog.Dialog):
             "véve elképzelhető, hogy a készlet nem lesz elegendő.")\
             .pack(padx=PADX, pady=PADY)
         self.__itemlistbox = ItemListbox(box, title="Fogyó készlet",
-                                         master_list=self.__shortitems,
-                                         view="deliveryview")
-        self.__itemlistbox.set_width(80)
+                                         master_list=self.__shortitems)
         self.__itemlistbox.pack(padx=PADX, pady=PADY)
         box.pack(padx=PADX, pady=PADY)
         return box
