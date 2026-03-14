@@ -97,12 +97,12 @@ class StockItemRecord(Record):
     def valueview(self) -> str:
         return "{name:32} {stock:>9} {unit:<4} x {up:>10} = {value:>14} Ft".\
                 format(name=(self.manufacturer + " " + self.name)[:32],
-                       stock=locale.format_string(f="%+.2f", val=self.stock,
+                       stock=locale.format_string(f="%.2f", val=self.stock,
                                                   grouping=True)[:9],
                        unit=self.unit[:4],
                        up=locale.format_string(f="%.2f", val=self.unitprice,
                                                grouping=True)[:9],
-                       value=locale.format_string(f="%+.2f", val=self.__value,
+                       value=locale.format_string(f="%.2f", val=self.__value,
                                                   grouping=True))
 
     @property
