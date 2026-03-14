@@ -78,8 +78,8 @@ class StockItemRecord(Record):
         assert  hasattr(self, "change")
         self.stock -= self.change
 
-    def is_almost_same(self, item:Self) -> bool:
-        if self.contains(item.name) and self.unitprice == item.unitprice:
+    def is_like(self, item:Self) -> bool:
+        if self.contains(item.name):
             return True
         else:
             return False

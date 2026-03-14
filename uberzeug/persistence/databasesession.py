@@ -274,7 +274,7 @@ class DatabaseSession(sqlite3.Connection):
 
     def lookup(self, newitem:StockItemRecord) -> StockItemRecord|None:
         for stockitem in self.load_all_items():
-            if stockitem.is_almost_same(newitem):
+            if stockitem.is_like(newitem):
                 return stockitem
         return None
 
