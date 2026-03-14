@@ -348,7 +348,7 @@ class DatabaseSession(sqlite3.Connection):
         usage = self.execute("""
             SELECT *, SUM(valtozas) AS usage
             FROM raktar_naplo
-            WHERE datum >= date('2025-11-30', '-' || ? || ' days')
+            WHERE datum >= date('now', '-' || ? || ' days')
             GROUP BY megnevezes
             ORDER BY usage DESC;
         """, (lookback_days, ))
