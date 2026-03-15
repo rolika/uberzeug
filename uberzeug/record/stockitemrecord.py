@@ -4,7 +4,7 @@ locale.setlocale(locale.LC_ALL, "")
 from typing import Self
 
 from record.record import Record
-from utils.textrep import asci
+from utils.textrep import simplify
 
 
 TRANSLATE_ATTRIBUTES = {
@@ -63,8 +63,8 @@ class StockItemRecord(Record):
 
     def contains(self, term:str) -> bool:
         for attribute in TRANSLATE_ATTRIBUTES.values():
-            if asci(term) in\
-                asci(str(getattr(self, attribute, None))):
+            if simplify(term) in\
+                simplify(str(getattr(self, attribute, None))):
                 return True
         return False
 

@@ -1,7 +1,7 @@
 import locale
 locale.setlocale(locale.LC_ALL, "")
 
-from utils.textrep import asci
+from utils.textrep import simplify
 from record.record import Record
 from record.stockitemrecord import StockItemRecord
 
@@ -37,12 +37,12 @@ class LogRecord(Record):
     def is_referring_to(self, stockitem:StockItemRecord) -> bool:
         """Returns True if the name of the stockitem is referring to the name
         of the log record."""
-        return self.contains(stockitem.name)
+        return simplify(stockitem.name) in simplify(self.name)
 
     def contains(self, term:str) -> bool:
         for attribute in TRANSLATE_ATTRIBUTES.values():
-            if asci(term) in\
-                asci(str(getattr(self, attribute, None))):
+            if simplify(term) in\
+                simplify(str(getattr(self, attribute, None))):
                 return True
         return False
 
