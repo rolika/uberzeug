@@ -291,6 +291,15 @@ class DatabaseSession(sqlite3.Connection):
               stockitem.comment, stockitem.unit, stockitem.unitprice,
               stockitem.packaging, stockitem.place, stockitem.shelflife,
               stockitem.productiondate, stockitem.articlenumber))
+        if hasattr(stockitem, "oldname"):
+            space = " " if stockitem.manufacturer else ""
+            new_name = stockitem.manufacturer + space + stockitem.name
+            with self:
+                self.execute("""
+                    UPDATE raktar_naplo
+                    SET megnevezes = ?
+                    WHERE megnevezes = ?;
+                """, (new_name, stockitem.oldname))
 
     def insert(self, stockitem:StockItemRecord) -> None:
         with self:
@@ -362,3 +371,12 @@ class DatabaseSession(sqlite3.Connection):
                     usage_records.append(item)
                     break
         return usage_records
+
+    def get_stockitem_by_articlenumber(self,
+                                       articlenumber:int) -> StockItemRecord:
+        item = self.execute("""
+            SELECT *
+            FROM raktar
+            WHERE cikkszam = ?;
+        """, (articlenumber, )).fetchone()
+        return StockItemRecord(**item) if item else None

@@ -125,7 +125,7 @@ class Uberzeug():
                     setattr(existing_stockitem, "change", newitem.stock)
                     existing_stockitem.apply_change()
                     self.__dbsession.update(existing_stockitem)
-                    log = f"update: {newitem.name} +{newitem.stock}"
+                    log = f"update: {newitem.name} + {newitem.stock}"
             else:
                 self.__dbsession.insert(newitem)
             logging.info(f"{host} {log}")
@@ -136,6 +136,11 @@ class Uberzeug():
         master_list = self.__dbsession.load_all_items()
         item = modifyitem_dialog(self.__ui, master_list)
         if item:
+            old_item = self.__dbsession\
+                .get_stockitem_by_articlenumber(item.articlenumber)
+            space = " " if old_item.manufacturer else ""
+            name = old_item.manufacturer + space + old_item.name
+            setattr(item, "oldname", name)
             self.__dbsession.update(item)
             logging.info\
                 (f"{socket.gethostname()} modify: {item.name} {item.stock}")
