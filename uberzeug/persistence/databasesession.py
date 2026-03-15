@@ -12,11 +12,10 @@ from record.stockitemrecord import StockItemRecord
 class DatabaseSession(sqlite3.Connection):
     """This class handles all database-related stuff."""
 
-    def __init__(self, filepath:str, lookback_days:int) -> None:
+    def __init__(self, filepath:str) -> None:
         """Initialize an sqlite database connection."""
         super().__init__(pathlib.Path(filepath))
         self.row_factory = sqlite3.Row  # access results with column-names
-        self.__lookback_days = lookback_days
         self._create_tables()
 
     def _create_tables(self):
@@ -38,6 +37,7 @@ class DatabaseSession(sqlite3.Connection):
                     gyartasido,
                     szin,
                     jeloles,
+                    szallitasido,
                     letrehozas,
                     utolso_modositas);
                 """)

@@ -43,7 +43,7 @@ class Uberzeug():
         linux_icon = config["DEFAULT"]["linux_icon"]
         lookback_days = int(config["DEFAULT"]["lookback_days"])
 
-        self.__dbsession = DatabaseSession(database_file, lookback_days)
+        self.__dbsession = DatabaseSession(database_file)
         self.__filesession = FileSession(waybillfolder, turnoverfolder,
                                          stockfolder)
         self.__ui = TitleUI(title, organization, title_image, windows_icon,
