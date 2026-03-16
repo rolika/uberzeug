@@ -9,13 +9,17 @@ class _AskNewExistCancel(simpledialog.Dialog):
         super().__init__(parent, title="Figyelj!")
 
     def body(self, parent:Widget) -> None:
-        ttk.Label(self, text="Már létezik anyag ilyen névvel és egységárral.").pack(ipadx=5, ipady=5, padx=5, pady=5)
+        ttk.Label(self, text="Már létezik anyag ilyen névvel és egységárral.")\
+            .pack(ipadx=5, ipady=5, padx=5, pady=5)
 
     def buttonbox(self) -> None:
         box = Frame(self)
-        ttk.Button(box, text="Új tétel legyen!", command=self._newitem).pack(ipadx=5, ipady=5, padx=5, pady=5, fill=X)
-        ttk.Button(box, text="Meglévő tételhez adom.", command=self._existitem).pack(ipadx=5, ipady=5, padx=5, pady=5, fill=X)
-        ttk.Button(box, text="Mégse", command=self.cancel).pack(ipadx=5, ipady=5, padx=5, pady=5, fill=X)
+        ttk.Button(box, text="Új tétel legyen!", command=self._newitem)\
+            .pack(ipadx=5, ipady=5, padx=5, pady=5, fill=X)
+        ttk.Button(box, text="Meglévő tételhez adom.", command=self._existitem)\
+            .pack(ipadx=5, ipady=5, padx=5, pady=5, fill=X)
+        ttk.Button(box, text="Mégse", command=self.cancel)\
+            .pack(ipadx=5, ipady=5, padx=5, pady=5, fill=X)
         self.bind("<Escape>", self.cancel)
         box.pack()
 
