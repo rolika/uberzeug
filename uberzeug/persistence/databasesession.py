@@ -284,13 +284,14 @@ class DatabaseSession(sqlite3.Connection):
         UPDATE raktar
         SET keszlet = ?, megnevezes = ?, becenev = ?, gyarto = ?, leiras = ?,
             szin = ?, megjegyzes = ?, egyseg = ?, egysegar = ?, kiszereles = ?,
-            hely = ?, jeloles = '', lejarat = 60, gyartasido = date(),
-            utolso_modositas = date()
+            hely = ?, szallitasido = ?,jeloles = '', lejarat = 60,
+            gyartasido = date(), utolso_modositas = date()
         WHERE cikkszam = ?;
         """, (stockitem.stock, stockitem.name, stockitem.nickname,
               stockitem.manufacturer, stockitem.description, stockitem.color,
               stockitem.comment, stockitem.unit, stockitem.unitprice,
-              stockitem.packaging, stockitem.place, stockitem.articlenumber))
+              stockitem.packaging, stockitem.place, stockitem.deliverytime,
+              stockitem.articlenumber))
         if hasattr(stockitem, "oldname"):
             space = " " if stockitem.manufacturer else ""
             new_name = stockitem.manufacturer + space + stockitem.name
@@ -306,13 +307,14 @@ class DatabaseSession(sqlite3.Connection):
             self.execute("""
         INSERT INTO raktar (keszlet, megnevezes, becenev, gyarto, leiras, szin,
                             megjegyzes, egyseg, egysegar, kiszereles, hely,
-                            jeloles, lejarat, gyartasido, letrehozas,
-                            utolso_modositas)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', 60, date(), date(), date())
+                            szallitasido, jeloles, lejarat, gyartasido,
+                            letrehozas, utolso_modositas)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', 60, date(), date(),
+                date())
         """, (stockitem.stock, stockitem.name, stockitem.nickname,
               stockitem.manufacturer, stockitem.description, stockitem.color,
               stockitem.comment, stockitem.unit, stockitem.unitprice,
-              stockitem.packaging, stockitem.place))
+              stockitem.packaging, stockitem.place, stockitem.deliverytime))
 
     def update_stock(self, items:List[StockItemRecord]) -> None:
         with self:

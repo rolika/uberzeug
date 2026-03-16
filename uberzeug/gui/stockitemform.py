@@ -1,7 +1,5 @@
 import locale
 locale.setlocale(locale.LC_ALL, "")
-
-from datetime import date
 from tkinter import *
 from tkinter import ttk
 
@@ -35,40 +33,40 @@ class StockItemForm(LabelFrame):
         self.__place_var = StringVar()
         self.__unitprice_var = StringVar()
         self.__stock_var = StringVar()
+        self.__deliverytime_var = StringVar()
 
     def _build_interface(self) -> None:
         is_number = self.register(self._is_number)
-        is_date = self.register(self._is_date)
         is_empty = self.register(self._is_empty)
 
-        Label(self, text="Megnevezés:")\
-            .grid(row=0, column=0, sticky=W, padx=PADX, pady=PADY)
-        self.__name_entry =\
-            ttk.Entry(self, justify=LEFT, textvariable=self.__name_var,
-                      name="name", validate="all",
-                      validatecommand=(is_empty, "%P", "%W"))
-        self.__name_entry.grid(row=0, column=1, sticky=E+W, padx=PADX,
-                               pady=PADY, columnspan=7)
-
         Label(self, text="Gyártó:")\
-            .grid(row=1, column=0, sticky=W, padx=PADX, pady=PADY)
+            .grid(row=0, column=0, sticky=W, padx=PADX, pady=PADY)
         self.__manufacturer_entry =\
             ttk.Entry(self, justify=LEFT, textvariable=self.__manufacturer_var,
                       name="manufacturer", validate="all",
                       validatecommand=(is_empty, "%P", "%W"))
-        self.__manufacturer_entry.grid(row=1, column=1, sticky=E+W, padx=PADX,
+        self.__manufacturer_entry.grid(row=0, column=1, sticky=E+W, padx=PADX,
                                       pady=PADY, columnspan=3)
         Label(self, text="Becenév:")\
-            .grid(row=1, column=4, sticky=E, padx=PADX, pady=PADY)
+            .grid(row=0, column=4, sticky=E, padx=PADX, pady=PADY)
         ttk.Entry(self, justify=LEFT, textvariable=self.__nickname_var)\
-            .grid(row=1, column=5, sticky=E+W, padx=PADX, pady=PADY,
+            .grid(row=0, column=5, sticky=E+W, padx=PADX, pady=PADY,
                   columnspan=3)
 
+        Label(self, text="Megnevezés:")\
+            .grid(row=1, column=0, sticky=W, padx=PADX, pady=PADY)
+        self.__name_entry =\
+            ttk.Entry(self, justify=LEFT, textvariable=self.__name_var,
+                      name="name", validate="all",
+                      validatecommand=(is_empty, "%P", "%W"))
+        self.__name_entry.grid(row=1, column=1, sticky=E+W, padx=PADX,
+                               pady=PADY, columnspan=3)
+
         Label(self, text="Leírás:")\
-            .grid(row=2, column=0, sticky=W, padx=PADX, pady=PADY)
+            .grid(row=1, column=4, sticky=E, padx=PADX, pady=PADY)
         ttk.Entry(self, justify=LEFT, textvariable=self.__description_var)\
-            .grid(row=2, column=1, sticky=E+W, padx=PADX, pady=PADY,
-                  columnspan=7)
+            .grid(row=1, column=5, sticky=E+W, padx=PADX, pady=PADY,
+                  columnspan=3)
 
         Label(self, text="Megjegyzés:")\
             .grid(row=3, column=0, sticky=W, padx=PADX, pady=PADY)
@@ -97,6 +95,18 @@ class StockItemForm(LabelFrame):
         Label(self, text="egység", anchor=W)\
             .grid(row=4, column=3, sticky=E+W, padx=PADX, pady=PADY)
 
+        Label(self, text="Egységár:")\
+            .grid(row=4, column=4, sticky=W, padx=PADX, pady=PADY)
+        self.__unitprice_entry =\
+            ttk.Entry(self, justify=RIGHT, width=SHORT_FIELD,
+                      textvariable=self.__unitprice_var, validate="all",
+                      validatecommand=(is_number, "%P", "%W"))
+        self.__unitprice_entry.grid(row=4, column=5, padx=PADX, pady=PADY)
+        Label(self, text="Ft  /", anchor=W)\
+            .grid(row=4, column=6, sticky=E+W, padx=PADX, pady=PADY)
+        Label(self, textvariable=self.__unit_var, width=7, anchor=W)\
+            .grid(row=4, column=7, sticky=E+W, padx=PADX, pady=PADY)
+
         Label(self, text="Készlet:")\
             .grid(row=5, column=0, sticky=W, padx=PADX, pady=PADY)
         self.__stock_entry =\
@@ -107,17 +117,16 @@ class StockItemForm(LabelFrame):
                                 columnspan=2, sticky=E+W)
         Label(self, textvariable=self.__unit_var, width=7, anchor=W)\
             .grid(row=5, column=3, sticky=E+W, padx=PADX, pady=PADY)
-        Label(self, text="Egységár:")\
-            .grid(row=5, column=4, sticky=W, padx=PADX, pady=PADY)
-        self.__unitprice_entry =\
+
+        Label(self, text="Szállítási idő:")\
+            .grid(row=5, column=4, sticky=E, padx=PADX, pady=PADY)
+        self.__deliverytime_entry =\
             ttk.Entry(self, justify=RIGHT, width=SHORT_FIELD,
-                      textvariable=self.__unitprice_var, validate="all",
+                      textvariable=self.__deliverytime_var, validate="all",
                       validatecommand=(is_number, "%P", "%W"))
-        self.__unitprice_entry.grid(row=5, column=5, padx=PADX, pady=PADY)
-        Label(self, text="Ft  /", anchor=W)\
+        self.__deliverytime_entry.grid(row=5, column=5, padx=PADX, pady=PADY)
+        Label(self, text="nap", anchor=W)\
             .grid(row=5, column=6, sticky=E+W, padx=PADX, pady=PADY)
-        Label(self, textvariable=self.__unit_var, width=7, anchor=W)\
-            .grid(row=5, column=7, sticky=E+W, padx=PADX, pady=PADY)
 
         Label(self, text="Hely/projekt:")\
             .grid(row=6, column=0, sticky=W, padx=PADX, pady=PADY)
@@ -128,19 +137,12 @@ class StockItemForm(LabelFrame):
 
         self.bind_class("TEntry", "<FocusIn>", self._select_all)
 
+
     def _is_number(self, text:str, name:str) -> bool:
         try:
             number = locale.atof(text)
             if number >= 0:
                 styles.apply_entry_ok(self, name)
-        except ValueError:
-            styles.apply_entry_error(self, name)
-        return True
-
-    def _is_date(self, text:str, name:str) -> bool:
-        try:
-            date.fromisoformat(text)
-            styles.apply_entry_ok(self, name)
         except ValueError:
             styles.apply_entry_error(self, name)
         return True
@@ -165,7 +167,8 @@ class StockItemForm(LabelFrame):
             packaging=self._get_var(self.__packaging_var),
             stock=self._get_var(self.__stock_var),
             unitprice=self._get_var(self.__unitprice_var),
-            place=self.__place_var.get()
+            place=self.__place_var.get(),
+            deliverytime=self._get_var(self.__deliverytime_var)
         )
 
     def populate(self, stockitem:StockItemRecord) -> None:
@@ -187,6 +190,8 @@ class StockItemForm(LabelFrame):
         self.__unitprice_entry.insert(0,
                                       self._get_formatted(stockitem.unitprice))
         self.__place_var.set(stockitem.place)
+        self.__deliverytime_entry.insert(0,
+            self._get_formatted(stockitem.deliverytime))
 
     def is_valid(self) -> bool:
         return styles.is_entry_ok(self)
@@ -202,6 +207,7 @@ class StockItemForm(LabelFrame):
         self.__stock_entry["style"] = "errorstyle.TEntry"
         self.__unitprice_entry["style"] = "errorstyle.TEntry"
         self.__packaging_entry["style"] = "errorstyle.TEntry"
+        self.__deliverytime_entry["style"] = "errorstyle.TEntry"
 
     def _default_values(self) -> None:
         self.__packaging_entry.insert(0, 1)
@@ -222,5 +228,5 @@ class StockItemForm(LabelFrame):
         event.widget.selection_range(0, END)
 
     @property
-    def name_entry(self) -> ttk.Entry:
-        return self.__name_entry
+    def form_focus(self) -> ttk.Entry:
+        return self.__manufacturer_entry
