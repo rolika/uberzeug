@@ -272,11 +272,12 @@ class DatabaseSession(sqlite3.Connection):
                     break
         return sorted(project_stock, key=str)
 
-    def lookup(self, newitem:StockItemRecord) -> StockItemRecord|None:
+    def lookup(self, newitem:StockItemRecord) -> List[StockItemRecord]:
+        found_items = []
         for stockitem in self.load_all_items():
             if stockitem.is_like(newitem):
-                return stockitem
-        return None
+                found_items.append(stockitem)
+        return found_items
 
     def update(self, stockitem:StockItemRecord) -> None:
         with self:

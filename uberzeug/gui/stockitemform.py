@@ -47,11 +47,6 @@ class StockItemForm(LabelFrame):
                       validatecommand=(is_empty, "%P", "%W"))
         self.__manufacturer_entry.grid(row=0, column=1, sticky=E+W, padx=PADX,
                                       pady=PADY, columnspan=3)
-        Label(self, text="Becenév:")\
-            .grid(row=0, column=4, sticky=E, padx=PADX, pady=PADY)
-        ttk.Entry(self, justify=LEFT, textvariable=self.__nickname_var)\
-            .grid(row=0, column=5, sticky=E+W, padx=PADX, pady=PADY,
-                  columnspan=3)
 
         Label(self, text="Megnevezés:")\
             .grid(row=1, column=0, sticky=W, padx=PADX, pady=PADY)
@@ -62,31 +57,6 @@ class StockItemForm(LabelFrame):
         self.__name_entry.grid(row=1, column=1, sticky=E+W, padx=PADX,
                                pady=PADY, columnspan=3)
 
-        Label(self, text="Leírás:")\
-            .grid(row=1, column=4, sticky=E, padx=PADX, pady=PADY)
-        ttk.Entry(self, justify=LEFT, textvariable=self.__description_var)\
-            .grid(row=1, column=5, sticky=E+W, padx=PADX, pady=PADY,
-                  columnspan=3)
-
-        Label(self, text="Megjegyzés:")\
-            .grid(row=3, column=0, sticky=W, padx=PADX, pady=PADY)
-        ttk.Entry(self, justify=LEFT, textvariable=self.__comment_var)\
-            .grid(row=3, column=1, sticky=E+W, padx=PADX, pady=PADY,
-                  columnspan=3)
-        Label(self, text="Szín:")\
-            .grid(row=3, column=4, sticky=E, padx=PADX, pady=PADY)
-        ttk.Entry(self, justify=LEFT, textvariable=self.__color_var)\
-            .grid(row=3, column=5, sticky=E+W, padx=PADX, pady=PADY,
-                  columnspan=3)
-
-        Label(self, text="Kiszerelés:")\
-            .grid(row=4, column=0, sticky=W, padx=PADX, pady=PADY)
-        self.__packaging_entry =\
-            ttk.Entry(self, width=SHORT_FIELD, justify=RIGHT,
-                      textvariable=self.__packaging_var, name="packaging",
-                      validate="all", validatecommand=(is_number, "%P", "%W"))
-        self.__packaging_entry\
-            .grid(row=4, column=1, sticky=W, padx=PADX, pady=PADY)
         self.__unit_entry =\
             ttk.Entry(self, width=SHORT_FIELD, justify=LEFT,
                       textvariable=self.__unit_var, name="unit", validate="all",
@@ -135,6 +105,39 @@ class StockItemForm(LabelFrame):
             .grid(row=6, column=1, padx=PADX, pady=PADY, columnspan=2,
                   sticky=E+W)
 
+        Label(self, text="Becenév:")\
+            .grid(row=0, column=4, sticky=E, padx=PADX, pady=PADY)
+        ttk.Entry(self, justify=LEFT, textvariable=self.__nickname_var)\
+            .grid(row=0, column=5, sticky=E+W, padx=PADX, pady=PADY,
+                  columnspan=3)
+
+        Label(self, text="Leírás:")\
+            .grid(row=1, column=4, sticky=E, padx=PADX, pady=PADY)
+        ttk.Entry(self, justify=LEFT, textvariable=self.__description_var)\
+            .grid(row=1, column=5, sticky=E+W, padx=PADX, pady=PADY,
+                  columnspan=3)
+
+        Label(self, text="Megjegyzés:")\
+            .grid(row=3, column=0, sticky=W, padx=PADX, pady=PADY)
+        ttk.Entry(self, justify=LEFT, textvariable=self.__comment_var)\
+            .grid(row=3, column=1, sticky=E+W, padx=PADX, pady=PADY,
+                  columnspan=3)
+        Label(self, text="Szín:")\
+            .grid(row=3, column=4, sticky=E, padx=PADX, pady=PADY)
+        ttk.Entry(self, justify=LEFT, textvariable=self.__color_var)\
+            .grid(row=3, column=5, sticky=E+W, padx=PADX, pady=PADY,
+                  columnspan=3)
+
+        Label(self, text="Kiszerelés:")\
+            .grid(row=4, column=0, sticky=W, padx=PADX, pady=PADY)
+        self.__packaging_entry =\
+            ttk.Entry(self, width=SHORT_FIELD, justify=RIGHT,
+                      textvariable=self.__packaging_var, name="packaging",
+                      validate="all", validatecommand=(is_number, "%P", "%W"))
+        self.__packaging_entry\
+            .grid(row=4, column=1, sticky=W, padx=PADX, pady=PADY)
+
+        # selecting all text when entry gets focus
         self.bind_class("TEntry", "<FocusIn>", self._select_all)
 
 
