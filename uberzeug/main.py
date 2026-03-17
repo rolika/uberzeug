@@ -5,7 +5,6 @@
 
 import configparser
 import locale
-
 locale.setlocale(locale.LC_ALL, "")
 import logging
 import socket
@@ -15,6 +14,7 @@ from typing import List
 from utils.constants import *
 from gui.asknewexistcancel import ask_newexistcancel
 from gui.askprojectnumber import ask_projectnumber
+from gui.existingitemdialig import ExistingItemDialog
 from gui.turnoverdialog import TurnoverDialog
 from gui.modifyitemdialog import modifyitem_dialog
 from gui.shortagewarningdialog import ShortageWarningDialog
@@ -113,19 +113,26 @@ class Uberzeug():
     def _newitem(self) -> None:
         newitem = stockitem_dialog(self.__ui, "Új raktári tétel")
         host = socket.gethostname()
+        update = False
         if newitem:
-            log = f"new: {newitem.name} {newitem.stock}"
+            log = f"new: {newitem.name} {newitem.stock} {newitem.unit}"
             message = f"új anyag: {newitem.name} {newitem.stock} {newitem.unit}"
-            existing_stockitem = self.__dbsession.lookup(newitem)
-            if existing_stockitem:
-                answer = ask_newexistcancel(self.__ui)
-                if answer == "new":
-                    self.__dbsession.insert(newitem)
-                elif answer == "exist":
-                    setattr(existing_stockitem, "change", newitem.stock)
-                    existing_stockitem.apply_change()
-                    self.__dbsession.update(existing_stockitem)
-                    log = f"update: {newitem.name} + {newitem.stock}"
+            similar_items = self.__dbsession.lookup(newitem)
+            if similar_items:
+                existsdialog = ExistingItemDialog(self.__ui, "Hasonló anyagok",
+                                                  newitem, similar_items)
+                selected_item = existsdialog.selected_item
+                if selected_item is None:  # cancel
+                    return
+                elif selected_item.articlenumber is not None:  # existing item
+                    update = True
+                    selected_item.stock += newitem.stock
+                    log = f"update: {selected_item.name} + {newitem.stock} " +\
+                          f"{newitem.unit}"
+                    message = f"{selected_item.name} készletének növelése: " +\
+                              f"+ {newitem.stock} {selected_item.unit}"
+            if update:
+                self.__dbsession.update(selected_item)
             else:
                 self.__dbsession.insert(newitem)
             logging.info(f"{host} {log}")

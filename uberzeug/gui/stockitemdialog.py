@@ -16,7 +16,7 @@ class _StockItemDialog(simpledialog.Dialog):
         self.__stockitemform = StockItemForm(self)
         self.__stockitemform.pack()
         self.bind_all("<Key>", self._is_stockitem_valid)
-        return self.__stockitemform.name_entry
+        return self.__stockitemform.form_focus
 
     def buttonbox(self):
         """Override standard buttons."""
@@ -27,11 +27,11 @@ class _StockItemDialog(simpledialog.Dialog):
         ttk.Button(box, text="Mégse", width=10, command=self.cancel)\
             .pack(side=LEFT, padx=5, pady=5)
         box.pack()
-    
+
     def apply(self) -> None:
         if self.__stockitemform.is_valid():
             self.__stockitem = self.__stockitemform.retrieve()
-    
+
     def get(self) -> StockItemRecord|None:
         return self.__stockitem
 
