@@ -1,0 +1,9 @@
+[project]
+name = "uberzeug"
+version = "0.8.1"
+description = "Inventory management system for small businesses."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pandas>=3.0.1",
+]
