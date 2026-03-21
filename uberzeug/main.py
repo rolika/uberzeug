@@ -42,10 +42,11 @@ class Uberzeug():
         windows_icon = config["DEFAULT"]["windows_icon"]
         linux_icon = config["DEFAULT"]["linux_icon"]
         lookback_days = int(config["DEFAULT"]["lookback_days"])
+        shortagefolder = config["DEFAULT"]["shortagefolder"]
 
         self.__dbsession = DatabaseSession(database_file)
         self.__filesession = FileSession(waybillfolder, turnoverfolder,
-                                         stockfolder)
+                                         stockfolder, shortagefolder)
         self.__ui = TitleUI(title, organization, title_image, windows_icon,
                             linux_icon, root=self)
         self.__lookback_days = lookback_days
@@ -193,7 +194,8 @@ class Uberzeug():
                 short_items.append(item)
         if short_items:
             ShortageWarningDialog(self.__ui, "Kifogyó készlet",
-                                  self.__lookback_days, short_items)
+                                  self.__lookback_days, short_items,
+                                  self.__filesession)
 
 
 if __name__ == "__main__":

@@ -3,12 +3,15 @@ import os
 import pathlib
 from typing import List
 
+import numpy as np
+import pandas as pd
+
 import utils.constants as ct
 from utils import textrep
 from utils.constants import *
 from utils.projectnumber import Projectnumber
 from record.logrecord import LogRecord
-from record.stockitemrecord import StockItemRecord
+from record.stockitemrecord import TRANSLATE_ATTRIBUTES, StockItemRecord
 
 
 class FileSession:
@@ -21,14 +24,16 @@ class FileSession:
     The waybill has a number which looks like 24_001_12, the latter being a
     serial number, which is always +1 of all waybills in the projectfolder."""
     def __init__(self, waybillfolder:str, turnoverfolder:str, stockfolder:str,
-                  extension:str=EXTENSION) -> None:
+                 shortagefolder:str, extension:str=EXTENSION) -> None:
         self.__waybillfolder = pathlib.Path(waybillfolder)
         self.__turnoverfolder = pathlib.Path(turnoverfolder)
         self.__stockfolder = pathlib.Path(stockfolder)
+        self.__shortagefolder = pathlib.Path(shortagefolder)
         self.__extension = extension
         os.makedirs(self.__waybillfolder, exist_ok=True)
         os.makedirs(self.__turnoverfolder, exist_ok=True)
         os.makedirs(self.__stockfolder, exist_ok=True)
+        os.makedirs(self.__shortagefolder, exist_ok=True)
 
     def export_waybill(self, items:List[StockItemRecord],
                        projectnumber:Projectnumber) -> str:
@@ -107,3 +112,11 @@ class FileSession:
 
     def _count_files(self, folder:pathlib.Path) -> int:
         return sum([len(files) for r, d, files in os.walk(folder)])
+
+    def export_shortages(self, items:List[StockItemRecord]) -> str:
+        datalist = np.array([(item.name, item.stock, item.unit)\
+                             for item in items])
+        df = pd.DataFrame(datalist)
+        filename = f"shortage_warning_{date.today().isoformat()}.xlsx"
+        df.to_excel(self.__shortagefolder / filename, index=False)
+        return filename

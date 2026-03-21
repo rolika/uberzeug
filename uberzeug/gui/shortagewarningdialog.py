@@ -8,16 +8,20 @@ from tkinter import ttk
 from tkinter import simpledialog
 from typing import List
 
+import pandas as pd
+
 from gui.itemlistbox import ItemListbox
 from utils.constants import *
+from persistence.filesession import FileSession
 from record.stockitemrecord import StockItemRecord
 
 
 class ShortageWarningDialog(simpledialog.Dialog):
     def __init__(self, root:Widget, title:str, lookback_days:int,
-                 shortitems:List[StockItemRecord]) -> None:
+                 shortitems:List[StockItemRecord], file:FileSession) -> None:
         self.__lookback_days = lookback_days
         self.__shortitems = shortitems
+        self.__file = file
         super().__init__(root, title=title)
 
     def body(self, root:Widget) -> Widget:
@@ -43,4 +47,5 @@ class ShortageWarningDialog(simpledialog.Dialog):
         box.pack()
 
     def apply(self):
-        return super().apply()
+        filename =self.__file.export_shortages(self.__shortitems)
+        messagebox.showinfo("Exportálás kész", f"A fájl elmentve: {filename}")
