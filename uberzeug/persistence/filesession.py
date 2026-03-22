@@ -116,7 +116,8 @@ class FileSession:
     def export_shortages(self, items:List[StockItemRecord]) -> str:
         datalist = np.array([(item.name, item.stock, item.unit)\
                              for item in items])
-        df = pd.DataFrame(datalist)
+        df = pd.DataFrame(datalist, index=list(range(1, datalist.shape[0] + 1)),
+                          columns=("megnevezés", "mennyiség", "egység"))
         filename = f"shortage_warning_{date.today().isoformat()}.xlsx"
-        df.to_excel(self.__shortagefolder / filename, index=False)
+        df.to_excel(self.__shortagefolder / filename)
         return filename
