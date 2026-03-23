@@ -196,6 +196,8 @@ class Uberzeug():
             ShortageWarningDialog(self.__ui, "Kifogyó készlet",
                                   self.__lookback_days, short_items,
                                   self.__filesession)
+        else:
+            messagebox.showinfo("Kifogyó készlet", "Nincs kifogyó készlet.")
 
 
 if __name__ == "__main__":
