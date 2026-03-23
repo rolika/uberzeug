@@ -126,11 +126,14 @@ class FileSession:
     def _count_files(self, folder:pathlib.Path) -> int:
         return sum([len(files) for r, d, files in os.walk(folder)])
 
-    def export_shortages(self, items:List[StockItemRecord]) -> str:
-        datalist = np.array([(item.name, item.stock, item.unit)\
-                             for item in items])
-        df = pd.DataFrame(datalist, index=list(range(1, datalist.shape[0] + 1)),
-                          columns=("megnevezés", "mennyiség", "egység"))
-        filename = f"shortage_warning_{date.today().isoformat()}.xlsx"
-        df.to_excel(self.__shortagefolder / filename)
+    def export_shortages(self, items:List[StockItemRecord],
+                         lookback_days:int) -> str:
+        filename = f"fogyó_készlet_{date.today().strftime('%Y%m%d')}"
+        nth_export = self._count_files(self.__shortagefolder) + 1
+        filename += f"_{nth_export}.{self.__extension}"
+        with open(self.__shortagefolder / filename, "w") as f:
+            f.write(textrep.shortage_header(lookback_days))
+            for item in items:
+                f.write(f"{item.valueview}\n")
+            f.write(textrep.shortage_footer())
         return filename

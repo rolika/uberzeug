@@ -47,5 +47,6 @@ class ShortageWarningDialog(simpledialog.Dialog):
         box.pack()
 
     def apply(self):
-        filename =self.__file.export_shortages(self.__shortitems)
+        filename =self.__file.export_shortages(self.__shortitems,
+                                               self.__lookback_days)
         messagebox.showinfo("Exportálás kész", f"A fájl elmentve: {filename}")
