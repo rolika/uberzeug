@@ -17,7 +17,9 @@ class ExistingItemDialog(simpledialog.Dialog):
         super().__init__(parent, title)
 
     def body(self, parent:Widget) -> Widget:
-        self.__itemlistbox = ItemListbox(self, master_list=self.__main_list)
+        self.__itemlistbox = ItemListbox(self, master_list=self.__main_list,
+                                         view="valueview")
+        self.__itemlistbox.set_width(80)
         self.__itemlistbox.pack(padx=PADX, pady=PADY)
         self.__itemlistbox.bind_selection(self._enable_select_button)
         self.bind_all("<Escape>", self._disable_select_button)
