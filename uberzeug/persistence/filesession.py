@@ -77,13 +77,19 @@ class FileSession:
         if lookup_term:
             filename += f"_{lookup_term}"
         nth_export = self._count_files(self.__stockfolder) + 1
-        filename += f"_{nth_export}"
-        filename += f".{self.__extension}"
-        with open(self.__stockfolder / filename, "w") as f:
-            f.write(textrep.stock_header(lookup_term))
-            for item in items:
-                f.write(f"{item.valueview}\n")
-            f.write(textrep.stock_footer(total))
+        filename += f"_{nth_export}.xlsx"
+        datalist:List = []
+        for item in items:
+            space = " " if item.manufacturer else ""
+            name = item.manufacturer + space + item.name
+            datalist.append((name, item.stock, item.unit, item.unitprice,
+                             item.value))
+        datalist = np.array(datalist)
+        df = pd.DataFrame(datalist, index=list(range(1, datalist.shape[0] + 1)),
+                          columns=("megnevezés", "készlet", "egység",
+                                   "egységár", "érték"))
+        df.to_excel(self.__stockfolder / filename)
+        return filename
 
     def _get_waybillexport_folder(self,
                                   projectnumber:Projectnumber) -> pathlib.Path:

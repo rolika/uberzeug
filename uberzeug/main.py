@@ -180,10 +180,10 @@ class Uberzeug():
             "Készlet exportálása",
             self.__dbsession.select_all_items_for_export())
         if len(dialog.selected_records):
-            self.__filesession.export_stock(dialog.selected_records,
-                                            dialog.total_value,
-                                            dialog.lookup_term)
-            messagebox.showinfo("Készlet exportálása", "Sikeres exportálás!")
+            filename =self.__filesession.export_stock(dialog.selected_records,
+                                                      dialog.total_value,
+                                                      dialog.lookup_term)
+            messagebox.showinfo("Készlet exportálása", filename)
 
     def _check_shortages(self) -> None:
         short_items = []
