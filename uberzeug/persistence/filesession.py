@@ -1,3 +1,6 @@
+import locale
+locale.setlocale(locale.LC_ALL, "")
+
 from datetime import date
 import os
 import pathlib
@@ -82,8 +85,12 @@ class FileSession:
         for item in items:
             space = " " if item.manufacturer else ""
             name = item.manufacturer + space + item.name
-            datalist.append((name, item.stock, item.unit, item.unitprice,
-                             item.value))
+            stock = locale.format_string(f="%.2f", val=item.stock)
+            unitprice = locale.format_string(f="%.0f", val=item.unitprice,
+                                         monetary=True)
+            value = locale.format_string(f="%.0f", val=item.value,
+                                         monetary=True)
+            datalist.append((name, stock, item.unit, unitprice, value))
         datalist = np.array(datalist)
         df = pd.DataFrame(datalist, index=list(range(1, datalist.shape[0] + 1)),
                           columns=("megnevezés", "készlet", "egység",
