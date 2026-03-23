@@ -1,14 +1,20 @@
+import locale
+locale.setlocale(locale.LC_ALL, "")
+
 from datetime import date
 import os
 import pathlib
 from typing import List
+
+import numpy as np
+import pandas as pd
 
 import utils.constants as ct
 from utils import textrep
 from utils.constants import *
 from utils.projectnumber import Projectnumber
 from record.logrecord import LogRecord
-from record.stockitemrecord import StockItemRecord
+from record.stockitemrecord import TRANSLATE_ATTRIBUTES, StockItemRecord
 
 
 class FileSession:
@@ -21,14 +27,16 @@ class FileSession:
     The waybill has a number which looks like 24_001_12, the latter being a
     serial number, which is always +1 of all waybills in the projectfolder."""
     def __init__(self, waybillfolder:str, turnoverfolder:str, stockfolder:str,
-                  extension:str=EXTENSION) -> None:
+                 shortagefolder:str, extension:str=EXTENSION) -> None:
         self.__waybillfolder = pathlib.Path(waybillfolder)
         self.__turnoverfolder = pathlib.Path(turnoverfolder)
         self.__stockfolder = pathlib.Path(stockfolder)
+        self.__shortagefolder = pathlib.Path(shortagefolder)
         self.__extension = extension
         os.makedirs(self.__waybillfolder, exist_ok=True)
         os.makedirs(self.__turnoverfolder, exist_ok=True)
         os.makedirs(self.__stockfolder, exist_ok=True)
+        os.makedirs(self.__shortagefolder, exist_ok=True)
 
     def export_waybill(self, items:List[StockItemRecord],
                        projectnumber:Projectnumber) -> str:
@@ -72,13 +80,23 @@ class FileSession:
         if lookup_term:
             filename += f"_{lookup_term}"
         nth_export = self._count_files(self.__stockfolder) + 1
-        filename += f"_{nth_export}"
-        filename += f".{self.__extension}"
-        with open(self.__stockfolder / filename, "w") as f:
-            f.write(textrep.stock_header(lookup_term))
-            for item in items:
-                f.write(f"{item.valueview}\n")
-            f.write(textrep.stock_footer(total))
+        filename += f"_{nth_export}.xlsx"
+        datalist:List = []
+        for item in items:
+            space = " " if item.manufacturer else ""
+            name = item.manufacturer + space + item.name
+            stock = locale.format_string(f="%.2f", val=item.stock)
+            unitprice = locale.format_string(f="%.0f", val=item.unitprice,
+                                         monetary=True)
+            value = locale.format_string(f="%.0f", val=item.value,
+                                         monetary=True)
+            datalist.append((name, stock, item.unit, unitprice, value))
+        datalist = np.array(datalist)
+        df = pd.DataFrame(datalist, index=list(range(1, datalist.shape[0] + 1)),
+                          columns=("megnevezés", "készlet", "egység",
+                                   "egységár", "érték"))
+        df.to_excel(self.__stockfolder / filename)
+        return filename
 
     def _get_waybillexport_folder(self,
                                   projectnumber:Projectnumber) -> pathlib.Path:
@@ -107,3 +125,15 @@ class FileSession:
 
     def _count_files(self, folder:pathlib.Path) -> int:
         return sum([len(files) for r, d, files in os.walk(folder)])
+
+    def export_shortages(self, items:List[StockItemRecord],
+                         lookback_days:int) -> str:
+        filename = f"fogyó_készlet_{date.today().strftime('%Y%m%d')}"
+        nth_export = self._count_files(self.__shortagefolder) + 1
+        filename += f"_{nth_export}.{self.__extension}"
+        with open(self.__shortagefolder / filename, "w") as f:
+            f.write(textrep.shortage_header(lookback_days))
+            for item in items:
+                f.write(f"{item.valueview}\n")
+            f.write(textrep.shortage_footer())
+        return filename

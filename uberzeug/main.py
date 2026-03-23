@@ -42,10 +42,11 @@ class Uberzeug():
         windows_icon = config["DEFAULT"]["windows_icon"]
         linux_icon = config["DEFAULT"]["linux_icon"]
         lookback_days = int(config["DEFAULT"]["lookback_days"])
+        shortagefolder = config["DEFAULT"]["shortagefolder"]
 
         self.__dbsession = DatabaseSession(database_file)
         self.__filesession = FileSession(waybillfolder, turnoverfolder,
-                                         stockfolder)
+                                         stockfolder, shortagefolder)
         self.__ui = TitleUI(title, organization, title_image, windows_icon,
                             linux_icon, root=self)
         self.__lookback_days = lookback_days
@@ -179,10 +180,10 @@ class Uberzeug():
             "Készlet exportálása",
             self.__dbsession.select_all_items_for_export())
         if len(dialog.selected_records):
-            self.__filesession.export_stock(dialog.selected_records,
-                                            dialog.total_value,
-                                            dialog.lookup_term)
-            messagebox.showinfo("Készlet exportálása", "Sikeres exportálás!")
+            filename =self.__filesession.export_stock(dialog.selected_records,
+                                                      dialog.total_value,
+                                                      dialog.lookup_term)
+            messagebox.showinfo("Készlet exportálása", filename)
 
     def _check_shortages(self) -> None:
         short_items = []
@@ -193,7 +194,10 @@ class Uberzeug():
                 short_items.append(item)
         if short_items:
             ShortageWarningDialog(self.__ui, "Kifogyó készlet",
-                                  self.__lookback_days, short_items)
+                                  self.__lookback_days, short_items,
+                                  self.__filesession)
+        else:
+            messagebox.showinfo("Kifogyó készlet", "Nincs kifogyó készlet.")
 
 
 if __name__ == "__main__":

@@ -17,7 +17,9 @@ class ExistingItemDialog(simpledialog.Dialog):
         super().__init__(parent, title)
 
     def body(self, parent:Widget) -> Widget:
-        self.__itemlistbox = ItemListbox(self, master_list=self.__main_list)
+        self.__itemlistbox = ItemListbox(self, master_list=self.__main_list,
+                                         view="valueview")
+        self.__itemlistbox.set_width(80)
         self.__itemlistbox.pack(padx=PADX, pady=PADY)
         self.__itemlistbox.bind_selection(self._enable_select_button)
         self.bind_all("<Escape>", self._disable_select_button)
@@ -28,18 +30,26 @@ class ExistingItemDialog(simpledialog.Dialog):
         self.__select_button = ttk.Button(box, text="Hozzáadom", width=10,
                                           command=self._existing,
                                           state=DISABLED)
-        self.__select_button.pack(side=LEFT, padx=5, pady=5)
-        ttk.Button(box, text="Új tétel legyen", width=20,
-                   command=self._new_item).pack(side=LEFT, padx=5, pady=5)
+        self.__select_button.pack(side=LEFT, padx=PADX, pady=PADY)
+        self.__new_button =ttk.Button(box, text="Új tétel legyen", width=20,
+                                      command=self._new_item)
+        self.__new_button.pack(side=LEFT, padx=PADX, pady=PADY)
         ttk.Button(box, text="Mégse", width=10, command=self.cancel)\
-            .pack(side=LEFT, padx=5, pady=5)
+            .pack(side=LEFT, padx=PADX, pady=PADY)
         box.pack()
+        self.__esc_var = StringVar()
+        self.__esc_var.set("")
+        Label(self, textvariable=self.__esc_var).pack(padx=PADX, pady=PADY)
 
     def _enable_select_button(self, _:Event=None) -> None:
         self.__select_button["state"] = NORMAL
+        self.__new_button["state"] = DISABLED
+        self.__esc_var.set("Escape: mégis új legyen")
 
     def _disable_select_button(self, _:Event=None) -> None:
         self.__select_button["state"] = DISABLED
+        self.__new_button["state"] = NORMAL
+        self.__esc_var.set("")
 
     def _existing(self, _:Event=None) -> None:
         self.__selected_item = self.__itemlistbox.get_record()

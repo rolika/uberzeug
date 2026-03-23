@@ -108,6 +108,22 @@ def stock_footer(total:float=0.0) -> str:
     return turnover_footer(total)
 
 
+def shortage_header(lookback_days:int) -> str:
+    result = line() + "\n"
+    result += headline(f"Fogyó készlet - {lookback_days}"\
+                       + " napos visszatekintéssel",
+                       explode_it=False, uppercase=False) + "\n"
+    result += line() + "\n"
+    return result
+
+
+def shortage_footer() -> str:
+    result = line() + "\n"
+    d = date.today()
+    result += f"Kelt: {city()}, {d.strftime('%Y. %B %d.')}\n"
+    return result
+
+
 def simplify(text:str) -> str:
     """Return the input as lower-cased alphanumeric text to avoid confusion."""
     return "".join(re.findall("[a-z0-9]", str(text).lower().\
