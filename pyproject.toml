@@ -1,6 +1,6 @@
 [project]
 name = "uberzeug"
-version = "0.8.1"
+version = "1.0.0"
 description = "Inventory management system for small businesses."
 readme = "README.md"
 requires-python = ">=3.13"
