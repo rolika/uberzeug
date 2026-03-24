@@ -43,12 +43,13 @@ class Uberzeug():
         linux_icon = config["DEFAULT"]["linux_icon"]
         lookback_days = int(config["DEFAULT"]["lookback_days"])
         shortagefolder = config["DEFAULT"]["shortagefolder"]
+        function_availability = config["DEFAULT"]["function_availability"]
 
         self.__dbsession = DatabaseSession(database_file)
         self.__filesession = FileSession(waybillfolder, turnoverfolder,
                                          stockfolder, shortagefolder)
         self.__ui = TitleUI(title, organization, title_image, windows_icon,
-                            linux_icon, root=self)
+                            linux_icon, function_availability, root=self)
         self.__lookback_days = lookback_days
         self._bindings()
         self._update_buttons()

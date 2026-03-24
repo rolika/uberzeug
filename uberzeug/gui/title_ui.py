@@ -11,7 +11,7 @@ from gui.stock_ui import StockUI
 class TitleUI(Frame):
     def __init__(self, title:str, organization:List[str],
                  title_image:str, windows_icon:str, linux_icon:str,
-                 root:Widget=None, **kwargs) -> None:
+                 function_availability:str,root:Widget=None, **kwargs) -> None:
         super().__init__(**kwargs)
         if os.name == "posix":
             try:
@@ -26,6 +26,7 @@ class TitleUI(Frame):
                 pass
         self.master.title(textrep.explode(title, width=3))
         self.__company = organization[0]
+        self.__function_availability = function_availability
         try:
             self.__title_image = PhotoImage(file=title_image)
         except TclError:
@@ -46,7 +47,8 @@ class TitleUI(Frame):
         self.__controllui.pack(fill=BOTH, padx=5, pady=5)
         self.__shortcut.add(self.__stockui, text="Raktár")
         self.__shortcut.add(self.__controllui, text="Kontrolling")
-        self.__shortcut.add(ttk.Frame(self.__shortcut), text="Projektek")
+        if self.__function_availability != "warehouse":
+            self.__shortcut.add(ttk.Frame(self.__shortcut), text="Projektek")
         self.__shortcut.pack(fill=BOTH, padx=5, pady=5)
 
     @property
