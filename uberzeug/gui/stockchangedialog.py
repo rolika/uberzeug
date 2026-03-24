@@ -31,6 +31,9 @@ class _StockChangeDialog(simpledialog.Dialog):
         """Create dialog body. Return widget that should have initial focus."""
         box = Frame(self)
         self.__itemlistbox = ItemListbox(box, master_list=self.__master_list)
+        if self.__mode == Mode.DEPOSIT:
+            self.__itemlistbox.view = "valueview"
+            self.__itemlistbox.set_width(80)
         self.__itemlistbox.pack(side=LEFT, padx=PADX, pady=PADY)
         self.__itemlistbox.bind_selection(self._stockchange)
         if self.__mode == Mode.DELETE:
@@ -101,7 +104,7 @@ class _StockChangeDialog(simpledialog.Dialog):
             self.__waybillpanel.update_waybill()
 
     @property
-    def withdraw_list(self) -> List[StockItemRecord]|None:
+    def result_list(self) -> List[StockItemRecord]|None:
         return self.__withdraw_list
 
 
@@ -109,25 +112,25 @@ def withdraw_dialog(root:Widget, master_list:List[StockItemRecord],
                     projectnumber:Projectnumber) -> List[StockItemRecord]|None:
     withdrawed_items = _StockChangeDialog(root, master_list, projectnumber,
                                           WITHDRAW_TITLE, Mode.WITHDRAW)
-    return withdrawed_items.withdraw_list
+    return withdrawed_items.result_list
 
 
 def takeback_dialog(root:Widget, master_list:List[StockItemRecord],
                     projectnumber:Projectnumber) -> List[StockItemRecord]|None:
     takeback_items = _StockChangeDialog(root, master_list, projectnumber,
                                         TAKEBACK_TITLE, Mode.TAKEBACK)
-    return takeback_items.withdraw_list
+    return takeback_items.result_list
 
 
 def deposit_dialog(root:Widget, master_list:List[StockItemRecord])\
     -> List[StockItemRecord]|None:
     deposit_items = _StockChangeDialog(root, master_list, None, DEPOSIT_TITLE,
                                        Mode.DEPOSIT)
-    return deposit_items.withdraw_list
+    return deposit_items.result_list
 
 
 def delete_dialog(root:Widget, master_list:List[StockItemRecord])\
     -> List[StockItemRecord]|None:
     deposit_items = _StockChangeDialog(root, master_list, None,DELETE_TITLE,
                                        Mode.DELETE)
-    return deposit_items.withdraw_list
+    return deposit_items.result_list
