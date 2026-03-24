@@ -3,8 +3,10 @@ from tkinter import ttk
 
 
 class ControllUI(Frame):
-    def __init__(self, root:Widget=None, **kwargs) -> None:
+    def __init__(self, root:Widget=None, function_availability:str="all",
+                 **kwargs) -> None:
         super().__init__(root, **kwargs)
+        self.__function_availability = function_availability
         self._body()
 
     def _body(self) -> None:
@@ -18,6 +20,8 @@ class ControllUI(Frame):
                                             text="Fogyó készlet\nellenőrzése")
         self.__shortage_button.pack(fill=BOTH, padx=5, pady=5)
         box.pack(side=LEFT, padx=5, pady=5, anchor=NW)
+        if self.__function_availability == "warehouse":
+            self.__controlling_button["state"] = "disabled"
 
     @property
     def controlling_button(self) -> ttk.Button:

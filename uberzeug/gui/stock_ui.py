@@ -3,8 +3,10 @@ from tkinter import ttk
 
 
 class StockUI(Frame):
-    def __init__(self, root:Widget=None, **kwargs) -> None:
+    def __init__(self, root:Widget=None, function_availability:str="all",
+                 **kwargs) -> None:
         super().__init__(root, **kwargs)
+        self.__function_availability = function_availability
         self._body()
 
     def _body(self) -> None:
@@ -15,6 +17,10 @@ class StockUI(Frame):
         self.__modify_button.pack(fill=X, padx=5, pady=5)
         self.__delete_button = ttk.Button(box, text="Anyag törlése")
         self.__delete_button.pack(fill=X, padx=5, pady=5)
+        if self.__function_availability == "warehouse":
+            self.__newitem_button["state"] = "disabled"
+            self.__modify_button["state"] = "disabled"
+            self.__delete_button["state"] = "disabled"
         box.pack(side=LEFT, fill=BOTH, padx=5, pady=5)
         box = ttk.LabelFrame(self, text="Raktárkészlet-kezelés")
         self.__withdraw_button =ttk.Button(box, text="Kivét projektre")
@@ -30,8 +36,9 @@ class StockUI(Frame):
         self.__withdraw_button["state"] = state
         self.__takeback_button["state"] = state
         self.__deposit_button["state"] = state
-        self.__modify_button["state"] = state
-        self.__delete_button["state"] = state
+        if self.__function_availability != "warehouse":
+            self.__modify_button["state"] = state
+            self.__delete_button["state"] = state
 
     @property
     def withdraw_button(self) -> ttk.Button:
