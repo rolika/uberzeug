@@ -11,7 +11,8 @@ from gui.stock_ui import StockUI
 class TitleUI(Frame):
     def __init__(self, title:str, organization:List[str],
                  title_image:str, windows_icon:str, linux_icon:str,
-                 root:Widget=None, **kwargs) -> None:
+                 function_availability:str="all", root:Widget=None,
+                 **kwargs) -> None:
         super().__init__(**kwargs)
         if os.name == "posix":
             try:
@@ -26,6 +27,7 @@ class TitleUI(Frame):
                 pass
         self.master.title(textrep.explode(title, width=3))
         self.__company = organization[0]
+        self.__function_availability = function_availability
         try:
             self.__title_image = PhotoImage(file=title_image)
         except TclError:
@@ -40,13 +42,15 @@ class TitleUI(Frame):
         canvas.pack(padx=5, pady=5)
         box.pack(padx=5, pady=5)
         self.__shortcut = ttk.Notebook(self)
-        self.__stockui = StockUI(self.__shortcut)
+        self.__stockui = StockUI(self.__shortcut, self.__function_availability)
         self.__stockui.pack(fill=BOTH, padx=5, pady=5)
-        self.__controllui = ControllUI(self.__shortcut)
+        self.__controllui = ControllUI(self.__shortcut,
+                                       self.__function_availability)
         self.__controllui.pack(fill=BOTH, padx=5, pady=5)
         self.__shortcut.add(self.__stockui, text="Raktár")
         self.__shortcut.add(self.__controllui, text="Kontrolling")
-        self.__shortcut.add(ttk.Frame(self.__shortcut), text="Projektek")
+        if self.__function_availability != "warehouse":
+            self.__shortcut.add(ttk.Frame(self.__shortcut), text="Projektek")
         self.__shortcut.pack(fill=BOTH, padx=5, pady=5)
 
     @property

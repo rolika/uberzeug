@@ -4,7 +4,7 @@ locale.setlocale(locale.LC_ALL, "")
 from typing import Self
 
 from record.record import Record
-from utils.textrep import asci
+from utils.textrep import simplify
 
 
 TRANSLATE_ATTRIBUTES = {
@@ -23,6 +23,7 @@ TRANSLATE_ATTRIBUTES = {
     "gyartasido": "productiondate",
     "szin": "color",
     "jeloles": "notation",
+    "szallitasido": "deliverytime",
     "letrehozas": "created",
     "utolso_modositas": "modified"
 }
@@ -62,8 +63,8 @@ class StockItemRecord(Record):
 
     def contains(self, term:str) -> bool:
         for attribute in TRANSLATE_ATTRIBUTES.values():
-            if asci(term) in\
-                asci(str(getattr(self, attribute, None))):
+            if simplify(term) in\
+                simplify(str(getattr(self, attribute, None))):
                 return True
         return False
 
@@ -77,9 +78,8 @@ class StockItemRecord(Record):
         assert  hasattr(self, "change")
         self.stock -= self.change
 
-    def is_almost_same(self, item:Self) -> bool:
-        if asci(item.name) in asci(self.name) and\
-            self.unitprice == item.unitprice:
+    def is_like(self, item:Self) -> bool:
+        if self.contains(item.name):
             return True
         else:
             return False
@@ -95,14 +95,14 @@ class StockItemRecord(Record):
 
     @property
     def valueview(self) -> str:
-        return "{name:32} {stock:>9} {unit:<4} x {up:>10} = {value:>14} Ft".\
-                format(name=(self.manufacturer + " " + self.name)[:32],
-                       stock=locale.format_string(f="%+.2f", val=self.stock,
+        return "{name:35} {stock:>9} {unit:<4} x {up:>7} = {value:>12},- Ft".\
+                format(name=(self.manufacturer + " " + self.name)[:35],
+                       stock=locale.format_string(f="%.2f", val=self.stock,
                                                   grouping=True)[:9],
                        unit=self.unit[:4],
-                       up=locale.format_string(f="%.2f", val=self.unitprice,
-                                               grouping=True)[:9],
-                       value=locale.format_string(f="%+.2f", val=self.__value,
+                       up=locale.format_string(f="%.0f", val=self.unitprice,
+                                               grouping=True)[:7],
+                       value=locale.format_string(f="%.0f", val=self.__value,
                                                   grouping=True))
 
     @property

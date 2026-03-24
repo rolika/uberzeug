@@ -3,17 +3,25 @@ from tkinter import ttk
 
 
 class ControllUI(Frame):
-    def __init__(self, root:Widget=None, **kwargs) -> None:
+    def __init__(self, root:Widget=None, function_availability:str="all",
+                 **kwargs) -> None:
         super().__init__(root, **kwargs)
+        self.__function_availability = function_availability
         self._body()
 
     def _body(self) -> None:
         box = ttk.Frame(self)
         self.__controlling_button = ttk.Button(box, text="Utókalkuláció")
         self.__controlling_button.pack(fill=BOTH, padx=5, pady=5, side=LEFT)
-        self.__export_button = ttk.Button(box, text="Raktárkészlet\nexportálása")
+        self.__export_button = ttk.Button(box,
+                                          text="Raktárkészlet\nexportálása")
         self.__export_button.pack(fill=BOTH, padx=5, pady=5, side=LEFT)
+        self.__shortage_button = ttk.Button(box,
+                                            text="Fogyó készlet\nellenőrzése")
+        self.__shortage_button.pack(fill=BOTH, padx=5, pady=5)
         box.pack(side=LEFT, padx=5, pady=5, anchor=NW)
+        if self.__function_availability == "warehouse":
+            self.__controlling_button["state"] = "disabled"
 
     @property
     def controlling_button(self) -> ttk.Button:
@@ -30,6 +38,14 @@ class ControllUI(Frame):
     @export_button.setter
     def export_button(self, command:callable) -> None:
         self.__export_button["command"] = command
+
+    @property
+    def shortage_button(self) -> ttk.Button:
+        return self.__shortage_button
+
+    @shortage_button.setter
+    def shortage_button(self, command:callable) -> None:
+        self.__shortage_button["command"] = command
 
 
 if __name__ == "__main__":

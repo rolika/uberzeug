@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 import pathlib
 import sqlite3
 from typing import List
@@ -37,6 +37,7 @@ class DatabaseSession(sqlite3.Connection):
                     gyartasido,
                     szin,
                     jeloles,
+                    szallitasido,
                     letrehozas,
                     utolso_modositas);
                 """)
@@ -68,6 +69,7 @@ class DatabaseSession(sqlite3.Connection):
                     gyartasido,
                     szin,
                     jeloles,
+                    szallitasido,
                     letrehozas,
                     utolso_modositas
             FROM raktar ORDER BY gyarto, megnevezes;
@@ -270,11 +272,12 @@ class DatabaseSession(sqlite3.Connection):
                     break
         return sorted(project_stock, key=str)
 
-    def lookup(self, newitem:StockItemRecord) -> StockItemRecord|None:
+    def lookup(self, newitem:StockItemRecord) -> List[StockItemRecord]:
+        found_items = []
         for stockitem in self.load_all_items():
-            if stockitem.is_almost_same(newitem):
-                return stockitem
-        return None
+            if stockitem.is_like(newitem):
+                found_items.append(stockitem)
+        return found_items
 
     def update(self, stockitem:StockItemRecord) -> None:
         with self:
@@ -282,26 +285,37 @@ class DatabaseSession(sqlite3.Connection):
         UPDATE raktar
         SET keszlet = ?, megnevezes = ?, becenev = ?, gyarto = ?, leiras = ?,
             szin = ?, megjegyzes = ?, egyseg = ?, egysegar = ?, kiszereles = ?,
-            hely = ?, lejarat = ?, gyartasido = ?, utolso_modositas = date()
+            hely = ?, szallitasido = ?,jeloles = '', lejarat = 60,
+            gyartasido = date(), utolso_modositas = date()
         WHERE cikkszam = ?;
         """, (stockitem.stock, stockitem.name, stockitem.nickname,
               stockitem.manufacturer, stockitem.description, stockitem.color,
               stockitem.comment, stockitem.unit, stockitem.unitprice,
-              stockitem.packaging, stockitem.place, stockitem.shelflife,
-              stockitem.productiondate, stockitem.articlenumber))
+              stockitem.packaging, stockitem.place, stockitem.deliverytime,
+              stockitem.articlenumber))
+        if hasattr(stockitem, "oldname"):
+            space = " " if stockitem.manufacturer else ""
+            new_name = stockitem.manufacturer + space + stockitem.name
+            with self:
+                self.execute("""
+                    UPDATE raktar_naplo
+                    SET megnevezes = ?
+                    WHERE megnevezes = ?;
+                """, (new_name, stockitem.oldname))
 
     def insert(self, stockitem:StockItemRecord) -> None:
         with self:
             self.execute("""
         INSERT INTO raktar (keszlet, megnevezes, becenev, gyarto, leiras, szin,
                             megjegyzes, egyseg, egysegar, kiszereles, hely,
-                            lejarat, gyartasido, letrehozas, utolso_modositas)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, date(), date())
+                            szallitasido, jeloles, lejarat, gyartasido,
+                            letrehozas, utolso_modositas)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', 60, date(), date(),
+                date())
         """, (stockitem.stock, stockitem.name, stockitem.nickname,
               stockitem.manufacturer, stockitem.description, stockitem.color,
               stockitem.comment, stockitem.unit, stockitem.unitprice,
-              stockitem.packaging, stockitem.place, stockitem.shelflife,
-              stockitem.productiondate))
+              stockitem.packaging, stockitem.place, stockitem.deliverytime))
 
     def update_stock(self, items:List[StockItemRecord]) -> None:
         with self:
@@ -341,3 +355,31 @@ class DatabaseSession(sqlite3.Connection):
                 SET egysegar = ?
                 WHERE azonosito = ?;
             """, (new_unitprice, articlenumber))
+
+    def get_usage(self, lookback_days:int) -> List[StockItemRecord]:
+        usage = self.execute("""
+            SELECT *, SUM(valtozas) AS usage
+            FROM raktar_naplo
+            WHERE datum >= date('now', '-' || ? || ' days')
+            GROUP BY megnevezes
+            ORDER BY usage DESC;
+        """, (lookback_days, ))
+        logrecords = [LogRecord(**item) for item in usage]
+        all_items = self.load_all_items()
+        usage_records:List[StockItemRecord] = []
+        for logrecord in logrecords:
+            for item in all_items:
+                if logrecord.is_referring_to(item) and logrecord.usage < 0:
+                    setattr(item, "usage", abs(logrecord.usage))
+                    usage_records.append(item)
+                    break
+        return usage_records
+
+    def get_stockitem_by_articlenumber(self,
+                                       articlenumber:int) -> StockItemRecord:
+        item = self.execute("""
+            SELECT *
+            FROM raktar
+            WHERE cikkszam = ?;
+        """, (articlenumber, )).fetchone()
+        return StockItemRecord(**item) if item else None

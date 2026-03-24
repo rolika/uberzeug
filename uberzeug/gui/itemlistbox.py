@@ -130,6 +130,15 @@ class ItemListbox(LabelFrame):
     def display_list(self) -> List[Record]:
         return self.__display_list
 
+    @property
+    def view(self) -> str:
+        return self.__view
+
+    @view.setter
+    def view(self, new_view:str) -> None:
+        self.__view = new_view
+        self._populate(self.__display_list)
+
 
 if __name__ == "__main__":
     itemlist = ItemListbox()

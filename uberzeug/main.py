@@ -5,7 +5,6 @@
 
 import configparser
 import locale
-
 locale.setlocale(locale.LC_ALL, "")
 import logging
 import socket
@@ -15,8 +14,10 @@ from typing import List
 from utils.constants import *
 from gui.asknewexistcancel import ask_newexistcancel
 from gui.askprojectnumber import ask_projectnumber
+from gui.existingitemdialig import ExistingItemDialog
 from gui.turnoverdialog import TurnoverDialog
 from gui.modifyitemdialog import modifyitem_dialog
+from gui.shortagewarningdialog import ShortageWarningDialog
 from gui.stockitemdialog import stockitem_dialog
 from gui.title_ui import TitleUI
 from gui.stockchangedialog\
@@ -40,12 +41,16 @@ class Uberzeug():
         title_image = config["DEFAULT"]["title_image"]
         windows_icon = config["DEFAULT"]["windows_icon"]
         linux_icon = config["DEFAULT"]["linux_icon"]
+        lookback_days = int(config["DEFAULT"]["lookback_days"])
+        shortagefolder = config["DEFAULT"]["shortagefolder"]
+        function_availability = config["DEFAULT"]["function_availability"]
 
         self.__dbsession = DatabaseSession(database_file)
         self.__filesession = FileSession(waybillfolder, turnoverfolder,
-                                         stockfolder)
+                                         stockfolder, shortagefolder)
         self.__ui = TitleUI(title, organization, title_image, windows_icon,
-                            linux_icon, root=self)
+                            linux_icon, function_availability, root=self)
+        self.__lookback_days = lookback_days
         self._bindings()
         self._update_buttons()
         self.__ui.pack()
@@ -63,6 +68,7 @@ class Uberzeug():
         self.__ui.stockui.delete_button = self._delete
         self.__ui.controllui.controlling_button = self._controlling
         self.__ui.controllui.export_button = self._export
+        self.__ui.controllui.shortage_button = self._check_shortages
 
     def _withdraw(self) -> None:
         projectnumber = ask_projectnumber(self.__ui)
@@ -109,19 +115,26 @@ class Uberzeug():
     def _newitem(self) -> None:
         newitem = stockitem_dialog(self.__ui, "Új raktári tétel")
         host = socket.gethostname()
+        update = False
         if newitem:
-            log = f"new: {newitem.name} {newitem.stock}"
+            log = f"new: {newitem.name} {newitem.stock} {newitem.unit}"
             message = f"új anyag: {newitem.name} {newitem.stock} {newitem.unit}"
-            existing_stockitem = self.__dbsession.lookup(newitem)
-            if existing_stockitem:
-                answer = ask_newexistcancel(self.__ui)
-                if answer == "new":
-                    self.__dbsession.insert(newitem)
-                elif answer == "exist":
-                    setattr(existing_stockitem, "change", newitem.stock)
-                    existing_stockitem.apply_change()
-                    self.__dbsession.update(existing_stockitem)
-                    log = f"update: {newitem.name} +{newitem.stock}"
+            similar_items = self.__dbsession.lookup(newitem)
+            if similar_items:
+                existsdialog = ExistingItemDialog(self.__ui, "Hasonló anyagok",
+                                                  newitem, similar_items)
+                selected_item = existsdialog.selected_item
+                if selected_item is None:  # cancel
+                    return
+                elif selected_item.articlenumber is not None:  # existing item
+                    update = True
+                    selected_item.stock += newitem.stock
+                    log = f"update: {selected_item.name} + {newitem.stock} " +\
+                          f"{newitem.unit}"
+                    message = f"{selected_item.name} készletének növelése: " +\
+                              f"+ {newitem.stock} {selected_item.unit}"
+            if update:
+                self.__dbsession.update(selected_item)
             else:
                 self.__dbsession.insert(newitem)
             logging.info(f"{host} {log}")
@@ -132,6 +145,11 @@ class Uberzeug():
         master_list = self.__dbsession.load_all_items()
         item = modifyitem_dialog(self.__ui, master_list)
         if item:
+            old_item = self.__dbsession\
+                .get_stockitem_by_articlenumber(item.articlenumber)
+            space = " " if old_item.manufacturer else ""
+            name = old_item.manufacturer + space + old_item.name
+            setattr(item, "oldname", name)
             self.__dbsession.update(item)
             logging.info\
                 (f"{socket.gethostname()} modify: {item.name} {item.stock}")
@@ -163,10 +181,24 @@ class Uberzeug():
             "Készlet exportálása",
             self.__dbsession.select_all_items_for_export())
         if len(dialog.selected_records):
-            self.__filesession.export_stock(dialog.selected_records,
-                                            dialog.total_value,
-                                            dialog.lookup_term)
-            messagebox.showinfo("Készlet exportálása", "Sikeres exportálás!")
+            filename =self.__filesession.export_stock(dialog.selected_records,
+                                                      dialog.total_value,
+                                                      dialog.lookup_term)
+            messagebox.showinfo("Készlet exportálása", filename)
+
+    def _check_shortages(self) -> None:
+        short_items = []
+        for item in self.__dbsession.get_usage(self.__lookback_days):
+            prediction =\
+                round(item.deliverytime * item.usage / self.__lookback_days)
+            if item.stock < prediction:
+                short_items.append(item)
+        if short_items:
+            ShortageWarningDialog(self.__ui, "Kifogyó készlet",
+                                  self.__lookback_days, short_items,
+                                  self.__filesession)
+        else:
+            messagebox.showinfo("Kifogyó készlet", "Nincs kifogyó készlet.")
 
 
 if __name__ == "__main__":

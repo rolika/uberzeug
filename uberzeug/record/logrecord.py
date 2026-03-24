@@ -1,7 +1,7 @@
 import locale
 locale.setlocale(locale.LC_ALL, "")
 
-from utils.textrep import asci
+from utils.textrep import simplify
 from record.record import Record
 from record.stockitemrecord import StockItemRecord
 
@@ -37,25 +37,25 @@ class LogRecord(Record):
     def is_referring_to(self, stockitem:StockItemRecord) -> bool:
         """Returns True if the name of the stockitem is referring to the name
         of the log record."""
-        return asci(stockitem.name) in asci(self.name)
+        return simplify(stockitem.name) in simplify(self.name)
 
     def contains(self, term:str) -> bool:
         for attribute in TRANSLATE_ATTRIBUTES.values():
-            if asci(term) in\
-                asci(str(getattr(self, attribute, None))):
+            if simplify(term) in\
+                simplify(str(getattr(self, attribute, None))):
                 return True
         return False
 
     @property
     def listview(self) -> str:
-        return "{name:33} {change:>9} {unit:<4} x {up:>10} = {value:>13} Ft".\
-                format(name=self.name[:33],
+        return "{name:36} {change:>9} {unit:<4} x {up:>7} = {value:>11},- Ft".\
+                format(name=self.name[:36],
                        change=locale.format_string(f="%+.2f", val=self.change,
                                                    grouping=True)[:9],
                        unit=self.unit[:4],
-                       up=locale.format_string(f="%.2f", val=self.unitprice,
-                                               grouping=True)[:9],
-                       value=locale.format_string(f="%+.2f", val=self.__value,
+                       up=locale.format_string(f="%.0f", val=self.unitprice,
+                                               grouping=True)[:7],
+                       value=locale.format_string(f="%+.0f", val=self.__value,
                                                   grouping=True))
 
     @property
