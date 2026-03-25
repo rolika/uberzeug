@@ -1,2 +1,2 @@
-# raktar.py3
+# Überzeug
 ## Raktárkészlet-nyilvántartó és utókalkuláló alkalmazás
