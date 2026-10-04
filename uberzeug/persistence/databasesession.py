@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date
 import pathlib
 import sqlite3
 from typing import List
@@ -18,7 +18,7 @@ class DatabaseSession(sqlite3.Connection):
         self.row_factory = sqlite3.Row  # access results with column-names
         self._create_tables()
 
-    def _create_tables(self):
+    def _create_tables(self) -> None:
         with self:
             self.execute("""
                 CREATE TABLE IF NOT EXISTS raktar(
@@ -53,27 +53,28 @@ class DatabaseSession(sqlite3.Connection):
                 """)
 
     def _select_all_items(self) -> sqlite3.Cursor:
-        return self.execute("""
-            SELECT  cikkszam,
-                    CAST(keszlet AS REAL) AS keszlet,
-                    megnevezes,
-                    becenev,
-                    gyarto,
-                    leiras,
-                    megjegyzes,
-                    egyseg,
-                    CAST(egysegar AS INT) AS egysegar,
-                    kiszereles,
-                    hely,
-                    lejarat,
-                    gyartasido,
-                    szin,
-                    jeloles,
-                    szallitasido,
-                    letrehozas,
-                    utolso_modositas
-            FROM raktar ORDER BY gyarto, megnevezes;
-               """)
+        with self:
+            return self.execute("""
+                SELECT  cikkszam,
+                        CAST(keszlet AS REAL) AS keszlet,
+                        megnevezes,
+                        becenev,
+                        gyarto,
+                        leiras,
+                        megjegyzes,
+                        egyseg,
+                        CAST(egysegar AS INT) AS egysegar,
+                        kiszereles,
+                        hely,
+                        lejarat,
+                        gyartasido,
+                        szin,
+                        jeloles,
+                        szallitasido,
+                        letrehozas,
+                        utolso_modositas
+                FROM raktar ORDER BY gyarto, megnevezes;
+                """)
 
     def query_log(self, projectnumber:Projectnumber,
                   date_:date) -> sqlite3.Cursor:
@@ -82,162 +83,179 @@ class DatabaseSession(sqlite3.Connection):
         projectnumber:  yy_nnn
         month:          yyyy-mm"""
         month = date_.strftime("%Y-%m")
-        return self.execute(f"""
-            SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
-            FROM raktar_naplo
-            WHERE projektszam = ?
-            AND strftime('%Y-%m', datum) = ?
-            GROUP BY megnevezes, egysegar;
-        """, (str(projectnumber), month))
+        with self:
+            return self.execute(f"""
+                SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
+                FROM raktar_naplo
+                WHERE projektszam = ?
+                AND strftime('%Y-%m', datum) = ?
+                GROUP BY megnevezes, egysegar;
+            """, (str(projectnumber), month))
 
     def query_log_by_year(self, date_:date) -> sqlite3.Cursor:
         year = date_.strftime("%Y")
-        return self.execute(f"""
-            SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
-            FROM raktar_naplo
-            WHERE strftime('%Y', datum) = ?
-            GROUP BY megnevezes, egysegar;
-        """, (year, ))
+        with self:
+            return self.execute(f"""
+                SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
+                FROM raktar_naplo
+                WHERE strftime('%Y', datum) = ?
+                GROUP BY megnevezes, egysegar;
+            """, (year, ))
 
     def query_log_by_month(self, date_:date) -> sqlite3.Cursor:
         # hasn't much sense, but it's easier than exclude the option
         month = date_.strftime("%m")
-        return self.execute(f"""
-            SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
-            FROM raktar_naplo
-            WHERE strftime('%m', datum) = ?
-            GROUP BY megnevezes, egysegar;
-        """, (month, ))
+        with self:
+            return self.execute(f"""
+                SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
+                FROM raktar_naplo
+                WHERE strftime('%m', datum) = ?
+                GROUP BY megnevezes, egysegar;
+            """, (month, ))
 
     def query_log_by_project(self,
-                             projectnumber:Projectnumber) -> sqlite3.Cursor:
-        return self.execute(f"""
-            SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
-            FROM raktar_naplo
-            WHERE projektszam = ?
-            GROUP BY megnevezes, egysegar;
-        """, (str(projectnumber), ))
+            projectnumber:Projectnumber) -> sqlite3.Cursor:
+        with self:
+            return self.execute(f"""
+                SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
+                FROM raktar_naplo
+                WHERE projektszam = ?
+                GROUP BY megnevezes, egysegar;
+            """, (str(projectnumber), ))
 
     def query_log_by_year_and_month(self, date_:date) -> sqlite3.Cursor:
         yearmonth = date_.strftime("%Y-%m")
-        return self.execute(f"""
-            SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
-            FROM raktar_naplo
-            WHERE strftime('%Y-%m', datum) = ?
-            GROUP BY megnevezes, egysegar;
-        """, (yearmonth, ))
+        with self:
+            return self.execute(f"""
+                SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
+                FROM raktar_naplo
+                WHERE strftime('%Y-%m', datum) = ?
+                GROUP BY megnevezes, egysegar;
+            """, (yearmonth, ))
 
     def query_log_by_year_and_project(self, date_:date,
-                                projectnumber:Projectnumber) -> sqlite3.Cursor:
+            projectnumber:Projectnumber) -> sqlite3.Cursor:
         year = date_.strftime("%Y")
-        return self.execute(f"""
-            SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
-            FROM raktar_naplo
-            WHERE strftime('%Y', datum) = ?
-            AND projektszam = ?
-            GROUP BY megnevezes, egysegar;
-        """, (year, str(projectnumber), ))
+        with self:
+            return self.execute(f"""
+                SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
+                FROM raktar_naplo
+                WHERE strftime('%Y', datum) = ?
+                AND projektszam = ?
+                GROUP BY megnevezes, egysegar;
+            """, (year, str(projectnumber), ))
 
     def query_log_by_month_and_project(self, date_:date,
-                                projectnumber:Projectnumber) -> sqlite3.Cursor:
+            projectnumber:Projectnumber) -> sqlite3.Cursor:
         # hasn't much sense either
         month = date_.strftime("%m")
-        return self.execute(f"""
-            SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
-            FROM raktar_naplo
-            WHERE strftime('%m', datum) = ?
-            AND projektszam = ?
-            GROUP BY megnevezes, egysegar;
-        """, (month, str(projectnumber), ))
+        with self:
+            return self.execute(f"""
+                SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
+                FROM raktar_naplo
+                WHERE strftime('%m', datum) = ?
+                AND projektszam = ?
+                GROUP BY megnevezes, egysegar;
+            """, (month, str(projectnumber), ))
 
     def query_log_by_all(self) -> sqlite3.Cursor:
-        return self.execute(f"""
-            SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
-            FROM raktar_naplo
-            GROUP BY megnevezes, egysegar;
-        """)
+        with self:
+            return self.execute(f"""
+                SELECT {LOG_COLUMNS}, SUM(valtozas) AS total_change
+                FROM raktar_naplo
+                GROUP BY megnevezes, egysegar;
+            """)
 
     def query_distinct_years(self) ->List[str]:
         """Query distinct years in descending order."""
-        years = self.execute("""
-            SELECT DISTINCT strftime('%Y', datum) AS year
-            FROM raktar_naplo
-            ORDER BY year DESC;
-        """)
+        with self:
+            years = self.execute("""
+                SELECT DISTINCT strftime('%Y', datum) AS year
+                FROM raktar_naplo
+                ORDER BY year DESC;
+            """)
         return [year["year"] for year in years]
 
     def query_distinct_months(self, year:str) -> List[str]:
         """Query distinct months in descending order."""
-        months = self.execute("""
-            SELECT DISTINCT strftime('%m', datum) AS month
-            FROM raktar_naplo
-            WHERE strftime('%Y', datum) = ?
-            ORDER BY month DESC;
-        """, (year, ))
+        with self:
+            months = self.execute("""
+                SELECT DISTINCT strftime('%m', datum) AS month
+                FROM raktar_naplo
+                WHERE strftime('%Y', datum) = ?
+                ORDER BY month DESC;
+            """, (year, ))
         return [date(1900, int(month["month"]), 1).strftime("%B")\
                 for month in months]
 
     def query_all_distinct_months(self) -> List[str]:
         """Query distinct months in descending order."""
-        months = self.execute("""
-            SELECT DISTINCT strftime('%m', datum) AS month
-            FROM raktar_naplo
-            ORDER BY month DESC;
-        """)
+        with self:
+            months = self.execute("""
+                SELECT DISTINCT strftime('%m', datum) AS month
+                FROM raktar_naplo
+                ORDER BY month DESC;
+            """)
         return [date(1900, int(month["month"]), 1).strftime("%B")\
                 for month in months]
 
     def query_distinct_projects(self, date_:date) -> List[Projectnumber]:
         yearmonth = date_.strftime("%Y-%m")
-        projects = self.execute("""
-            SELECT DISTINCT projektszam AS projectnumber
-            FROM raktar_naplo
-            WHERE strftime('%Y-%m', datum) = ?
-            ORDER BY projektszam ASC;
-        """, (yearmonth, ))
+        with self:
+            projects = self.execute("""
+                SELECT DISTINCT projektszam AS projectnumber
+                FROM raktar_naplo
+                WHERE strftime('%Y-%m', datum) = ?
+                ORDER BY projektszam ASC;
+            """, (yearmonth, ))
         return [Projectnumber(project["projectnumber"]) for project in projects]
 
     def query_distinct_projects_by_month(self,
-                                         date_:date) -> List[Projectnumber]:
+            date_:date) -> List[Projectnumber]:
         month = date_.strftime("%m")
-        projects = self.execute("""
-            SELECT DISTINCT projektszam AS projectnumber
-            FROM raktar_naplo
-            WHERE strftime('%m', datum) = ?
-            ORDER BY projektszam ASC;
-        """, (month, ))
+        with self:
+            projects = self.execute("""
+                SELECT DISTINCT projektszam AS projectnumber
+                FROM raktar_naplo
+                WHERE strftime('%m', datum) = ?
+                ORDER BY projektszam ASC;
+            """, (month, ))
         return [Projectnumber(project["projectnumber"]) for project in projects]
 
     def query_distinct_projects_by_year(self,
-                                         date_:date) -> List[Projectnumber]:
+            date_:date) -> List[Projectnumber]:
         year = date_.strftime("%Y")
-        projects = self.execute("""
-            SELECT DISTINCT projektszam AS projectnumber
-            FROM raktar_naplo
-            WHERE strftime('%Y', datum) = ?
-            ORDER BY projektszam ASC;
-        """, (year, ))
+        with self:
+            projects = self.execute("""
+                SELECT DISTINCT projektszam AS projectnumber
+                FROM raktar_naplo
+                WHERE strftime('%Y', datum) = ?
+                ORDER BY projektszam ASC;
+            """, (year, ))
         return [Projectnumber(project["projectnumber"]) for project in projects]
 
     def query_all_distinct_projects(self) -> List[Projectnumber]:
         """Query distinct projectnumbers in ascending order."""
-        projects = self.execute("""
-            SELECT DISTINCT projektszam AS projectnumber
-            FROM raktar_naplo
-            ORDER BY projektszam ASC;
-        """)
+        with self:
+            projects = self.execute("""
+                SELECT DISTINCT projektszam AS projectnumber
+                FROM raktar_naplo
+                ORDER BY projektszam ASC;
+            """)
         return [Projectnumber(project["projectnumber"]) for project in projects]
 
     def load_all_items(self) -> List[StockItemRecord]:
-        return [StockItemRecord(**item) for item in self._select_all_items()]
+        with self:
+            return [StockItemRecord(**item)\
+                    for item in self._select_all_items()]
 
     def load_withdrawable_items(self) -> List[StockItemRecord]:
-        return [StockItemRecord(**item) for item in self._select_all_items()
-                if item["keszlet"] > 0]
+        with self:
+            return [StockItemRecord(**item)\
+                for item in self._select_all_items() if item["keszlet"] > 0]
 
-    def log_stock_change(self, items:List[StockItemRecord],
+    def write_stock_change(self, items:List[StockItemRecord],
                          projectnumber:Projectnumber) -> None:
-        self.update_stock(items)
         with self:
             for item in items:
                 space = " " if item.manufacturer else ""
@@ -248,17 +266,23 @@ class DatabaseSession(sqlite3.Connection):
                     VALUES (?, ?, ?, ?, date(), ?)
                 """, (name, item.unitprice, item.unit, item.change,
                     str(projectnumber)))
+                self.execute("""
+                    UPDATE raktar
+                    SET keszlet = ?, utolso_modositas = date()
+                    WHERE cikkszam = ?;
+                """, (item.stock, item.articlenumber))
 
     def _load_log_entries(self, projectnumber:Projectnumber) -> List[LogRecord]:
-        logentries = self.execute("""
-            SELECT *, SUM(valtozas) AS total_change
-            FROM raktar_naplo
-            WHERE projektszam = ?
-            GROUP BY megnevezes;""", (str(projectnumber), ))
+        with self:
+            logentries = self.execute("""
+                SELECT *, SUM(valtozas) AS total_change
+                FROM raktar_naplo
+                WHERE projektszam = ?
+                GROUP BY megnevezes;""", (str(projectnumber), ))
         return [LogRecord(**item) for item in logentries]
 
     def get_project_stock(self, projectnumber:Projectnumber)\
-        -> List[StockItemRecord]:
+            -> List[StockItemRecord]:
         all_items = self.load_all_items()
         log_records = self._load_log_entries(projectnumber)
         project_stock = set()
@@ -293,6 +317,8 @@ class DatabaseSession(sqlite3.Connection):
               stockitem.comment, stockitem.unit, stockitem.unitprice,
               stockitem.packaging, stockitem.place, stockitem.deliverytime,
               stockitem.articlenumber))
+
+    def update_log_name(self, stockitem:StockItemRecord) -> None:
         if hasattr(stockitem, "oldname"):
             space = " " if stockitem.manufacturer else ""
             new_name = stockitem.manufacturer + space + stockitem.name
@@ -336,8 +362,9 @@ class DatabaseSession(sqlite3.Connection):
     def select_all_items_for_export(self) -> List[StockItemRecord]:
         """Returns all items that are withdawable, i.e. with stock > 0 for
         export, in descendding order by value, i.e. stock * unitprice. """
-        return sorted(self.load_withdrawable_items(),
-                      key=lambda item: item.value, reverse=True)
+        with self:
+            return sorted(self.load_withdrawable_items(),
+                          key=lambda item: item.value, reverse=True)
 
     def transfer_log(self, articlenumber:int, project:Projectnumber) -> None:
         with self:
@@ -357,13 +384,14 @@ class DatabaseSession(sqlite3.Connection):
             """, (new_unitprice, articlenumber))
 
     def get_usage(self, lookback_days:int) -> List[StockItemRecord]:
-        usage = self.execute("""
-            SELECT *, SUM(valtozas) AS usage
-            FROM raktar_naplo
-            WHERE datum >= date('now', '-' || ? || ' days')
-            GROUP BY megnevezes
-            ORDER BY usage DESC;
-        """, (lookback_days, ))
+        with self:
+            usage = self.execute("""
+                SELECT *, SUM(valtozas) AS usage
+                FROM raktar_naplo
+                WHERE datum >= date('now', '-' || ? || ' days')
+                GROUP BY megnevezes
+                ORDER BY usage DESC;
+            """, (lookback_days, ))
         logrecords = [LogRecord(**item) for item in usage]
         all_items = self.load_all_items()
         usage_records:List[StockItemRecord] = []
@@ -376,10 +404,11 @@ class DatabaseSession(sqlite3.Connection):
         return usage_records
 
     def get_stockitem_by_articlenumber(self,
-                                       articlenumber:int) -> StockItemRecord:
-        item = self.execute("""
-            SELECT *
-            FROM raktar
-            WHERE cikkszam = ?;
-        """, (articlenumber, )).fetchone()
+            articlenumber:int) -> StockItemRecord:
+        with self:
+            item = self.execute("""
+                SELECT *
+                FROM raktar
+                WHERE cikkszam = ?;
+            """, (articlenumber, )).fetchone()
         return StockItemRecord(**item) if item else None

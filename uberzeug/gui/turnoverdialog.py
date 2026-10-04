@@ -19,11 +19,12 @@ from gui.transferdialog import TransferDialog
 
 
 class TurnoverDialog(simpledialog.Dialog):
-    def __init__(self, root:Widget, dbsession:DatabaseSession,
+    def __init__(self, root:Widget, dbsession:DatabaseSession, logfile: str,
                  filesession:FileSession, title:str) -> None:
         self.__dbsession = dbsession
         self.__filesession = filesession
         self.__title = title
+        self.__logfile = logfile
         self.__former_month = None
         self.__former_project = None
         super().__init__(root, title=title)
@@ -44,19 +45,19 @@ class TurnoverDialog(simpledialog.Dialog):
         yearoptionmenu: OptionMenu = OptionMenu(
             box, self.__yearoption_var, *yearoptions)
         self.__yearoption_var.set(selected_year)
-        self.__yearoption_var.trace("w", self._update_months)
+        self.__yearoption_var.trace_add("write", self._update_months)
         yearoptionmenu.pack(side=LEFT, fill=X, expand=True)
 
         self.__monthoption_var: StringVar = StringVar()
         self.__monthoptionmenu: OptionMenu = OptionMenu(
             box, self.__monthoption_var, "")
-        self.__monthoption_var.trace("w", self._update_projects)
+        self.__monthoption_var.trace_add("write", self._update_projects)
         self.__monthoptionmenu.pack(side=LEFT, fill=X, expand=True)
 
         self.__projectoption_var: StringVar = StringVar()
         self.__projectcombobox: ttk.Combobox = ttk.Combobox(
             box, textvariable=self.__projectoption_var, state="readonly")
-        self.__projectoption_var.trace("w", self._update_log)
+        self.__projectoption_var.trace_add("write", self._update_log)
         self.__projectcombobox.pack(side=LEFT, fill=X, expand=True)
         box.pack(fill=X, expand=True)
 
@@ -112,7 +113,7 @@ class TurnoverDialog(simpledialog.Dialog):
                 .strptime(f"{selected_year}-{selected_month}-01", "%Y-%B-%d")
             project = Projectnumber(self.__projectoption_var.get())
             TransferDialog(self, "Átvezetés", project, yearmonth, record,
-                           self.__dbsession)
+                           self.__logfile, self.__dbsession)
             self._update_months()  # update log after transfer
 
     def _update_months(self, *args) -> None:

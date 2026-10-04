@@ -1,6 +1,9 @@
 from datetime import date
 import locale
 locale.setlocale(locale.LC_ALL, "")
+import logging
+import socket
+import sqlite3
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
@@ -15,7 +18,7 @@ from record.logrecord import LogRecord
 
 class TransferDialog(simpledialog.Dialog):
     def __init__(self, root:Widget, title:str, project:Projectnumber,
-                 yearmonth:date, logrecord:LogRecord,
+                 yearmonth:date, logrecord:LogRecord, logfile: str,
                  dbsession:DatabaseSession) -> None:
         title = f"{project.legal}: {title}"
         self.__project = project
@@ -23,6 +26,9 @@ class TransferDialog(simpledialog.Dialog):
         self.__logrecord = logrecord
         self.__dbsession = dbsession
         super().__init__(root, title=title)
+        logging.basicConfig(filename=logfile, encoding='utf-8',
+                            format="%(levelname)s: %(asctime)s %(message)s",
+                            datefmt="%Y.%m.%d %H:%M:%S", level=logging.INFO)
 
     def body(self, root:Widget) -> Widget:
         box = Frame(self)
@@ -40,7 +46,7 @@ class TransferDialog(simpledialog.Dialog):
         self.__unitprice_var.set(locale.format_string(f="%.2f",
             val=self.__logrecord.unitprice, grouping=True))
         entry.select_range(0, END)
-        self.__unitprice_var.trace("w", self._update_values)
+        self.__unitprice_var.trace_add("write", self._update_values)
         Label(box, text=f"Ft/{self.__logrecord.unit} = ")\
             .pack(side=LEFT, padx=PADX, pady=PADY)
         self.__value_var = StringVar()
@@ -59,7 +65,7 @@ class TransferDialog(simpledialog.Dialog):
                 self.__dbsession.query_distinct_projects(self.__yearmonth)]
         self.__projectcombobox["values"] = projectoptions
         self.__projectoption_var.set(self.__project.legal)
-        self.__projectoption_var.trace("w", self._update_values)
+        self.__projectoption_var.trace_add("write", self._update_values)
         self.__projectcombobox.pack(fill=X, expand=True)
         box.pack(padx=PADX, pady=PADY)
 
@@ -98,16 +104,28 @@ class TransferDialog(simpledialog.Dialog):
             self._get_unitprice() == self.__logrecord.unitprice:
             return
         if not messagebox.askokcancel("Átvezetés megerősítése",
-                                    f"Átvezeted {selected_project} projektbe?",
-                                    parent=self):
+                                      "Megváltoztatod?", parent=self):
             self.__projectoption_var.set(self.__project.legal)
             return
+        host = socket.gethostname()
         if selected_project != self.__project.legal:
-            self.__dbsession.transfer_log(self.__logrecord.articlenumber,
-                                          Projectnumber(selected_project))
+            try:
+                self.__dbsession.transfer_log(self.__logrecord.articlenumber,
+                                              Projectnumber(selected_project))
+            except sqlite3.DatabaseError as e:
+                logging.error(f"{host} transfer project: database error: {e}")
+                messagebox.showerror(title="Átvezetés adatbázis hiba!",
+                    message=CRITICAL_ERROR_MESSAGE)
+                return
         if self._get_unitprice() != self.__logrecord.unitprice:
-            self.__dbsession.update_log_unitprice(\
-                self.__logrecord.articlenumber, self._get_unitprice())
+            try:
+                self.__dbsession.update_log_unitprice(\
+                    self.__logrecord.articlenumber, self._get_unitprice())
+            except sqlite3.DatabaseError as e:
+                logging.error(f"{host} transfer unitprice: database error: {e}")
+                messagebox.showerror(title="Átvezetés adatbázis hiba!",
+                    message=CRITICAL_ERROR_MESSAGE)
+                return
         self.destroy()
 
     def _update_values(self, *args):
