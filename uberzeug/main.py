@@ -37,7 +37,7 @@ class Uberzeug():
         waybillfolder = config["DEFAULT"]["waybillfolder"]
         turnoverfolder = config["DEFAULT"]["turnoverfolder"]
         stockfolder = config["DEFAULT"]["stockfolder"]
-        logfile = config["DEFAULT"]["logfile"]
+        self.__logfile = config["DEFAULT"]["logfile"]
         title_image = config["DEFAULT"]["title_image"]
         windows_icon = config["DEFAULT"]["windows_icon"]
         linux_icon = config["DEFAULT"]["linux_icon"]
@@ -54,7 +54,7 @@ class Uberzeug():
         self._bindings()
         self._update_buttons()
         self.__ui.pack()
-        logging.basicConfig(filename=logfile, encoding='utf-8',
+        logging.basicConfig(filename=self.__logfile, encoding='utf-8',
                             format="%(levelname)s: %(asctime)s %(message)s",
                             datefmt="%Y.%m.%d %H:%M:%S", level=logging.INFO)
         self.__ui.mainloop()
@@ -229,8 +229,8 @@ class Uberzeug():
         self.__ui.stockui.switch_button_state(empty_db)
 
     def _controlling(self) -> None:
-        TurnoverDialog(self.__ui, self.__dbsession, self.__filesession,
-                       "Kontrolling")
+        TurnoverDialog(self.__ui, self.__dbsession, self.__logfile,
+                       self.__filesession, "Kontrolling")
 
     def _export(self) -> None:
         dialog:simpledialog.Dialog = StockExportDialog(self.__ui,

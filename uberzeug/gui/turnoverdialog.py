@@ -19,11 +19,12 @@ from gui.transferdialog import TransferDialog
 
 
 class TurnoverDialog(simpledialog.Dialog):
-    def __init__(self, root:Widget, dbsession:DatabaseSession,
+    def __init__(self, root:Widget, dbsession:DatabaseSession, logfile: str,
                  filesession:FileSession, title:str) -> None:
         self.__dbsession = dbsession
         self.__filesession = filesession
         self.__title = title
+        self.__logfile = logfile
         self.__former_month = None
         self.__former_project = None
         super().__init__(root, title=title)
@@ -112,7 +113,7 @@ class TurnoverDialog(simpledialog.Dialog):
                 .strptime(f"{selected_year}-{selected_month}-01", "%Y-%B-%d")
             project = Projectnumber(self.__projectoption_var.get())
             TransferDialog(self, "Átvezetés", project, yearmonth, record,
-                           self.__dbsession)
+                           self.__logfile, self.__dbsession)
             self._update_months()  # update log after transfer
 
     def _update_months(self, *args) -> None:
