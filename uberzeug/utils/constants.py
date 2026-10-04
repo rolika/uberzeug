@@ -34,3 +34,5 @@ Mode = enum.Enum("Mode", [("WITHDRAW", 1),
                           ("DELETE", 4)])
 
 SHOW_ALL: str = "összes"
+
+CRITICAL_ERROR_MESSAGE ="Ha ezt látod, ne is folytasd, szólj Rolinak!"

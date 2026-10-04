@@ -85,7 +85,7 @@ class Uberzeug():
             except sqlite3.DatabaseError as e:
                 logging.error(f"{host} withdraw: database error: {e}")
                 messagebox.showerror(title="Kivét adatbázis hiba!",
-                    message="Ha ezt látod, ne is folytasd, szólj Rolinak!")
+                    message=CRITICAL_ERROR_MESSAGE)
                 return
             waybill_number = self.__filesession.export_waybill(withdrawed_items,
                                                                projectnumber)
@@ -111,7 +111,7 @@ class Uberzeug():
             except sqlite3.DatabaseError as e:
                 logging.error(f"{host} takeback: database error: {e}")
                 messagebox.showerror(title="Visszavét adatbázis hiba!",
-                    message="Ha ezt látod, ne is folytasd, szólj Rolinak!")
+                    message=CRITICAL_ERROR_MESSAGE)
                 return
             waybill_number = self.__filesession.export_waybill(takeback_items,
                                                                projectnumber)
@@ -130,7 +130,7 @@ class Uberzeug():
             except sqlite3.DatabaseError as e:
                 logging.error(f"{host} deposit: database error: {e}")
                 messagebox.showerror(title="Bevét adatbázis hiba!",
-                    message="Ha ezt látod, ne is folytasd, szólj Rolinak!")
+                    message=CRITICAL_ERROR_MESSAGE)
                 return
             logging.info(f"{host} deposit: {pieces} items")
             messagebox.showinfo(DEPOSIT_TITLE, f"{pieces} tétel bevételezve.")
@@ -162,7 +162,7 @@ class Uberzeug():
                 except sqlite3.DatabaseError as e:
                     logging.error(f"{host} new -> deposit: database error: {e}")
                     messagebox.showerror(title="Bevét tadatbázis hiba!",
-                        message="Ha ezt látod, ne is folytasd, szólj Rolinak!")
+                        message=CRITICAL_ERROR_MESSAGE)
                     return
             else:
                 try:
@@ -170,7 +170,7 @@ class Uberzeug():
                 except sqlite3.DatabaseError as e:
                     logging.error(f"{host} new item: database error: {e}")
                     messagebox.showerror(title="Új anyag adatbázis hiba!",
-                        message="Ha ezt látod, ne is folytasd, szólj Rolinak!")
+                        message=CRITICAL_ERROR_MESSAGE)
                     return
             logging.info(f"{host} {log}")
             messagebox.showinfo("Felvéve a raktárba", message)
@@ -191,14 +191,14 @@ class Uberzeug():
             except sqlite3.DatabaseError as e:
                 logging.error(f"{host} modify update: database error: {e}")
                 messagebox.showerror(title="Raktár adatbázis hiba!",
-                    message="Ha ezt látod, ne is folytasd, szólj Rolinak!")
+                    message=CRITICAL_ERROR_MESSAGE)
                 return
             try:
                 self.__dbsession.update_log_name(item)
             except sqlite3.DatabaseError as e:
                 logging.error(f"{host} modify update log: database error: {e}")
                 messagebox.showerror(title="Raktárnapló adatbázis hiba!",
-                    message="Ha ezt látod, ne is folytasd, szólj Rolinak!")
+                    message=CRITICAL_ERROR_MESSAGE)
                 return
             logging.info\
                 (f"{host} modify: {item.name} {item.stock} {item.unit}")
@@ -217,7 +217,7 @@ class Uberzeug():
                 except sqlite3.DatabaseError as e:
                     logging.error(f"{host} delete item: database error: {e}")
                     messagebox.showerror(title="Raktár adatbázis hiba!",
-                        message="Ha ezt látod, ne is folytasd, szólj Rolinak!")
+                        message=CRITICAL_ERROR_MESSAGE)
                     return
                 logging.info\
                 (f"{host} delete: {item.name} {-item.change}")
