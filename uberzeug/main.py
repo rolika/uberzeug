@@ -8,11 +8,11 @@ import locale
 locale.setlocale(locale.LC_ALL, "")
 import logging
 import socket
+import sqlite3
 from tkinter import messagebox, simpledialog
 from typing import List
 
 from utils.constants import *
-from gui.asknewexistcancel import ask_newexistcancel
 from gui.askprojectnumber import ask_projectnumber
 from gui.existingitemdialig import ExistingItemDialog
 from gui.turnoverdialog import TurnoverDialog
@@ -78,7 +78,13 @@ class Uberzeug():
         withdrawed_items = withdraw_dialog(self.__ui, master_list,
                                            projectnumber)
         if len(withdrawed_items):
-            self.__dbsession.log_stock_change(withdrawed_items, projectnumber)
+            try:
+                self.__dbsession.write_stock_change(withdrawed_items,
+                                                    projectnumber)
+            except sqlite3.DatabaseError:
+                messagebox.showerror(title="Kivét adatbázis hiba!",
+                    message="Ha ezt látod, ne is folytasd, szólj Rolinak!")
+                return
             waybill_number = self.__filesession.export_waybill(withdrawed_items,
                                                                projectnumber)
             logging.info(f"{socket.gethostname()} withdraw: {waybill_number}")
@@ -96,7 +102,13 @@ class Uberzeug():
                 takeback.stock = takeback.backup_stock
                 takeback.change = abs(takeback.change)
                 takeback.apply_change()
-            self.__dbsession.log_stock_change(takeback_items, projectnumber)
+            try:
+                self.__dbsession.write_stock_change(takeback_items,
+                                                    projectnumber)
+            except sqlite3.DatabaseError:
+                messagebox.showerror(title="Kivét adatbázis hiba!",
+                    message="Ha ezt látod, ne is folytasd, szólj Rolinak!")
+                return
             waybill_number = self.__filesession.export_waybill(takeback_items,
                                                                projectnumber)
             logging.info(f"{socket.gethostname()} takeback: {waybill_number}")
@@ -108,7 +120,12 @@ class Uberzeug():
         deposit_items = deposit_dialog(self.__ui, master_list)
         pieces = len(deposit_items)
         if pieces:
-            self.__dbsession.update_stock(deposit_items)
+            try:
+                self.__dbsession.update_stock(deposit_items)
+            except sqlite3.DatabaseError:
+                messagebox.showerror(title="Bevét adatbázis hiba!",
+                    message="Ha ezt látod, ne is folytasd, szólj Rolinak!")
+                return
             logging.info(f"{socket.gethostname()} deposit: {pieces} items")
             messagebox.showinfo(DEPOSIT_TITLE, f"{pieces} tétel bevételezve.")
 
@@ -134,9 +151,19 @@ class Uberzeug():
                     message = f"{selected_item.name} készletének növelése: " +\
                               f"+ {newitem.stock} {selected_item.unit}"
             if update:
-                self.__dbsession.update(selected_item)
+                try:
+                    self.__dbsession.update(selected_item)
+                except sqlite3.DatabaseError:
+                    messagebox.showerror(title="Bevét adatbázis hiba!",
+                        message="Ha ezt látod, ne is folytasd, szólj Rolinak!")
+                    return
             else:
-                self.__dbsession.insert(newitem)
+                try:
+                    self.__dbsession.insert(newitem)
+                except sqlite3.DatabaseError:
+                    messagebox.showerror(title="Új anyag adatbázis hiba!",
+                        message="Ha ezt látod, ne is folytasd, szólj Rolinak!")
+                    return
             logging.info(f"{host} {log}")
             messagebox.showinfo("Felvéve a raktárba", message)
         self._update_buttons()
@@ -150,7 +177,18 @@ class Uberzeug():
             space = " " if old_item.manufacturer else ""
             name = old_item.manufacturer + space + old_item.name
             setattr(item, "oldname", name)
-            self.__dbsession.update(item)
+            try:
+                self.__dbsession.update(item)
+            except sqlite3.DatabaseError:
+                messagebox.showerror(title="Raktár adatbázis hiba!",
+                    message="Ha ezt látod, ne is folytasd, szólj Rolinak!")
+                return
+            try:
+                self.__dbsession.update_log_name(item)
+            except sqlite3.DatabaseError:
+                messagebox.showerror(title="Raktárnapló adatbázis hiba!",
+                    message="Ha ezt látod, ne is folytasd, szólj Rolinak!")
+                return
             logging.info\
                 (f"{socket.gethostname()} modify: {item.name} {item.stock}")
             messagebox.showinfo(MODIFIY_TITLE,
@@ -162,7 +200,12 @@ class Uberzeug():
         if len(items) and\
             messagebox.askokcancel(DELETE_TITLE, "Biztos vagy benne?"):
             for item in items:
-                self.__dbsession.delete(item)
+                try:
+                    self.__dbsession.delete(item)
+                except sqlite3.DatabaseError:
+                    messagebox.showerror(title="Raktár adatbázis hiba!",
+                        message="Ha ezt látod, ne is folytasd, szólj Rolinak!")
+                    return
                 logging.info\
                 (f"{socket.gethostname()} delete: {item.name} {-item.change}")
             messagebox.showinfo(DELETE_TITLE, "Anyag(ok) törölve.")
