@@ -44,19 +44,19 @@ class TurnoverDialog(simpledialog.Dialog):
         yearoptionmenu: OptionMenu = OptionMenu(
             box, self.__yearoption_var, *yearoptions)
         self.__yearoption_var.set(selected_year)
-        self.__yearoption_var.trace("w", self._update_months)
+        self.__yearoption_var.trace_add("write", self._update_months)
         yearoptionmenu.pack(side=LEFT, fill=X, expand=True)
 
         self.__monthoption_var: StringVar = StringVar()
         self.__monthoptionmenu: OptionMenu = OptionMenu(
             box, self.__monthoption_var, "")
-        self.__monthoption_var.trace("w", self._update_projects)
+        self.__monthoption_var.trace_add("write", self._update_projects)
         self.__monthoptionmenu.pack(side=LEFT, fill=X, expand=True)
 
         self.__projectoption_var: StringVar = StringVar()
         self.__projectcombobox: ttk.Combobox = ttk.Combobox(
             box, textvariable=self.__projectoption_var, state="readonly")
-        self.__projectoption_var.trace("w", self._update_log)
+        self.__projectoption_var.trace_add("write", self._update_log)
         self.__projectcombobox.pack(side=LEFT, fill=X, expand=True)
         box.pack(fill=X, expand=True)
 

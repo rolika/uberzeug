@@ -40,7 +40,7 @@ class TransferDialog(simpledialog.Dialog):
         self.__unitprice_var.set(locale.format_string(f="%.2f",
             val=self.__logrecord.unitprice, grouping=True))
         entry.select_range(0, END)
-        self.__unitprice_var.trace("w", self._update_values)
+        self.__unitprice_var.trace_add("write", self._update_values)
         Label(box, text=f"Ft/{self.__logrecord.unit} = ")\
             .pack(side=LEFT, padx=PADX, pady=PADY)
         self.__value_var = StringVar()
@@ -59,7 +59,7 @@ class TransferDialog(simpledialog.Dialog):
                 self.__dbsession.query_distinct_projects(self.__yearmonth)]
         self.__projectcombobox["values"] = projectoptions
         self.__projectoption_var.set(self.__project.legal)
-        self.__projectoption_var.trace("w", self._update_values)
+        self.__projectoption_var.trace_add("write", self._update_values)
         self.__projectcombobox.pack(fill=X, expand=True)
         box.pack(padx=PADX, pady=PADY)
 
