@@ -29,10 +29,10 @@ from persistence.filesession import FileSession
 
 class Uberzeug():
     def __init__(self, title:str=APPLICATION_TITLE,
-                 organization:List[str]=ORGANIZATION) -> None:
-
+                 organization:List[str]=ORGANIZATION,
+                 configfile:str=CONFIGFILE) -> None:
         config = configparser.ConfigParser()
-        config.read(CONFIGFILE)
+        config.read(configfile)
         database_file = config["DEFAULT"]["database"]
         waybillfolder = config["DEFAULT"]["waybillfolder"]
         turnoverfolder = config["DEFAULT"]["turnoverfolder"]
